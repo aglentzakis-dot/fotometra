@@ -66,6 +66,8 @@ button{font-family:inherit;color:inherit}
   display:flex; align-items:center; gap:6px; max-width:calc(100% - 16px);
 }
 #scaleTag.warn{color:var(--danger)}
+#selBar{position:absolute; left:50%; transform:translateX(-50%); top:8px; display:flex; gap:6px; z-index:3}
+#selBar .zb{width:42px;height:42px;font-size:17px}
 #autoTag{position:absolute; right:8px; top:8px; background:var(--panel); border:1px solid var(--line);
   border-radius:9px; padding:4px 8px; font-size:10.5px; font-weight:600; opacity:0; transition:opacity .4s;
   pointer-events:none; box-shadow:var(--shadow)}
@@ -160,10 +162,14 @@ ul.tips{margin:8px 0 0 16px;padding:0;font-size:12.5px;line-height:1.6;color:var
     <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
       <button class="tbtn primary" id="bCam">📸 Κάμερα</button>
       <button class="tbtn" id="bFile">🗂️ Από αρχεία</button>
-      <button class="tbtn" id="bSaved2">💾 Αποθηκευμένα</button>
+      <button class="tbtn" id="bSaved2">💾 Οι εργασίες μου</button>
     </div>
   </div>
   <div id="scaleTag" style="display:none"></div>
+  <div id="selBar" style="display:none">
+    <button class="zb" id="selEdit" title="Αλλαγή">✏️</button>
+    <button class="zb" id="selDel" title="Διαγραφή">🗑️</button>
+  </div>
   <div id="autoTag">💾 αποθηκεύτηκε</div>
   <div id="histBox" style="display:none">
     <button class="zb" id="hUndo" title="Αναίρεση">↶</button>
@@ -258,6 +264,7 @@ const cv=$('cv'), ctx=cv.getContext('2d');
 const EN={"Νέα φωτογραφία": "New photo", "Κοινοποίηση": "Share", "Λίστα": "List", "Τέλος": "Done", "Εγκατάσταση": "Install", "Κάμερα": "Camera", "Από αρχεία": "From files", "Αποθηκευμένα": "Saved", "αποθηκεύτηκε": "saved", "Αναίρεση": "Undo", "Επανάληψη": "Redo", "πάχος": "thickness", "Κλείδωμα γωνίας": "Lock angle", "Σημάδια": "Marks", "Διάσταση / σχόλιο": "Value / note", "Διαγραφή": "Delete", "Ολοκλήρωση": "Finish", "Κλείσιμο σχήματος": "Close shape", "Βάλε μια φωτογραφία για να ξεκινήσεις": "Add a photo to get started", "Τράβα ίσιες γραμμές, πάρε διαστάσεις σε πραγματικά μέτρα, βάλε σημειώσεις πάνω στην εικόνα και βγάλε την έτοιμη για αποστολή.": "Draw straight lines, get dimensions in real units, add notes on the image and send it ready.", "Επιλογή": "Select", "Σημείωση": "Note", "Μέτρηση": "Measure", "Κλίμακα": "Scale", "Ορθογώνιο": "Rectangle", "Πολύγωνο": "Polygon", "Γωνία": "Angle", "Βέλος": "Arrow", "Σχέδιο": "Draw", "Άλλα": "More", "Μήκος": "Length", "Περισσότερα εργαλεία": "More tools", "Όλα τα εργαλεία είναι ήδη στη μπάρα.": "All tools are already in the bar.", "⚙️ Ποια στη μπάρα": "⚙️ Which in the bar", "Ρύθμιση εργαλείων": "Tool setup", "Διάλεξε ποια εργαλεία μένουν στην κάτω μπάρα και με ποια σειρά. Τα υπόλοιπα πάνε στο «Άλλα».": "Choose which tools stay in the bottom bar and in what order. The rest go under «More».", "στη μπάρα": "in the bar", "στο παράθυρο": "in the popup", "Μπάρα": "Bar", "Παράθυρο": "Popup", "↺ Προεπιλογή": "↺ Default", "Έτοιμο": "Done", "Πρέπει να μείνει ένα τουλάχιστον": "At least one must stay", "Ορισμός κλίμακας": "Set scale", "Τράβηξες μια γραμμή πάνω σε κάτι που ξέρεις πόσο είναι (πόρτα, πλακάκι, μέτρο). Γράψε το πραγματικό μήκος και όλες οι μετρήσεις θα βγαίνουν σε πραγματικές μονάδες.": "You drew a line over something whose size you know (a door, a tile, a tape measure). Enter its real length and every measurement will come out in real units.", "Προσοχή — οι μετρήσεις είναι κατά προσέγγιση": "Careful — measurements are approximate", "Η φωτογραφία είναι επίπεδη εικόνα ενός χώρου με βάθος. Ό,τι κι αν κάνουμε, δεν βγαίνει 100% ακριβές νούμερο — για δεσμευτικές διαστάσεις πάντα μέτρο στο χέρι.": "A photo is a flat image of a space that has depth. Whatever we do, the number is never 100% exact — for binding dimensions always use a tape measure.", "Όσο πιο προσεκτικά πάρεις τη γραμμή αναφοράς, τόσο καλύτερα βγαίνουν όλα τα υπόλοιπα. Διάλεξε κάτι μεγάλο και με σίγουρη διάσταση.": "The more carefully you place the reference line, the better everything else comes out. Pick something large whose size you are sure of.", "Τράβα τη φωτογραφία κατά μέτωπο, όχι λοξά, και όχι πολύ κοντά — στις άκρες του φακού τα πράγματα «γέρνουν».": "Shoot the photo straight on, not at an angle, and not too close — things lean at the edges of the lens.", "Η κλίμακα ισχύει μόνο για το επίπεδο της γραμμής αναφοράς. Ιδανικά πάρε δύο μετρήσεις, πλάτος και βάθος, και αν παίζει ρόλο και το ύψος, βάλε και αυτό — και συγκρίνέ τα.": "The scale only holds for the plane of the reference line. Ideally take two references, width and depth, and height too if it matters — then compare them.", "Αν μια διάσταση σου βγει λάθος, τη διορθώνεις με το χέρι και, αν θες, ξαναϋπολογίζεται μαζί της όλη η κλίμακα.": "If a dimension comes out wrong you can correct it by hand and, if you want, recalculate the whole scale from it.", "Πραγματικό μήκος": "Real length", "Άκυρο": "Cancel", "Εφαρμογή": "Apply", "Γράψε έγκυρο μήκος": "Enter a valid length", "κλίμακα αναφοράς": "reference scale", "Η κλίμακα ορίστηκε": "Scale set", "Μήκος γραμμής": "Line length", "εικονοστοιχεία": "pixels", "Τράβα γραμμή σε κάτι με γνωστό μήκος": "Draw a line over something of known length", "Τράβα γραμμή πάνω σε κάτι με γνωστό μήκος": "Draw a line over something of known length", "Σχόλιο στη μέτρηση": "Note on measurement", "Γράψε εδώ…": "Write here…", "Αποθήκευση": "Save", "Αυτόματη μέτρηση": "Automatic measurement", "Δική σου διάσταση": "Your own dimension", "Αυτή είναι η σωστή τιμή — διόρθωσε και την κλίμακα, να πέσουν σωστά και οι άλλες μετρήσεις": "This is the correct value — fix the scale too, so the other measurements come out right", "Σχόλιο": "Note", "π.χ. θέλει μερεμέτι": "e.g. needs patching", "⇲ Νούμερο στη θέση του": "⇲ Number back in place", "↺ Αυτόματη": "↺ Automatic", "Η κλίμακα διορθώθηκε — μπήκαν σωστά όλες οι μετρήσεις": "Scale corrected — all measurements updated", "Σύρε για μετακίνηση · άσε το για επεξεργασία": "Drag to move · release to edit", "Λίστα μετρήσεων": "Measurement list", "Λίστα μετρήσεων & σημειώσεων": "Measurements & notes", "Δεν υπάρχει ακόμη τίποτα πάνω στη φωτογραφία.": "Nothing on the photo yet.", "Κλείσιμο": "Close", "χωρίς σχόλιο": "no note", "Πάμε": "Go", "Αλλαγή": "Edit", "Εξαγωγή πίνακα": "Export table", "Μενού": "Menu", "Αποθήκευση στη συσκευή": "Save on this device", "η δουλειά σου σώζεται μόνη της — εδώ της δίνεις όνομα": "your work saves itself — here you give it a name", "Όνομα": "Name", "Αποθηκευμένα έργα": "Saved projects", "άνοιγμα παλιότερης δουλειάς": "open earlier work", "Άνοιγμα": "Open", "email, Viber, Messenger, Συλλογή, Drive…": "email, Viber, Messenger, Gallery, Drive…", "Εξαγωγή εικόνας": "Export image", "κατέβασμα αρχείου με όλα τα σημάδια": "download a file with all the marks", "Εικόνα": "Image", "Αντίγραφο ασφαλείας (όλα)": "Backup (everything)", "ένα αρχείο με όλες τις εργασίες και τις φωτογραφίες": "one file with every project and photo", "Δημιουργία": "Create", "Επαναφορά από αντίγραφο": "Restore from backup", "φέρνει πίσω τα πάντα σε νέο κινητό ή μετά από καθάρισμα": "brings everything back on a new phone or after a wipe", "Επαναφορά": "Restore", "Αυτόματη αποθήκευση στο κινητό": "Auto-save to the phone", "ενεργή — κάθε εργασία γράφεται σε φάκελο": "active — every project is written to a folder", "θα ενεργοποιηθεί μόλις γίνει εφαρμογή Android": "will switch on once it becomes an Android app", "Ναι": "Yes", "Όχι": "No", "Εξαγωγή πίνακα μετρήσεων": "Export measurement table", "αρχείο για υπολογιστικό φύλλο": "file for a spreadsheet", "Πίνακας": "Table", "Μονάδα μέτρησης": "Unit of measurement", "σε τι θα γράφονται οι διαστάσεις": "what dimensions are written in", "Νέα κλίμακα": "New scale", "δεν έχει οριστεί": "not set", "Ορισμός": "Set", "Καθάρισμα σημαδιών": "Clear marks", "σβήνει όλα όσα ζωγράφισες": "erases everything you drew", "Καθάρισμα": "Clear", "Οδηγίες": "Help", "πώς δουλεύει το κάθε εργαλείο": "how each tool works", "Γλώσσα": "Language", "Εγκατάσταση στο κινητό": "Install on the phone", "να μπει σαν κανονική εφαρμογή": "add it like a normal app", "Διαθέσιμο στην εφαρμογή Android": "Available in the Android app", "Μονάδα": "Unit", "Εντάξει": "OK", "Δεν υπάρχει φωτογραφία": "No photo", "Αποθήκευση έργου": "Save project", "π.χ. Σαλόνι - τοίχος Β": "e.g. Living room - north wall", "Μένει μόνο στη συσκευή σου, σε αυτόν τον φυλλομετρητή.": "It stays only on your device, in this browser.", "Αποθηκεύτηκε": "Saved", "Δεν έγινε η αποθήκευση": "Could not save", "σημάδια": "marks", "Δεν υπάρχουν αποθηκευμένα έργα ακόμη.": "No saved projects yet.", "Συνεχίζεις από εκεί που έμεινες": "Continuing where you left off", "Εργασία": "Project", "Χωρίς όνομα": "Untitled", "Ετοιμάζεται το αντίγραφο…": "Preparing the backup…", "Δεν έγινε το αντίγραφο": "Backup failed", "Δεν είναι αρχείο ΦωτοΜέτρα": "Not a ΦωτοΜέτρα file", "Επαναφέρθηκαν": "Restored", "εργασίες": "projects", "Δεν διαβάστηκε το αρχείο": "Could not read the file", "Δεν υπάρχουν μετρήσεις": "No measurements", "Αποθηκεύτηκε στο κινητό": "Saved to the phone", "Δεν άνοιξε η εικόνα": "Could not open the image", "Τράβα φωτογραφία": "Take a photo", "Διάλεξε από τα αρχεία": "Choose from files", "Μπορείς επίσης να σύρεις μια φωτογραφία μέσα στο παράθυρο ή να την κάνεις επικόλληση.": "You can also drag a photo into the window or paste one.", "Αρ.": "No.", "Τύπος": "Type", "Βάλε πρώτα φωτογραφία": "Add a photo first", "Δεν υπάρχει τίποτα για αναίρεση": "Nothing to undo", "Δεν υπάρχει τίποτα για επανάληψη": "Nothing to redo", "Πάτα σημείο-σημείο · μετά «Ολοκλήρωση»": "Tap point by point · then «Finish»", "Τρία πατήματα: άκρη, κορυφή, άκρη": "Three taps: end, vertex, end", "Γωνίες κλειδωμένες σε 0°/45°/90°": "Angles locked to 0°/45°/90°", "Ελεύθερη γωνία": "Free angle", "Διάλεξε πρώτα κάτι με το εργαλείο Επιλογή": "Pick something first with the Select tool", "Διάλεξε πρώτα μια μέτρηση (εργαλείο Επιλογή ή από τη Λίστα)": "Pick a measurement first (Select tool or from the List)", "Εγκαταστάθηκε": "Installed", "Κείμενο": "Text", "κρυφό": "hidden", "σύντομο": "short", "πλήρες": "full", "περίμετρος": "perimeter", "μήκος": "length"};
 Object.assign(EN,{"Κείμενο: κρυφό / σύντομο / πλήρες": "Text: hidden / short / full", "Χωρίς κλίμακα": "No scale", "Παρατεταμένο πάτημα": "Long press", "📤 Κοινοποίηση": "📤 Share", "Αντίγραφο στο κινητό": "Copy on the phone", "Αυτόματη αποθήκευση": "Auto-save", "Έκδοση": "Version", "τράβα μια γραμμή πάνω σε κάτι που ξέρεις (πόρτα 2,10 μ, πλακάκι 60 εκ) και δώσε το μήκος. Από κει και πέρα κάθε μέτρηση βγαίνει σε πραγματικά μέτρα — κατά προσέγγιση πάντα, γιατί η φωτογραφία είναι επίπεδη εικόνα χώρου με βάθος. Η κλίμακα ισχύει στο επίπεδο της γραμμής αναφοράς, γι' αυτό συμφέρει να παίρνεις χωριστά πλάτος και βάθος (και ύψος όπου χρειάζεται).": "draw a line over something you know (a 2.10 m door, a 60 cm tile) and enter its length. From then on every measurement comes out in real units — always approximately, because a photo is a flat image of a space with depth. The scale holds in the plane of the reference line, which is why it pays to take width and depth separately (and height where it matters).", "σύρε για ίσια γραμμή με τη διάσταση πάνω της.": "drag for a straight line with its dimension written on it.", "κουμπώνει τις γραμμές στις 0°, 45°, 90° για τελείως ίσια σημάδια.": "snaps lines to 0°, 45°, 90° for perfectly straight marks.", "δίνει πλάτος × ύψος και εμβαδόν.": "gives width × height and area.", "πάτα σημείο-σημείο για σπασμένη γραμμή· «Κλείσιμο» για περίμετρο και εμβαδόν.": "tap point by point for a broken line; «Close shape» for perimeter and area.", "τρία πατήματα (άκρη – κορυφή – άκρη) και δείχνει τις μοίρες.": "three taps (end – vertex – end) and it shows the degrees.", "κανονικά η εικόνα μένει καθαρή — φαίνεται μόνο η αριθμημένη πινέζα με μια άσπρη κουκίδα που λέει ότι έχει κείμενο μέσα. Πατάς την πινέζα και εμφανίζεται το κείμενό της. Στην εξαγωγή της εικόνας γράφονται πάντα όλα ολόκληρα.": "normally the image stays clean — you only see the numbered pin with a small white dot telling you there is text inside. Tap the pin and its text appears. When the image is exported everything is always written out in full.", "πάτα σε κενό σημείο και γράψε· μπαίνει αριθμημένη πινέζα. Αν πατήσεις πάνω σε πινέζα που υπάρχει ήδη, ανοίγει η δική της επεξεργασία — δεν μπαίνει καινούργια από πάνω.": "tap an empty spot and write; a numbered pin appears. Tapping an existing pin opens that pin for editing — it does not add a new one on top.", "σύρε για μετακίνηση της εικόνας, πάτα πάνω σε σχήμα για να το πιάσεις, τράβα τις άσπρες κουκίδες για να το διορθώσεις.": "drag to move the image, tap a shape to grab it, drag the white dots to adjust it.", "κάθε μέτρηση βγαίνει «0» στη μονάδα που έχεις διαλέξει και τη γράφεις εσύ. Αν θες να μετράει μόνη της, όρισε κλίμακα.": "every measurement comes out as «0» in the unit you chose and you write it in yourself. If you want it measured automatically, set a scale.", "διπλό πάτημα πάνω σε μια μέτρηση (ή «✏️ Διάσταση / σχόλιο») και γράφεις εσύ την τιμή. Αν τσεκάρεις «διόρθωσε και την κλίμακα», διορθώνονται μαζί και όλες οι άλλες μετρήσεις.": "double-tap a measurement (or «✏️ Value / note») and type the value yourself. If you tick «fix the scale too», every other measurement is corrected along with it.", "κράτα το δάχτυλο πάνω σε μια γραμμή, σε ένα σχήμα ή πάνω στο ίδιο το νούμερο. Κουμπώνει (δονείται) και μετά ή το σέρνεις όπου θες, ή το αφήνεις και ανοίγει η επεξεργασία. Το νούμερο μετακινείται χωριστά από τη γραμμή, με αχνή γραμμούλα να δείχνει σε ποια ανήκει.": "hold your finger on a line, a shape or on the number itself. It locks on (with a small vibration) and then you either drag it wherever you want, or release it and editing opens. The number moves separately from the line, with a faint leader showing which one it belongs to.", "κάτω αριστερά: αναίρεση και επαναφορά.": "bottom left: undo and redo.", "(πάνω μπάρα): ανοίγει το κανονικό μενού του κινητού και στέλνει τη φωτογραφία με όλα τα σημάδια ολόκληρα — μαζί πάει και η λίστα των μετρήσεων ως κείμενο.": "(top bar): opens the phone's normal share menu and sends the photo with every mark written out in full — the measurement list goes along as text.", "η εργασία σώζεται μέσα στην εφαρμογή, όχι σε φάκελο του κινητού. Για να έχεις τη φωτογραφία και έξω από αυτήν, χρησιμοποίησε «Αποθήκευση στο κινητό» από το μενού.": "the project is saved inside the app, not in a phone folder. To have the photo outside it too, use «Share» from the menu.", "δεν χρειάζεται να πατάς τίποτα. Κάθε αλλαγή σώζεται μόνη της και όταν ξανανοίξεις την εφαρμογή συνεχίζεις από εκεί που έμεινες. Από το μενού δίνεις απλώς όνομα στην εργασία.": "you do not have to press anything. Every change saves itself and when you reopen the app you continue where you left off. From the menu you just give the project a name.", "Δύο δάχτυλα: μεγέθυνση και μετακίνηση, όποιο εργαλείο κι αν έχεις.": "Two fingers: zoom and pan, whatever tool you have selected."});
 Object.assign(EN,{"Βάλ' την σαν κανονική εφαρμογή στο κινητό": "Add it to your phone like a normal app", "⤓ Εγκατάσταση": "⤓ Install", "Ρυθμίσεις": "Settings", "Όχι τώρα": "Not now"});
+Object.assign(EN,{"Οι εργασίες μου": "My projects", "➕ Νέα εργασία": "➕ New project", "💾 Οι εργασίες μου": "💾 My projects", "🗑️ Διαγραφή": "🗑️ Delete", "Αλλαγή": "Edit", "Άκυρο": "Cancel"});
 const USYM={el:{'μ':'μ','εκ':'εκ','χιλ':'χιλ'},en:{'μ':'m','εκ':'cm','χιλ':'mm'}};
 const UNAMES={el:{'μ':'μέτρα','εκ':'εκατοστά','χιλ':'χιλιοστά'},en:{'μ':'meters','εκ':'centimeters','χιλ':'millimeters'}};
 function uSym(u){ return (USYM[S.lang]||USYM.el)[u]||u; }
@@ -755,10 +762,14 @@ function editAnn(a){
     <label class="fld">Σχόλιο</label>
     <textarea id="eNote" placeholder="π.χ. θέλει μερεμέτι">${esc(a.note)}</textarea>
     <div class="acts">
+      <button id="eDel" style="color:var(--danger)">🗑️ Διαγραφή</button>
+      <button class="primary" id="eOk">Αποθήκευση</button>
+    </div>
+    <div class="acts" style="margin-top:8px">
       <button id="ePos">⇲ Νούμερο στη θέση του</button>
       <button id="eAuto">↺ Αυτόματη</button>
-      <button class="primary" id="eOk">Αποθήκευση</button>
     </div>`);
+  $('eDel').onclick=()=>{ push(); S.anns=S.anns.filter(x=>x!==a); S.sel=null; closeSheet(); draw(); refreshOpts(); };
   $('ePos').onclick=()=>{ push(); a.lo=null; closeSheet(); draw(); };
   $('eAuto').onclick=()=>{ push(); a.man=''; closeSheet(); draw(); };
   $('eOk').onclick=()=>{
@@ -1120,8 +1131,12 @@ async function projectsSheet(){
       <button class="mini" data-o="${r.id}">Άνοιγμα</button>
       <button class="mini del" data-x="${r.id}">✕</button>
     </div>`).join(''):'<p class="hint">Δεν υπάρχουν αποθηκευμένα έργα ακόμη.</p>';
-  openSheet(`<h2>Αποθηκευμένα έργα</h2>${rows}<div class="acts"><button class="primary" id="prC">Κλείσιμο</button></div>`);
+  openSheet(`<h2>Οι εργασίες μου</h2>
+    <div class="acts" style="margin:0 0 10px"><button class="primary" id="prNew">➕ Νέα εργασία</button></div>
+    ${rows}
+    <div class="acts"><button ${S.img?'class="primary"':''} id="prC">${S.img?'Κλείσιμο':'Άκυρο'}</button></div>`);
   $('prC').onclick=closeSheet;
+  $('prNew').onclick=()=>{ closeSheet(); setTimeout(()=>$('bOpen').click(),120); };
   $('sheetIn').querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>{
     const r=recs.find(x=>x.id===b.dataset.o);
     const url=URL.createObjectURL(r.blob); const im=new Image();
@@ -1217,6 +1232,7 @@ function setTool(t){
 function refreshOpts(){
   $('swatches').querySelectorAll('[data-c]').forEach(s=>s.classList.toggle('on',s.dataset.c===S.color));
   $('cSnap').classList.toggle('on',S.snap);
+  const sb=$('selBar'); if(sb)sb.style.display=(S.img&&S.sel)?'flex':'none';
   const hu=$('hUndo'), hr=$('hRedo');
   if(hu){ hu.classList.toggle('off',!S.undoS.length); hr.classList.toggle('off',!S.redoS.length); }
   $('cShow').classList.toggle('on',S.show);
@@ -1251,6 +1267,8 @@ $('hUndo').onclick=undo; $('hRedo').onclick=redo;
 $('cEdit').onclick=()=>{ const a=S.anns.find(x=>x.id===S.sel);
   if(!a){toast('Διάλεξε πρώτα μια μέτρηση (εργαλείο Επιλογή ή από τη Λίστα)');return;} editAnn(a); };
 $('bList').onclick=listSheet; $('bMenu').onclick=menuSheet;
+$('selEdit').onclick=()=>{ const a=S.anns.find(x=>x.id===S.sel); if(a)editAnn(a); };
+$('selDel').onclick=delSel;
 $('bShare').onclick=()=>{ if(!S.img){toast('Βάλε πρώτα φωτογραφία');return;} sharePng(); };
 $('zIn').onclick=()=>zoomAt(cv._w/2,cv._h/2,1.25);
 $('zOut').onclick=()=>zoomAt(cv._w/2,cv._h/2,1/1.25);
@@ -1290,12 +1308,20 @@ if(EMBED){
       if(mine.length) projectsSheet(); else $('fCam').click();
     }catch(e){}
   })();
-} else restoreLast();
+} else {
+  (async()=>{
+    try{
+      const d=await db();
+      const all=await new Promise((res,rej)=>{ const t=d.transaction('p','readonly'); const q=t.objectStore('p').getAll(); q.onsuccess=()=>res(q.result||[]); q.onerror=()=>rej(q.error); });
+      if(all.length) projectsSheet();
+    }catch(e){}
+  })();
+}
 (async()=>{ try{ if(window.claude&&window.claude.use) dl=await window.claude.use('downloads'); }catch(_){}
 })();
 
 /* ---------- εγκατάσταση ως εφαρμογή ---------- */
-const APPV='2.1.0';
+const APPV='2.2.0';
 let deferredPrompt=null;
 let instDismissed=false; try{ instDismissed=!!localStorage.getItem('fotometra-noinst'); }catch(_){}
 function showInstBar(v){ const b=document.getElementById('instBar'); if(b)b.style.display=v?'flex':'none'; }
