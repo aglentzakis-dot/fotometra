@@ -136,7 +136,8 @@ ul.tips{margin:8px 0 0 16px;padding:0;font-size:12.5px;line-height:1.6;color:var
 
 <div id="top">
   <h1>ΦωτοΜέτρα</h1>
-  <button class="tbtn" id="bOpen">📷 Φωτογραφία</button>
+  <button class="tbtn" id="bOpen" title="Νέα φωτογραφία">📷</button>
+  <button class="tbtn" id="bShare" title="Κοινοποίηση">📤</button>
   <button class="tbtn" id="bList">Λίστα</button>
   <button class="tbtn primary" id="bDone" style="display:none">✓ Τέλος</button>
   <button class="tbtn primary" id="bInstall" style="display:none">⤓ Εγκατάσταση</button>
@@ -761,7 +762,7 @@ function menuSheet(){
   openSheet(`<h2>Μενού</h2>
     <div class="row"><div class="rowmain"><b>Αποθήκευση στη συσκευή</b><span>η δουλειά σου σώζεται μόνη της — εδώ της δίνεις όνομα</span></div><button class="mini" id="mSave">Όνομα</button></div>
     <div class="row"><div class="rowmain"><b>Αποθηκευμένα έργα</b><span>άνοιγμα παλιότερης δουλειάς</span></div><button class="mini" id="mOpen">Άνοιγμα</button></div>
-    <div class="row"><div class="rowmain"><b>Αποθήκευση στο κινητό</b><span>στέλνει τη φωτογραφία σε Συλλογή, Drive, WhatsApp…</span></div><button class="mini" id="mShare">Αποστολή</button></div>
+    <div class="row"><div class="rowmain"><b>Κοινοποίηση</b><span>email, Viber, Messenger, Συλλογή, Drive…</span></div><button class="mini" id="mShare">Άνοιγμα</button></div>
     <div class="row"><div class="rowmain"><b>Εξαγωγή εικόνας</b><span>κατέβασμα αρχείου με όλα τα σημάδια</span></div><button class="mini" id="mPng">Εικόνα</button></div>
     <div class="row"><div class="rowmain"><b>Αντίγραφο ασφαλείας (όλα)</b><span>ένα αρχείο με όλες τις εργασίες και τις φωτογραφίες</span></div><button class="mini" id="mBack">Δημιουργία</button></div>
     <div class="row"><div class="rowmain"><b>Επαναφορά από αντίγραφο</b><span>φέρνει πίσω τα πάντα σε νέο κινητό ή μετά από καθάρισμα</span></div><button class="mini" id="mRest">Επαναφορά</button></div>
@@ -809,6 +810,7 @@ function helpSheet(){
     <li><b>Δική σου διάσταση</b>: διπλό πάτημα πάνω σε μια μέτρηση (ή «✏️ Διάσταση / σχόλιο») και γράφεις εσύ την τιμή. Αν τσεκάρεις «διόρθωσε και την κλίμακα», διορθώνονται μαζί και όλες οι άλλες μετρήσεις.</li>
     <li><b>Παρατεταμένο πάτημα</b>: κράτα το δάχτυλο πάνω σε μια γραμμή, σε ένα σχήμα ή πάνω στο ίδιο το νούμερο. Κουμπώνει (δονείται) και μετά ή το σέρνεις όπου θες, ή το αφήνεις και ανοίγει η επεξεργασία. Το νούμερο μετακινείται χωριστά από τη γραμμή, με αχνή γραμμούλα να δείχνει σε ποια ανήκει.</li>
     <li><b>↶ ↷</b> κάτω αριστερά: αναίρεση και επαναφορά.</li>
+    <li><b>📤 Κοινοποίηση</b> (πάνω μπάρα): ανοίγει το κανονικό μενού του κινητού και στέλνει τη φωτογραφία με όλα τα σημάδια ολόκληρα — μαζί πάει και η λίστα των μετρήσεων ως κείμενο.</li>
     <li><b>Αντίγραφο στο κινητό</b>: η εργασία σώζεται μέσα στην εφαρμογή, όχι σε φάκελο του κινητού. Για να έχεις τη φωτογραφία και έξω από αυτήν, χρησιμοποίησε «Αποθήκευση στο κινητό» από το μενού.</li>
     <li><b>Αυτόματη αποθήκευση</b>: δεν χρειάζεται να πατάς τίποτα. Κάθε αλλαγή σώζεται μόνη της και όταν ξανανοίξεις την εφαρμογή συνεχίζεις από εκεί που έμεινες. Από το μενού δίνεις απλώς όνομα στην εργασία.</li>
     <li>Δύο δάχτυλα: μεγέθυνση και μετακίνηση, όποιο εργαλείο κι αν έχεις.</li>
@@ -920,10 +922,24 @@ async function saveFile(name,data){
   a.href=u; a.download=name; a.click(); setTimeout(()=>URL.revokeObjectURL(u),4000);
 }
 function pngName(){ return ((S.projName||'fotometra').replace(/[^\p{L}\p{N} _-]/gu,'').trim()||'fotometra')+'.png'; }
+function shareText(){
+  const L=S.anns.filter(a=>measureOf(a)||a.note)
+    .map((a,i)=>(i+1)+'. '+(TNAME[a.type]||a.type)+(measureOf(a)?': '+measureOf(a):'')+(a.note?' — '+a.note:''));
+  return (S.projName?S.projName+'\n':'')+L.join('\n');
+}
 async function sharePng(quiet){
   if(!S.img)return;
   const b=await new Promise(r=>renderFull().toBlob(r,'image/png'));
-  if(b) await saveToDevice(pngName(),b,quiet);
+  if(!b)return;
+  if(!quiet&&navigator.canShare){
+    const f=new File([b],pngName(),{type:'image/png'});
+    const full={files:[f], title:S.projName||'ΦωτοΜέτρα', text:shareText()};
+    try{
+      if(navigator.canShare(full)){ await navigator.share(full); return; }
+      if(navigator.canShare({files:[f]})){ await navigator.share({files:[f],title:S.projName||'ΦωτοΜέτρα'}); return; }
+    }catch(e){ if(e&&e.name==='AbortError')return; }
+  }
+  await saveToDevice(pngName(),b,quiet);
 }
 
 /* ---------- εφεδρικό αντίγραφο όλων ---------- */
@@ -1114,6 +1130,7 @@ $('hUndo').onclick=undo; $('hRedo').onclick=redo;
 $('cEdit').onclick=()=>{ const a=S.anns.find(x=>x.id===S.sel);
   if(!a){toast('Διάλεξε πρώτα μια μέτρηση (εργαλείο Επιλογή ή από τη Λίστα)');return;} editAnn(a); };
 $('bList').onclick=listSheet; $('bMenu').onclick=menuSheet;
+$('bShare').onclick=()=>{ if(!S.img){toast('Βάλε πρώτα φωτογραφία');return;} sharePng(); };
 $('zIn').onclick=()=>zoomAt(cv._w/2,cv._h/2,1.25);
 $('zOut').onclick=()=>zoomAt(cv._w/2,cv._h/2,1/1.25);
 $('zFit').onclick=fitView;
@@ -1153,7 +1170,7 @@ if(EMBED){
 })();
 
 /* ---------- εγκατάσταση ως εφαρμογή ---------- */
-const APPV='1.9.2';
+const APPV='1.9.3';
 let deferredPrompt=null;
 window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); deferredPrompt=e; $('bInstall').style.display='flex'; });
 window.addEventListener('appinstalled',()=>{ deferredPrompt=null; $('bInstall').style.display='none'; toast('Εγκαταστάθηκε'); });
