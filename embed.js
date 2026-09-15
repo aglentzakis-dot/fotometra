@@ -24,6 +24,7 @@
      (Αν κάποτε θελήσεις τοπικό αντίγραφο, βάλε: var APP = 'fotometra/index.html';) */
   var APP = 'https://aglentzakis-dot.github.io/fotometra/index.html';
   var ov = null;
+  var ready = false;
 
   function open(owner, title) {
     close();
@@ -38,7 +39,20 @@
     f.style.cssText = 'width:100%;height:100%;border:0;display:block';
     f.allow = 'camera; web-share';
 
+    /* Εφεδρικό κουμπί κλεισίματος: εμφανίζεται μόνο αν η ΦωτοΜέτρα δεν
+       απαντήσει μέσα σε 6 δευτερόλεπτα (π.χ. χωρίς ίντερνετ), ώστε να μη
+       μείνει ποτέ κλειδωμένη η σελίδα. Κανονικά κλείνεις με το «✓ Τέλος». */
+    var x = document.createElement('button');
+    x.textContent = '✕';
+    x.style.cssText = 'position:absolute;right:10px;bottom:10px;z-index:2;display:none;' +
+      'width:44px;height:44px;border-radius:50%;border:0;background:rgba(0,0,0,.6);' +
+      'color:#fff;font-size:20px;line-height:44px;cursor:pointer';
+    x.onclick = close;
+    ready = false;
+    setTimeout(function () { if (!ready && x) x.style.display = 'block'; }, 6000);
+
     ov.appendChild(f);
+    ov.appendChild(x);
     document.body.appendChild(ov);
     document.body.style.overflow = 'hidden';
   }
@@ -54,7 +68,9 @@
   }
 
   window.addEventListener('message', function (e) {
-    if (e.data && e.data.type === 'fotometra-close') close();
+    if (!e.data) return;
+    if (e.data.type === 'fotometra-ready') ready = true;
+    if (e.data.type === 'fotometra-close') close();
   });
 
   function db() {

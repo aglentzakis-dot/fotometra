@@ -1,8 +1,8 @@
 /* ΦωτοΜέτρα — service worker */
-const V = 'fotometra-v10';
+const V = 'fotometra-v11';
 const FILES = [
   './', './index.html', './manifest.json',
-  './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'
+  './embed.js', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'
 ];
 
 self.addEventListener('install', e => {

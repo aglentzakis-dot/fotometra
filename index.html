@@ -1128,6 +1128,7 @@ buildTools(); setTool('select'); fitCanvas(); refreshOpts();
 if(QP.get('title')) document.querySelector('#top h1').textContent=QP.get('title');
 if(EMBED){
   $('bDone').style.display='flex';
+  try{ parent.postMessage({type:'fotometra-ready'},'*'); }catch(_){}
   $('bDone').onclick=async()=>{ await autoSave(); try{parent.postMessage({type:'fotometra-close'},'*');}catch(_){} };
   (async()=>{
     try{
@@ -1142,7 +1143,7 @@ if(EMBED){
 })();
 
 /* ---------- εγκατάσταση ως εφαρμογή ---------- */
-const APPV='1.9.0';
+const APPV='1.9.1';
 let deferredPrompt=null;
 window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); deferredPrompt=e; $('bInstall').style.display='flex'; });
 window.addEventListener('appinstalled',()=>{ deferredPrompt=null; $('bInstall').style.display='none'; toast('Εγκαταστάθηκε'); });
