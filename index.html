@@ -207,6 +207,9 @@ const S = {
   scale:null,                 // {upp, unit}
   unit:'μ',                   // μονάδα εμφάνισης όταν δεν έχει οριστεί κλίμακα
   autoDev:false,            // αυτόματο γράψιμο αρχείου στο κινητό (μόνο με εφαρμογή Android)
+  lang:'el',
+  mainTools:['select','note','line','calib'],
+  toolOrder:['select','note','line','calib','rect','poly','angle','arrow','free'],
   noteText:'hide',            // hide | short | full — πόσο κείμενο φαίνεται πάνω στην εικόνα
   view:{s:1,tx:0,ty:0},
   draft:null, undoS:[], redoS:[],
@@ -243,13 +246,53 @@ const LR=new Map();   // πλαίσια ετικετών (για πιάσιμο 
 const $=id=>document.getElementById(id);
 const cv=$('cv'), ctx=cv.getContext('2d');
 
+/* ---------- γλώσσα ---------- */
+const EN={"Νέα φωτογραφία": "New photo", "Κοινοποίηση": "Share", "Λίστα": "List", "Τέλος": "Done", "Εγκατάσταση": "Install", "Κάμερα": "Camera", "Από αρχεία": "From files", "Αποθηκευμένα": "Saved", "αποθηκεύτηκε": "saved", "Αναίρεση": "Undo", "Επανάληψη": "Redo", "πάχος": "thickness", "Κλείδωμα γωνίας": "Lock angle", "Σημάδια": "Marks", "Διάσταση / σχόλιο": "Value / note", "Διαγραφή": "Delete", "Ολοκλήρωση": "Finish", "Κλείσιμο σχήματος": "Close shape", "Βάλε μια φωτογραφία για να ξεκινήσεις": "Add a photo to get started", "Τράβα ίσιες γραμμές, πάρε διαστάσεις σε πραγματικά μέτρα, βάλε σημειώσεις πάνω στην εικόνα και βγάλε την έτοιμη για αποστολή.": "Draw straight lines, get dimensions in real units, add notes on the image and send it ready.", "Επιλογή": "Select", "Σημείωση": "Note", "Μέτρηση": "Measure", "Κλίμακα": "Scale", "Ορθογώνιο": "Rectangle", "Πολύγωνο": "Polygon", "Γωνία": "Angle", "Βέλος": "Arrow", "Σχέδιο": "Draw", "Άλλα": "More", "Μήκος": "Length", "Περισσότερα εργαλεία": "More tools", "Όλα τα εργαλεία είναι ήδη στη μπάρα.": "All tools are already in the bar.", "⚙️ Ποια στη μπάρα": "⚙️ Which in the bar", "Ρύθμιση εργαλείων": "Tool setup", "Διάλεξε ποια εργαλεία μένουν στην κάτω μπάρα και με ποια σειρά. Τα υπόλοιπα πάνε στο «Άλλα».": "Choose which tools stay in the bottom bar and in what order. The rest go under «More».", "στη μπάρα": "in the bar", "στο παράθυρο": "in the popup", "Μπάρα": "Bar", "Παράθυρο": "Popup", "↺ Προεπιλογή": "↺ Default", "Έτοιμο": "Done", "Πρέπει να μείνει ένα τουλάχιστον": "At least one must stay", "Ορισμός κλίμακας": "Set scale", "Τράβηξες μια γραμμή πάνω σε κάτι που ξέρεις πόσο είναι (πόρτα, πλακάκι, μέτρο). Γράψε το πραγματικό μήκος και όλες οι μετρήσεις θα βγαίνουν σε πραγματικές μονάδες.": "You drew a line over something whose size you know (a door, a tile, a tape measure). Enter its real length and every measurement will come out in real units.", "Προσοχή — οι μετρήσεις είναι κατά προσέγγιση": "Careful — measurements are approximate", "Η φωτογραφία είναι επίπεδη εικόνα ενός χώρου με βάθος. Ό,τι κι αν κάνουμε, δεν βγαίνει 100% ακριβές νούμερο — για δεσμευτικές διαστάσεις πάντα μέτρο στο χέρι.": "A photo is a flat image of a space that has depth. Whatever we do, the number is never 100% exact — for binding dimensions always use a tape measure.", "Όσο πιο προσεκτικά πάρεις τη γραμμή αναφοράς, τόσο καλύτερα βγαίνουν όλα τα υπόλοιπα. Διάλεξε κάτι μεγάλο και με σίγουρη διάσταση.": "The more carefully you place the reference line, the better everything else comes out. Pick something large whose size you are sure of.", "Τράβα τη φωτογραφία κατά μέτωπο, όχι λοξά, και όχι πολύ κοντά — στις άκρες του φακού τα πράγματα «γέρνουν».": "Shoot the photo straight on, not at an angle, and not too close — things lean at the edges of the lens.", "Η κλίμακα ισχύει μόνο για το επίπεδο της γραμμής αναφοράς. Ιδανικά πάρε δύο μετρήσεις, πλάτος και βάθος, και αν παίζει ρόλο και το ύψος, βάλε και αυτό — και συγκρίνέ τα.": "The scale only holds for the plane of the reference line. Ideally take two references, width and depth, and height too if it matters — then compare them.", "Αν μια διάσταση σου βγει λάθος, τη διορθώνεις με το χέρι και, αν θες, ξαναϋπολογίζεται μαζί της όλη η κλίμακα.": "If a dimension comes out wrong you can correct it by hand and, if you want, recalculate the whole scale from it.", "Πραγματικό μήκος": "Real length", "Άκυρο": "Cancel", "Εφαρμογή": "Apply", "Γράψε έγκυρο μήκος": "Enter a valid length", "κλίμακα αναφοράς": "reference scale", "Η κλίμακα ορίστηκε": "Scale set", "Μήκος γραμμής": "Line length", "εικονοστοιχεία": "pixels", "Τράβα γραμμή σε κάτι με γνωστό μήκος": "Draw a line over something of known length", "Τράβα γραμμή πάνω σε κάτι με γνωστό μήκος": "Draw a line over something of known length", "Σχόλιο στη μέτρηση": "Note on measurement", "Γράψε εδώ…": "Write here…", "Αποθήκευση": "Save", "Αυτόματη μέτρηση": "Automatic measurement", "Δική σου διάσταση": "Your own dimension", "Αυτή είναι η σωστή τιμή — διόρθωσε και την κλίμακα, να πέσουν σωστά και οι άλλες μετρήσεις": "This is the correct value — fix the scale too, so the other measurements come out right", "Σχόλιο": "Note", "π.χ. θέλει μερεμέτι": "e.g. needs patching", "⇲ Νούμερο στη θέση του": "⇲ Number back in place", "↺ Αυτόματη": "↺ Automatic", "Η κλίμακα διορθώθηκε — μπήκαν σωστά όλες οι μετρήσεις": "Scale corrected — all measurements updated", "Σύρε για μετακίνηση · άσε το για επεξεργασία": "Drag to move · release to edit", "Λίστα μετρήσεων": "Measurement list", "Λίστα μετρήσεων & σημειώσεων": "Measurements & notes", "Δεν υπάρχει ακόμη τίποτα πάνω στη φωτογραφία.": "Nothing on the photo yet.", "Κλείσιμο": "Close", "χωρίς σχόλιο": "no note", "Πάμε": "Go", "Αλλαγή": "Edit", "Εξαγωγή πίνακα": "Export table", "Μενού": "Menu", "Αποθήκευση στη συσκευή": "Save on this device", "η δουλειά σου σώζεται μόνη της — εδώ της δίνεις όνομα": "your work saves itself — here you give it a name", "Όνομα": "Name", "Αποθηκευμένα έργα": "Saved projects", "άνοιγμα παλιότερης δουλειάς": "open earlier work", "Άνοιγμα": "Open", "email, Viber, Messenger, Συλλογή, Drive…": "email, Viber, Messenger, Gallery, Drive…", "Εξαγωγή εικόνας": "Export image", "κατέβασμα αρχείου με όλα τα σημάδια": "download a file with all the marks", "Εικόνα": "Image", "Αντίγραφο ασφαλείας (όλα)": "Backup (everything)", "ένα αρχείο με όλες τις εργασίες και τις φωτογραφίες": "one file with every project and photo", "Δημιουργία": "Create", "Επαναφορά από αντίγραφο": "Restore from backup", "φέρνει πίσω τα πάντα σε νέο κινητό ή μετά από καθάρισμα": "brings everything back on a new phone or after a wipe", "Επαναφορά": "Restore", "Αυτόματη αποθήκευση στο κινητό": "Auto-save to the phone", "ενεργή — κάθε εργασία γράφεται σε φάκελο": "active — every project is written to a folder", "θα ενεργοποιηθεί μόλις γίνει εφαρμογή Android": "will switch on once it becomes an Android app", "Ναι": "Yes", "Όχι": "No", "Εξαγωγή πίνακα μετρήσεων": "Export measurement table", "αρχείο για υπολογιστικό φύλλο": "file for a spreadsheet", "Πίνακας": "Table", "Μονάδα μέτρησης": "Unit of measurement", "σε τι θα γράφονται οι διαστάσεις": "what dimensions are written in", "Νέα κλίμακα": "New scale", "δεν έχει οριστεί": "not set", "Ορισμός": "Set", "Καθάρισμα σημαδιών": "Clear marks", "σβήνει όλα όσα ζωγράφισες": "erases everything you drew", "Καθάρισμα": "Clear", "Οδηγίες": "Help", "πώς δουλεύει το κάθε εργαλείο": "how each tool works", "Γλώσσα": "Language", "Εγκατάσταση στο κινητό": "Install on the phone", "να μπει σαν κανονική εφαρμογή": "add it like a normal app", "Διαθέσιμο στην εφαρμογή Android": "Available in the Android app", "Μονάδα": "Unit", "Εντάξει": "OK", "Δεν υπάρχει φωτογραφία": "No photo", "Αποθήκευση έργου": "Save project", "π.χ. Σαλόνι - τοίχος Β": "e.g. Living room - north wall", "Μένει μόνο στη συσκευή σου, σε αυτόν τον φυλλομετρητή.": "It stays only on your device, in this browser.", "Αποθηκεύτηκε": "Saved", "Δεν έγινε η αποθήκευση": "Could not save", "σημάδια": "marks", "Δεν υπάρχουν αποθηκευμένα έργα ακόμη.": "No saved projects yet.", "Συνεχίζεις από εκεί που έμεινες": "Continuing where you left off", "Εργασία": "Project", "Χωρίς όνομα": "Untitled", "Ετοιμάζεται το αντίγραφο…": "Preparing the backup…", "Δεν έγινε το αντίγραφο": "Backup failed", "Δεν είναι αρχείο ΦωτοΜέτρα": "Not a ΦωτοΜέτρα file", "Επαναφέρθηκαν": "Restored", "εργασίες": "projects", "Δεν διαβάστηκε το αρχείο": "Could not read the file", "Δεν υπάρχουν μετρήσεις": "No measurements", "Αποθηκεύτηκε στο κινητό": "Saved to the phone", "Δεν άνοιξε η εικόνα": "Could not open the image", "Τράβα φωτογραφία": "Take a photo", "Διάλεξε από τα αρχεία": "Choose from files", "Μπορείς επίσης να σύρεις μια φωτογραφία μέσα στο παράθυρο ή να την κάνεις επικόλληση.": "You can also drag a photo into the window or paste one.", "Αρ.": "No.", "Τύπος": "Type", "Βάλε πρώτα φωτογραφία": "Add a photo first", "Δεν υπάρχει τίποτα για αναίρεση": "Nothing to undo", "Δεν υπάρχει τίποτα για επανάληψη": "Nothing to redo", "Πάτα σημείο-σημείο · μετά «Ολοκλήρωση»": "Tap point by point · then «Finish»", "Τρία πατήματα: άκρη, κορυφή, άκρη": "Three taps: end, vertex, end", "Γωνίες κλειδωμένες σε 0°/45°/90°": "Angles locked to 0°/45°/90°", "Ελεύθερη γωνία": "Free angle", "Διάλεξε πρώτα κάτι με το εργαλείο Επιλογή": "Pick something first with the Select tool", "Διάλεξε πρώτα μια μέτρηση (εργαλείο Επιλογή ή από τη Λίστα)": "Pick a measurement first (Select tool or from the List)", "Εγκαταστάθηκε": "Installed", "Κείμενο": "Text", "κρυφό": "hidden", "σύντομο": "short", "πλήρες": "full", "περίμετρος": "perimeter", "μήκος": "length"};
+Object.assign(EN,{"Κείμενο: κρυφό / σύντομο / πλήρες": "Text: hidden / short / full", "Χωρίς κλίμακα": "No scale", "Παρατεταμένο πάτημα": "Long press", "📤 Κοινοποίηση": "📤 Share", "Αντίγραφο στο κινητό": "Copy on the phone", "Αυτόματη αποθήκευση": "Auto-save", "Έκδοση": "Version", "τράβα μια γραμμή πάνω σε κάτι που ξέρεις (πόρτα 2,10 μ, πλακάκι 60 εκ) και δώσε το μήκος. Από κει και πέρα κάθε μέτρηση βγαίνει σε πραγματικά μέτρα — κατά προσέγγιση πάντα, γιατί η φωτογραφία είναι επίπεδη εικόνα χώρου με βάθος. Η κλίμακα ισχύει στο επίπεδο της γραμμής αναφοράς, γι' αυτό συμφέρει να παίρνεις χωριστά πλάτος και βάθος (και ύψος όπου χρειάζεται).": "draw a line over something you know (a 2.10 m door, a 60 cm tile) and enter its length. From then on every measurement comes out in real units — always approximately, because a photo is a flat image of a space with depth. The scale holds in the plane of the reference line, which is why it pays to take width and depth separately (and height where it matters).", "σύρε για ίσια γραμμή με τη διάσταση πάνω της.": "drag for a straight line with its dimension written on it.", "κουμπώνει τις γραμμές στις 0°, 45°, 90° για τελείως ίσια σημάδια.": "snaps lines to 0°, 45°, 90° for perfectly straight marks.", "δίνει πλάτος × ύψος και εμβαδόν.": "gives width × height and area.", "πάτα σημείο-σημείο για σπασμένη γραμμή· «Κλείσιμο» για περίμετρο και εμβαδόν.": "tap point by point for a broken line; «Close shape» for perimeter and area.", "τρία πατήματα (άκρη – κορυφή – άκρη) και δείχνει τις μοίρες.": "three taps (end – vertex – end) and it shows the degrees.", "κανονικά η εικόνα μένει καθαρή — φαίνεται μόνο η αριθμημένη πινέζα με μια άσπρη κουκίδα που λέει ότι έχει κείμενο μέσα. Πατάς την πινέζα και εμφανίζεται το κείμενό της. Στην εξαγωγή της εικόνας γράφονται πάντα όλα ολόκληρα.": "normally the image stays clean — you only see the numbered pin with a small white dot telling you there is text inside. Tap the pin and its text appears. When the image is exported everything is always written out in full.", "πάτα σε κενό σημείο και γράψε· μπαίνει αριθμημένη πινέζα. Αν πατήσεις πάνω σε πινέζα που υπάρχει ήδη, ανοίγει η δική της επεξεργασία — δεν μπαίνει καινούργια από πάνω.": "tap an empty spot and write; a numbered pin appears. Tapping an existing pin opens that pin for editing — it does not add a new one on top.", "σύρε για μετακίνηση της εικόνας, πάτα πάνω σε σχήμα για να το πιάσεις, τράβα τις άσπρες κουκίδες για να το διορθώσεις.": "drag to move the image, tap a shape to grab it, drag the white dots to adjust it.", "κάθε μέτρηση βγαίνει «0» στη μονάδα που έχεις διαλέξει και τη γράφεις εσύ. Αν θες να μετράει μόνη της, όρισε κλίμακα.": "every measurement comes out as «0» in the unit you chose and you write it in yourself. If you want it measured automatically, set a scale.", "διπλό πάτημα πάνω σε μια μέτρηση (ή «✏️ Διάσταση / σχόλιο») και γράφεις εσύ την τιμή. Αν τσεκάρεις «διόρθωσε και την κλίμακα», διορθώνονται μαζί και όλες οι άλλες μετρήσεις.": "double-tap a measurement (or «✏️ Value / note») and type the value yourself. If you tick «fix the scale too», every other measurement is corrected along with it.", "κράτα το δάχτυλο πάνω σε μια γραμμή, σε ένα σχήμα ή πάνω στο ίδιο το νούμερο. Κουμπώνει (δονείται) και μετά ή το σέρνεις όπου θες, ή το αφήνεις και ανοίγει η επεξεργασία. Το νούμερο μετακινείται χωριστά από τη γραμμή, με αχνή γραμμούλα να δείχνει σε ποια ανήκει.": "hold your finger on a line, a shape or on the number itself. It locks on (with a small vibration) and then you either drag it wherever you want, or release it and editing opens. The number moves separately from the line, with a faint leader showing which one it belongs to.", "κάτω αριστερά: αναίρεση και επαναφορά.": "bottom left: undo and redo.", "(πάνω μπάρα): ανοίγει το κανονικό μενού του κινητού και στέλνει τη φωτογραφία με όλα τα σημάδια ολόκληρα — μαζί πάει και η λίστα των μετρήσεων ως κείμενο.": "(top bar): opens the phone's normal share menu and sends the photo with every mark written out in full — the measurement list goes along as text.", "η εργασία σώζεται μέσα στην εφαρμογή, όχι σε φάκελο του κινητού. Για να έχεις τη φωτογραφία και έξω από αυτήν, χρησιμοποίησε «Αποθήκευση στο κινητό» από το μενού.": "the project is saved inside the app, not in a phone folder. To have the photo outside it too, use «Share» from the menu.", "δεν χρειάζεται να πατάς τίποτα. Κάθε αλλαγή σώζεται μόνη της και όταν ξανανοίξεις την εφαρμογή συνεχίζεις από εκεί που έμεινες. Από το μενού δίνεις απλώς όνομα στην εργασία.": "you do not have to press anything. Every change saves itself and when you reopen the app you continue where you left off. From the menu you just give the project a name.", "Δύο δάχτυλα: μεγέθυνση και μετακίνηση, όποιο εργαλείο κι αν έχεις.": "Two fingers: zoom and pan, whatever tool you have selected."});
+const USYM={el:{'μ':'μ','εκ':'εκ','χιλ':'χιλ'},en:{'μ':'m','εκ':'cm','χιλ':'mm'}};
+const UNAMES={el:{'μ':'μέτρα','εκ':'εκατοστά','χιλ':'χιλιοστά'},en:{'μ':'meters','εκ':'centimeters','χιλ':'millimeters'}};
+function uSym(u){ return (USYM[S.lang]||USYM.el)[u]||u; }
+function uName(u){ return (UNAMES[S.lang]||UNAMES.el)[u]||u; }
+function tr(x){
+  if(S.lang!=='en'||!x) return x;
+  const k=String(x).trim();
+  if(EN[k]!==undefined) return EN[k];
+  if(k.startsWith(': ')&&EN[k.slice(2)]!==undefined) return ': '+EN[k.slice(2)];
+  return x;
+}
+const ORIG=new WeakMap();
+function applyLang(root){
+  root=root||document.body;
+  const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+  const nodes=[]; while(w.nextNode())nodes.push(w.currentNode);
+  nodes.forEach(n=>{
+    let orig=ORIG.get(n);
+    if(orig===undefined){ orig=n.nodeValue; ORIG.set(n,orig); }
+    const k=orig.trim(); if(!k)return;
+    n.nodeValue=(S.lang==='en')?orig.replace(k,tr(k)):orig;
+  });
+  root.querySelectorAll('[placeholder],[title]').forEach(el=>{
+    ['placeholder','title'].forEach(at=>{
+      if(!el.hasAttribute(at))return;
+      const key='o'+at;
+      if(el.dataset[key]===undefined)el.dataset[key]=el.getAttribute(at);
+      el.setAttribute(at,S.lang==='en'?tr(el.dataset[key]):el.dataset[key]);
+    });
+  });
+}
+function setLang(l){
+  S.lang=l; try{ localStorage.setItem('fotometra-lang',l); }catch(_){}
+  document.documentElement.lang=(l==='en'?'en':'el');
+  buildTools(); setTool(S.tool); applyLang(document.body); refreshOpts(); draw(); scaleTag();
+}
+
 /* ---------- βοηθητικά ---------- */
 const uid=()=>Math.random().toString(36).slice(2,9);
 const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
-function toast(t){const e=$('toast');e.textContent=t;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),2200);}
+function toast(t){const e=$('toast');e.textContent=tr(t);e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),2200);}
 function trimN(v){const a=Math.abs(v); if(a>=100)return v.toFixed(0); if(a>=10)return v.toFixed(1); if(a>=1)return v.toFixed(2); return v.toFixed(3);}
-function fmtLen(px){ if(!S.scale) return '0 '+S.unit; return trimN(px*S.scale.upp)+' '+S.scale.unit; }
-function fmtArea(px2){ if(!S.scale) return '0 '+S.unit+'²'; return trimN(px2*S.scale.upp*S.scale.upp)+' '+S.scale.unit+'²'; }
+function fmtLen(px){ if(!S.scale) return '0 '+uSym(S.unit); return trimN(px*S.scale.upp)+' '+uSym(S.scale.unit); }
+function fmtArea(px2){ if(!S.scale) return '0 '+uSym(S.unit)+'²'; return trimN(px2*S.scale.upp*S.scale.upp)+' '+uSym(S.scale.unit)+'²'; }
 function toScreen(p){return {x:p.x*S.view.s+S.view.tx, y:p.y*S.view.s+S.view.ty};}
 function toImg(p){return {x:(p.x-S.view.tx)/S.view.s, y:(p.y-S.view.ty)/S.view.s};}
 
@@ -268,7 +311,7 @@ function noteMode(a,v){
 function shortTxt(t){ const l=(t||'').split('\n')[0]; return l.length>16?l.slice(0,16)+'…':l; }
 
 function measureOf(a){
-  if(a.man) return a.man;
+  if(a.man) return a.manU?(a.man+' '+uSym(a.manU)):a.man;
   return autoMeasure(a);
 }
 function autoMeasure(a){
@@ -276,7 +319,7 @@ function autoMeasure(a){
   if(a.type==='rect'){ if(a.pts.length<2)return ''; const w=Math.abs(a.pts[1].x-a.pts[0].x), h=Math.abs(a.pts[1].y-a.pts[0].y);
     return fmtLen(w)+' × '+fmtLen(h)+'  ·  '+fmtArea(w*h); }
   if(a.type==='poly'){ if(a.pts.length<2)return ''; const per=polyLen(a.pts,a.closed);
-    return (a.closed?'περίμετρος ':'μήκος ')+fmtLen(per)+(a.closed&&a.pts.length>2?'  ·  '+fmtArea(polyArea(a.pts)):''); }
+    return tr(a.closed?'περίμετρος':'μήκος')+' '+fmtLen(per)+(a.closed&&a.pts.length>2?'  ·  '+fmtArea(polyArea(a.pts)):''); }
   if(a.type==='angle'){ if(a.pts.length<3)return ''; return angleOf(a.pts).toFixed(1)+'°'; }
   return '';
 }
@@ -627,7 +670,7 @@ function segDist(p,a,b){
 
 /* ---------- φύλλο / παράθυρα ---------- */
 let sheetAt=0;
-function openSheet(html){ sheetAt=Date.now(); $('sheetIn').innerHTML=html; $('sheet').classList.add('show'); }
+function openSheet(html){ sheetAt=Date.now(); $('sheetIn').innerHTML=html; applyLang($('sheetIn')); $('sheet').classList.add('show'); }
 function closeSheet(){ $('sheet').classList.remove('show'); }
 $('sheet').addEventListener('click',e=>{ if(e.target.id==='sheet'&&Date.now()-sheetAt>600)closeSheet(); });
 
@@ -649,9 +692,9 @@ function askCalib(a){
     <label class="fld">Πραγματικό μήκος</label>
     <div style="display:flex;gap:8px">
       <input type="number" id="cVal" inputmode="decimal" step="any" placeholder="π.χ. 2.10" style="flex:2">
-      <select id="cUnit" style="flex:1">${UNITS.map(u=>'<option value="'+u+'">'+UNAME[u]+'</option>').join('')}</select>
+      <select id="cUnit" style="flex:1">${UNITS.map(u=>'<option value="'+u+'">'+uName(u)+'</option>').join('')}</select>
     </div>
-    <p class="hint">Μήκος γραμμής: ${Math.round(px)} εικονοστοιχεία.</p>
+    <p class="hint">${tr('Μήκος γραμμής')}: ${Math.round(px)} ${tr('εικονοστοιχεία')}.</p>
     <div class="acts">
       <button id="cCancel">Άκυρο</button>
       <button class="primary" id="cOk">Εφαρμογή</button>
@@ -683,19 +726,19 @@ function editNote(a,isNew){
 }
 
 function manNum(a){ return (a.man||'').replace(/[^0-9.,-]/g,'').trim(); }
-function manUnit(a){ return ['χιλ','εκ','μ'].find(u=>(a.man||'').includes(u)) || (S.scale?S.scale.unit:S.unit); }
+function manUnit(a){ return a.manU || ['χιλ','εκ','μ'].find(u=>(a.man||'').includes(u)) || (S.scale?S.scale.unit:S.unit); }
 function editAnn(a){
   if(!a)return;
   if(a.type==='note'||a.type==='free'){ editNote(a); return; }
   const i=S.anns.indexOf(a)+1, auto=autoMeasure(a);
   const canScale=(a.type==='line'||a.type==='arrow'||a.type==='calib')&&a.pts.length>1;
   const esc=t=>(t||'').replace(/</g,'&lt;').replace(/"/g,'&quot;');
-  openSheet(`<h2>#${i} · ${TNAME[a.type]||a.type}</h2>
+  openSheet(`<h2>#${i} · ${tr(TNAME[a.type]||a.type)}</h2>
     <p class="hint">Αυτόματη μέτρηση: <b>${auto||'—'}</b></p>
     <label class="fld">Δική σου διάσταση</label>
     <div style="display:flex;gap:8px">
       <input type="text" id="eVal" inputmode="decimal" style="flex:2" value="${esc(manNum(a))}" placeholder="π.χ. 2,15">
-      <select id="eUnit" style="flex:1">${UNITS.map(u=>`<option value="${u}"${u===manUnit(a)?' selected':''}>${UNAME[u]}</option>`).join('')}</select>
+      <select id="eUnit" style="flex:1">${UNITS.map(u=>`<option value="${u}"${u===manUnit(a)?' selected':''}>${uName(u)}</option>`).join('')}</select>
     </div>
     ${canScale?`<label style="display:flex;gap:8px;align-items:center;margin-top:10px;font-size:12.5px;line-height:1.4">
       <input type="checkbox" id="eFix" style="width:auto;flex:0 0 auto"> Αυτή είναι η σωστή τιμή — διόρθωσε και την κλίμακα, να πέσουν σωστά και οι άλλες μετρήσεις</label>`:''}
@@ -717,9 +760,9 @@ function editAnn(a){
     const num=parseFloat((v.replace(',','.').match(/-?\d+(\.\d+)?/)||[''])[0]);
     if(fix&&num>0){
       S.scale={upp:num/dist(a.pts[0],a.pts[1]), unit:un};
-      S.unit=un; a.man=''; scaleTag(); toast('Η κλίμακα διορθώθηκε — μπήκαν σωστά όλες οι μετρήσεις');
+      S.unit=un; a.man=''; a.manU=null; scaleTag(); toast('Η κλίμακα διορθώθηκε — μπήκαν σωστά όλες οι μετρήσεις');
     } else {
-      a.man = v ? (v+' '+un) : '';
+      a.man = v ? v : ''; a.manU = v ? un : null;
       if(v&&!S.scale)S.unit=un;
     }
     closeSheet(); draw();
@@ -732,7 +775,7 @@ function listSheet(){
     <div class="row">
       <div class="num" style="background:${a.color};${a.color==='#ffffff'?'color:#111':''}">${i+1}</div>
       <div class="rowmain">
-        <b>${TNAME[a.type]||a.type}${measureOf(a)?' — '+measureOf(a):''}${a.man?' ✏️':''}</b>
+        <b>${tr(TNAME[a.type]||a.type)}${measureOf(a)?' — '+measureOf(a):''}${a.man?' ✏️':''}</b>
         <span>${a.note?a.note.replace(/</g,'&lt;'):'<i>χωρίς σχόλιο</i>'}</span>
       </div>
       <button class="mini" data-z="${a.id}">Πάμε</button>
@@ -769,17 +812,22 @@ function menuSheet(){
     <div class="row"><div class="rowmain"><b>Αυτόματη αποθήκευση στο κινητό</b><span>${native()?'ενεργή — κάθε εργασία γράφεται σε φάκελο':'θα ενεργοποιηθεί μόλις γίνει εφαρμογή Android'}</span></div>
       <button class="mini" id="mAuto">${native()?(S.autoDev?'Ναι':'Όχι'):'—'}</button></div>
     <div class="row"><div class="rowmain"><b>Εξαγωγή πίνακα μετρήσεων</b><span>αρχείο για υπολογιστικό φύλλο</span></div><button class="mini" id="mCsv">Πίνακας</button></div>
+    <div class="row"><div class="rowmain"><b>Γλώσσα</b><span>Ελληνικά / English</span></div>
+      <select id="mLang" style="width:auto;padding:6px 8px;font-size:12px">
+        <option value="el"${S.lang==='el'?' selected':''}>Ελληνικά</option>
+        <option value="en"${S.lang==='en'?' selected':''}>English</option></select></div>
     <div class="row"><div class="rowmain"><b>Μονάδα μέτρησης</b><span>σε τι θα γράφονται οι διαστάσεις</span></div>
-      <select id="mUnit" style="width:auto;padding:6px 8px;font-size:12px">${UNITS.map(u=>`<option value="${u}"${u===(S.scale?S.scale.unit:S.unit)?' selected':''}>${UNAME[u]}</option>`).join('')}</select></div>
-    <div class="row"><div class="rowmain"><b>Νέα κλίμακα</b><span>${S.scale?'τώρα: 1 εικ. = '+trimN(S.scale.upp)+' '+S.scale.unit:'δεν έχει οριστεί'}</span></div><button class="mini" id="mScale">Ορισμός</button></div>
+      <select id="mUnit" style="width:auto;padding:6px 8px;font-size:12px">${UNITS.map(u=>`<option value="${u}"${u===(S.scale?S.scale.unit:S.unit)?' selected':''}>${uName(u)}</option>`).join('')}</select></div>
+    <div class="row"><div class="rowmain"><b>Νέα κλίμακα</b><span>${S.scale?(S.lang==='en'?'now: 1 px = ':'τώρα: 1 εικ. = ')+trimN(S.scale.upp)+' '+uSym(S.scale.unit):tr('δεν έχει οριστεί')}</span></div><button class="mini" id="mScale">Ορισμός</button></div>
     <div class="row"><div class="rowmain"><b>Καθάρισμα σημαδιών</b><span>σβήνει όλα όσα ζωγράφισες</span></div><button class="mini del" id="mClear">Καθάρισμα</button></div>
     <div class="row"><div class="rowmain"><b>Οδηγίες</b><span>πώς δουλεύει το κάθε εργαλείο</span></div><button class="mini" id="mHelp">Άνοιγμα</button></div>
     <div class="row"><div class="rowmain"><b>Εγκατάσταση στο κινητό</b><span>να μπει σαν κανονική εφαρμογή</span></div><button class="mini" id="mInst">Εγκατάσταση</button></div>
-    <p class="hint">Έκδοση ${APPV}</p>
+    <p class="hint">${tr("Έκδοση")} ${APPV}</p>
     <div class="acts"><button class="primary" id="mClose">Κλείσιμο</button></div>`);
   $('mClose').onclick=closeSheet;
   $('mInst').onclick=()=>{ closeSheet(); doInstall(); };
-  $('mUnit').onchange=e=>{ setUnit(e.target.value); toast('Μονάδα: '+UNAME[e.target.value]); };
+  $('mLang').onchange=e=>{ setLang(e.target.value); closeSheet(); setTimeout(menuSheet,150); };
+  $('mUnit').onchange=e=>{ setUnit(e.target.value); toast(tr('Μονάδα')+': '+uName(e.target.value)); };
   $('mSave').onclick=()=>{ closeSheet(); saveProject(); };
   $('mOpen').onclick=()=>{ projectsSheet(); };
   $('mShare').onclick=()=>{ closeSheet(); sharePng(); };
@@ -841,7 +889,7 @@ function loadBlob(b){
 function setImage(im,blob){
   S.img=im; S.blob=blob; S.imgW=im.naturalWidth||im.width; S.imgH=im.naturalHeight||im.height;
   S.anns=[]; S.sel=null; S.scale=null; S.undoS=[]; S.redoS=[];
-  S.projId=null; S.projName='Εργασία '+new Date().toLocaleDateString('el-GR')+' '+new Date().toLocaleTimeString('el-GR',{hour:'2-digit',minute:'2-digit'});
+  S.projId=null; S.projName=tr('Εργασία')+' '+new Date().toLocaleDateString(S.lang==='en'?'en-GB':'el-GR')+' '+new Date().toLocaleTimeString(S.lang==='en'?'en-GB':'el-GR',{hour:'2-digit',minute:'2-digit'});
   lastSaved=null;
   $('empty').style.display='none'; $('zoomBox').style.display='flex'; $('histBox').style.display='flex';
   fitView(); scaleTag(); refreshOpts();
@@ -850,8 +898,8 @@ function scaleTag(){
   const t=$('scaleTag');
   if(!S.img){t.style.display='none';return;}
   t.style.display='flex';
-  if(S.scale){ t.className=''; t.innerHTML='📐 Κλίμακα: 1 εικ. = '+trimN(S.scale.upp)+' '+S.scale.unit; }
-  else { t.className='warn'; t.innerHTML='Χωρίς κλίμακα — οι μετρήσεις βγαίνουν 0 '+S.unit+', γράψ\' τες εσύ'; }
+  if(S.scale){ t.className=''; t.innerHTML='📐 '+tr('Κλίμακα')+': 1 px = '+trimN(S.scale.upp)+' '+uSym(S.scale.unit); }
+  else { t.className='warn'; t.innerHTML=(S.lang==='en'?'No scale — measurements come out 0 ':'Χωρίς κλίμακα — οι μετρήσεις βγαίνουν 0 ')+uSym(S.unit); }
   t.onclick=()=>{ setTool('calib'); toast('Τράβα γραμμή σε κάτι με γνωστό μήκος'); };
 }
 
@@ -962,7 +1010,7 @@ async function restoreAll(file){
     await new Promise((res,rej)=>{ const t=d.transaction('p','readwrite'); const st=t.objectStore('p');
       o.items.forEach(r=>st.put({id:r.id,name:r.name,date:r.date,anns:r.anns||[],scale:r.scale||null,unit:r.unit||'μ',owner:r.owner||'',blob:r.img?b64Blob(r.img,r.mime):null}));
       t.oncomplete=res; t.onerror=()=>rej(t.error); });
-    toast('Επαναφέρθηκαν '+o.items.length+' εργασίες');
+    toast(tr('Επαναφέρθηκαν')+' '+o.items.length+' '+tr('εργασίες'));
   }catch(e){ toast('Δεν διαβάστηκε το αρχείο'); }
 }
 function exportPng(){
@@ -971,9 +1019,9 @@ function exportPng(){
 }
 function exportCsv(){
   if(!S.anns.length){toast('Δεν υπάρχουν μετρήσεις');return;}
-  const lines=[['Αρ.','Τύπος','Μέτρηση','Σχόλιο'].join(';')];
-  S.anns.forEach((a,i)=>lines.push([i+1,TNAME[a.type]||a.type,(measureOf(a)||'').replace(/;/g,','),(a.note||'').replace(/;/g,',').replace(/\n/g,' ')].join(';')));
-  if(S.scale)lines.push(['','Κλίμακα','1 εικ. = '+trimN(S.scale.upp)+' '+S.scale.unit,''].join(';'));
+  const lines=[[tr('Αρ.'),tr('Τύπος'),tr('Μέτρηση'),tr('Σχόλιο')].join(';')];
+  S.anns.forEach((a,i)=>lines.push([i+1,tr(TNAME[a.type]||a.type),(measureOf(a)||'').replace(/;/g,','),(a.note||'').replace(/;/g,',').replace(/\n/g,' ')].join(';')));
+  if(S.scale)lines.push(['',tr('Κλίμακα'),'1 px = '+trimN(S.scale.upp)+' '+uSym(S.scale.unit),''].join(';'));
   saveFile('metriseis-'+Date.now()+'.csv','\ufeff'+lines.join('\n'));
 }
 
@@ -1032,7 +1080,7 @@ async function saveProject(){
     <p class="hint">Μένει μόνο στη συσκευή σου, σε αυτόν τον φυλλομετρητή.</p>`);
   $('pC').onclick=closeSheet;
   $('pS').onclick=async()=>{
-    const name=($('pN').value||'Χωρίς όνομα').trim();
+    const name=($('pN').value||tr('Χωρίς όνομα')).trim();
     try{
       const d=await db();
       const id=S.projId||uid();
@@ -1040,7 +1088,7 @@ async function saveProject(){
       if(!blob) blob=await new Promise(r=>renderFull().toBlob(r,'image/jpeg',0.9));
       const rec={id,name,date:Date.now(),blob,anns:S.anns,scale:S.scale,unit:S.unit,owner:S.owner};
       await new Promise((res,rej)=>{ const t=d.transaction('p','readwrite'); t.objectStore('p').put(rec); t.oncomplete=res; t.onerror=()=>rej(t.error); });
-      S.projId=id; S.projName=name; closeSheet(); toast('Αποθηκεύτηκε: '+name);
+      S.projId=id; S.projName=name; closeSheet(); toast(tr('Αποθηκεύτηκε')+': '+name);
     }catch(e){ toast('Δεν έγινε η αποθήκευση'); }
   };
 }
@@ -1054,7 +1102,7 @@ async function projectsSheet(){
   const rows=recs.length?recs.map(r=>`
     <div class="row">
       <div class="rowmain"><b>${r.name.replace(/</g,'&lt;')}</b>
-      <span>${new Date(r.date).toLocaleString('el-GR')} · ${r.anns.length} σημάδια</span></div>
+      <span>${new Date(r.date).toLocaleString(S.lang==='en'?'en-GB':'el-GR')} · ${r.anns.length} ${tr('σημάδια')}</span></div>
       <button class="mini" data-o="${r.id}">Άνοιγμα</button>
       <button class="mini del" data-x="${r.id}">✕</button>
     </div>`).join(''):'<p class="hint">Δεν υπάρχουν αποθηκευμένα έργα ακόμη.</p>';
@@ -1074,8 +1122,16 @@ async function projectsSheet(){
 }
 
 /* ---------- γραμμή εργαλείων ---------- */
+function toolBtn(t){ return `<button class="tool" data-t="${t.k}"><svg viewBox="0 0 24 24">${t.i}</svg>${t.n}</button>`; }
+function toolOf(k){ return TOOLS.find(x=>x.k===k); }
+function orderedTools(){ const r=S.toolOrder.map(toolOf).filter(Boolean);
+  TOOLS.forEach(t=>{ if(!r.includes(t))r.push(t); }); return r; }
+
 function buildTools(){
-  $('tools').innerHTML=TOOLS.map(t=>`<button class="tool" data-t="${t.k}"><svg viewBox="0 0 24 24">${t.i}</svg>${t.n}</button>`).join('');
+  const main=orderedTools().filter(t=>S.mainTools.includes(t.k));
+  $('tools').innerHTML=main.map(toolBtn).join('')+
+    `<button class="tool" id="tMore"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>Άλλα</button>`;
+  $('tMore').onclick=moreSheet;
   $('tools').querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>setTool(b.dataset.t));
   $('swatches').innerHTML=COLORS.map(c=>`<span class="sw" data-c="${c}" style="background:${c}"></span>`).join('');
   $('swatches').querySelectorAll('[data-c]').forEach(s=>s.onclick=()=>{
@@ -1084,10 +1140,61 @@ function buildTools(){
     refreshOpts();
   });
 }
+function saveTools(){ try{ localStorage.setItem('fotometra-tools',JSON.stringify({m:S.mainTools,o:S.toolOrder})); }catch(_){} }
+
+function moreSheet(){
+  const rest=orderedTools().filter(t=>!S.mainTools.includes(t.k));
+  openSheet(`<h2>Περισσότερα εργαλεία</h2>
+    <div id="moreGrid" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px">
+      ${rest.length?rest.map(t=>`<button class="chip" data-m="${t.k}" style="padding:10px 12px;font-size:13px">${t.n}</button>`).join(''):'<p class="hint">Όλα τα εργαλεία είναι ήδη στη μπάρα.</p>'}
+    </div>
+    <div class="acts">
+      <button id="tCfg">⚙️ Ποια στη μπάρα</button>
+      <button class="primary" id="tCl">Κλείσιμο</button>
+    </div>`);
+  $('tCl').onclick=closeSheet;
+  $('tCfg').onclick=toolsCfgSheet;
+  $('sheetIn').querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{ closeSheet(); setTool(b.dataset.m); });
+}
+
+function toolsCfgSheet(){
+  const list=orderedTools();
+  openSheet(`<h2>Ρύθμιση εργαλείων</h2>
+    <p class="hint">Διάλεξε ποια εργαλεία μένουν στην κάτω μπάρα και με ποια σειρά. Τα υπόλοιπα πάνε στο «Άλλα».</p>
+    ${list.map((t,i)=>`<div class="row">
+      <div class="rowmain"><b>${t.n}</b><span>${S.mainTools.includes(t.k)?'στη μπάρα':'στο παράθυρο'}</span></div>
+      <button class="mini" data-up="${t.k}" ${i===0?'style="opacity:.3"':''}>↑</button>
+      <button class="mini" data-dn="${t.k}" ${i===list.length-1?'style="opacity:.3"':''}>↓</button>
+      <button class="mini" data-sw="${t.k}">${S.mainTools.includes(t.k)?'Μπάρα':'Παράθυρο'}</button>
+    </div>`).join('')}
+    <div class="acts">
+      <button id="tRes">↺ Προεπιλογή</button>
+      <button class="primary" id="tOk">Έτοιμο</button>
+    </div>`);
+  const redo=()=>{ saveTools(); buildTools(); setTool(S.tool); toolsCfgSheet(); };
+  $('tOk').onclick=closeSheet;
+  $('tRes').onclick=()=>{ S.mainTools=['select','note','line','calib'];
+    S.toolOrder=['select','note','line','calib','rect','poly','angle','arrow','free']; redo(); };
+  $('sheetIn').querySelectorAll('[data-up]').forEach(b=>b.onclick=()=>{ move(b.dataset.up,-1); redo(); });
+  $('sheetIn').querySelectorAll('[data-dn]').forEach(b=>b.onclick=()=>{ move(b.dataset.dn,1); redo(); });
+  $('sheetIn').querySelectorAll('[data-sw]').forEach(b=>b.onclick=()=>{
+    const k=b.dataset.sw;
+    if(S.mainTools.includes(k)){ if(S.mainTools.length<2){toast('Πρέπει να μείνει ένα τουλάχιστον');return;} S.mainTools=S.mainTools.filter(x=>x!==k); }
+    else S.mainTools.push(k);
+    redo();
+  });
+  function move(k,d){
+    const a=orderedTools().map(t=>t.k), i=a.indexOf(k), j=i+d;
+    if(i<0||j<0||j>=a.length)return;
+    a.splice(j,0,a.splice(i,1)[0]); S.toolOrder=a;
+  }
+}
+
 function setTool(t){
   finishPoly();
   S.tool=t; S.sel=null; S.draft=null;
   $('tools').querySelectorAll('[data-t]').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+  const mb=$('tMore'); if(mb)mb.classList.toggle('on',!S.mainTools.includes(t));
   if(t==='calib'&&S.img)toast('Τράβα γραμμή σε κάτι με γνωστό μήκος');
   if(t==='poly')toast('Πάτα σημείο-σημείο · μετά «Ολοκλήρωση»');
   if(t==='angle')toast('Τρία πατήματα: άκρη, κορυφή, άκρη');
@@ -1100,15 +1207,15 @@ function refreshOpts(){
   if(hu){ hu.classList.toggle('off',!S.undoS.length); hr.classList.toggle('off',!S.redoS.length); }
   $('cShow').classList.toggle('on',S.show);
   const ct=$('cTxt');
-  if(ct){ ct.textContent='📝 Κείμενο: '+(S.noteText==='hide'?'κρυφό':S.noteText==='short'?'σύντομο':'πλήρες');
+  if(ct){ ct.textContent='📝 '+tr('Κείμενο')+': '+tr(S.noteText==='hide'?'κρυφό':S.noteText==='short'?'σύντομο':'πλήρες');
     ct.classList.toggle('on',S.noteText!=='hide'); }
   const open=S.anns.find(a=>a._open);
   const extra=$('cDel');
-  extra.textContent = open ? '✅ Ολοκλήρωση' : '🗑️ Διαγραφή';
+  extra.textContent = open ? ('✅ '+tr('Ολοκλήρωση')) : ('🗑️ '+tr('Διαγραφή'));
   extra.onclick = open ? (()=>{finishPoly();refreshOpts();}) : delSel;
   let cb=$('cClose');
   if(S.tool==='poly'){
-    if(!cb){ cb=document.createElement('button'); cb.className='chip'; cb.id='cClose'; cb.textContent='⭕ Κλείσιμο σχήματος'; $('opts').appendChild(cb); }
+    if(!cb){ cb=document.createElement('button'); cb.className='chip'; cb.id='cClose'; cb.textContent='⭕ '+tr('Κλείσιμο σχήματος'); $('opts').appendChild(cb); }
     cb.onclick=()=>{closePoly();refreshOpts();};
     cb.style.display='';
   } else if(cb) cb.style.display='none';
@@ -1149,9 +1256,13 @@ window.addEventListener('keydown',e=>{
 
 new ResizeObserver(fitCanvas).observe($('stage'));
 try{ if(navigator.storage&&navigator.storage.persist)navigator.storage.persist(); }catch(_){}
+try{ const l=localStorage.getItem('fotometra-lang'); if(l)S.lang=l; }catch(_){}
+try{ const c=JSON.parse(localStorage.getItem('fotometra-tools')||'null');
+  if(c&&c.m&&c.m.length){S.mainTools=c.m; if(c.o&&c.o.length)S.toolOrder=c.o;} }catch(_){}
 try{ S.autoDev=!!localStorage.getItem('fotometra-autodev'); }catch(_){}
 try{ const t=localStorage.getItem('fotometra-txt'); if(t)S.noteText=t; }catch(_){}
-buildTools(); setTool('select'); fitCanvas(); refreshOpts();
+buildTools(); setTool('select'); fitCanvas(); refreshOpts(); applyLang(document.body);
+document.documentElement.lang=(S.lang==='en'?'en':'el');
 if(QP.get('title')) document.querySelector('#top h1').textContent=QP.get('title');
 if(EMBED){
   $('bDone').style.display='flex';
@@ -1170,7 +1281,7 @@ if(EMBED){
 })();
 
 /* ---------- εγκατάσταση ως εφαρμογή ---------- */
-const APPV='1.9.3';
+const APPV='2.0.0';
 let deferredPrompt=null;
 window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); deferredPrompt=e; $('bInstall').style.display='flex'; });
 window.addEventListener('appinstalled',()=>{ deferredPrompt=null; $('bInstall').style.display='none'; toast('Εγκαταστάθηκε'); });
