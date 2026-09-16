@@ -11,6 +11,7 @@
    Χρήση:
        FotoMetra.open('pelatis:' + id, 'Παπαδόπουλος');   // μέσα στον πελάτη
        FotoMetra.open('*', 'Όλες οι φωτογραφίες');        // κεντρικό μενού
+       FotoMetra.open('*', 'All photos', 'en');           // άνοιγμα στα αγγλικά
        FotoMetra.count('pelatis:' + id).then(n => ...);   // πόσες φωτό έχει
        FotoMetra.list('pelatis:' + id).then(recs => ...); // οι εγγραφές
    --------------------------------------------------------------- */
@@ -26,7 +27,7 @@
   var ov = null;
   var ready = false;
 
-  function open(owner, title) {
+  function open(owner, title, lang) {
     close();
     ov = document.createElement('div');
     ov.setAttribute('data-fotometra', '1');
@@ -35,6 +36,7 @@
     var f = document.createElement('iframe');
     var q = (APP.indexOf('?')<0?'?':'&') + 'embed=1&owner=' + encodeURIComponent(owner || '');
     if (title) q += '&title=' + encodeURIComponent(title);
+    if (lang === 'en' || lang === 'el') q += '&lang=' + lang;
     f.src = APP + q;
     f.style.cssText = 'width:100%;height:100%;border:0;display:block';
     f.allow = 'camera; web-share';

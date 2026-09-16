@@ -1303,7 +1303,10 @@ window.addEventListener('keydown',e=>{
 
 new ResizeObserver(fitCanvas).observe($('stage'));
 try{ if(navigator.storage&&navigator.storage.persist)navigator.storage.persist(); }catch(_){}
-try{ const l=localStorage.getItem('fotometra-lang'); if(l)S.lang=l; }catch(_){}
+try{ const l=localStorage.getItem('fotometra-lang'); if(l==='el'||l==='en')S.lang=l; }catch(_){}
+/* Γλώσσα από τη διεύθυνση (π.χ. ...?lang=en) — υπερισχύει, χωρίς να αλλάζει
+   τη μόνιμη επιλογή του χρήστη. Χωρίς αυτήν, η εφαρμογή ανοίγει πάντα ελληνικά. */
+{ const ql=QP.get('lang'); if(ql==='el'||ql==='en')S.lang=ql; }
 try{ const c=JSON.parse(localStorage.getItem('fotometra-tools')||'null');
   if(c&&c.m&&c.m.length){S.mainTools=c.m; if(c.o&&c.o.length)S.toolOrder=c.o;} }catch(_){}
 try{ S.autoDev=!!localStorage.getItem('fotometra-autodev'); }catch(_){}
@@ -1336,7 +1339,7 @@ if(EMBED){
 })();
 
 /* ---------- εγκατάσταση ως εφαρμογή ---------- */
-const APPV='2.2.1';
+const APPV='2.2.2';
 let deferredPrompt=null;
 let instDismissed=false; try{ instDismissed=!!localStorage.getItem('fotometra-noinst'); }catch(_){}
 function showInstBar(v){ const b=document.getElementById('instBar'); if(b)b.style.display=v?'flex':'none'; }
