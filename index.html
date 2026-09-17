@@ -214,7 +214,7 @@ const OWNER=QP.get('owner')||'';
 
 /* ---------- κατάσταση ---------- */
 const S = {
-  owner:OWNER,
+  owner:OWNER, path:'', projFolder:'',
   img:null, blob:null, imgW:0, imgH:0,
   anns:[], sel:null, tool:'select',
   color:'#ff3b30', width:3, snap:false, show:true,
@@ -265,6 +265,7 @@ const EN={"Νέα φωτογραφία": "New photo", "Κοινοποίηση": 
 Object.assign(EN,{"Κείμενο: κρυφό / σύντομο / πλήρες": "Text: hidden / short / full", "Χωρίς κλίμακα": "No scale", "Παρατεταμένο πάτημα": "Long press", "📤 Κοινοποίηση": "📤 Share", "Αντίγραφο στο κινητό": "Copy on the phone", "Αυτόματη αποθήκευση": "Auto-save", "Έκδοση": "Version", "τράβα μια γραμμή πάνω σε κάτι που ξέρεις (πόρτα 2,10 μ, πλακάκι 60 εκ) και δώσε το μήκος. Από κει και πέρα κάθε μέτρηση βγαίνει σε πραγματικά μέτρα — κατά προσέγγιση πάντα, γιατί η φωτογραφία είναι επίπεδη εικόνα χώρου με βάθος. Η κλίμακα ισχύει στο επίπεδο της γραμμής αναφοράς, γι' αυτό συμφέρει να παίρνεις χωριστά πλάτος και βάθος (και ύψος όπου χρειάζεται).": "draw a line over something you know (a 2.10 m door, a 60 cm tile) and enter its length. From then on every measurement comes out in real units — always approximately, because a photo is a flat image of a space with depth. The scale holds in the plane of the reference line, which is why it pays to take width and depth separately (and height where it matters).", "σύρε για ίσια γραμμή με τη διάσταση πάνω της.": "drag for a straight line with its dimension written on it.", "κουμπώνει τις γραμμές στις 0°, 45°, 90° για τελείως ίσια σημάδια.": "snaps lines to 0°, 45°, 90° for perfectly straight marks.", "δίνει πλάτος × ύψος και εμβαδόν.": "gives width × height and area.", "πάτα σημείο-σημείο για σπασμένη γραμμή· «Κλείσιμο» για περίμετρο και εμβαδόν.": "tap point by point for a broken line; «Close shape» for perimeter and area.", "τρία πατήματα (άκρη – κορυφή – άκρη) και δείχνει τις μοίρες.": "three taps (end – vertex – end) and it shows the degrees.", "κανονικά η εικόνα μένει καθαρή — φαίνεται μόνο η αριθμημένη πινέζα με μια άσπρη κουκίδα που λέει ότι έχει κείμενο μέσα. Πατάς την πινέζα και εμφανίζεται το κείμενό της. Στην εξαγωγή της εικόνας γράφονται πάντα όλα ολόκληρα.": "normally the image stays clean — you only see the numbered pin with a small white dot telling you there is text inside. Tap the pin and its text appears. When the image is exported everything is always written out in full.", "πάτα σε κενό σημείο και γράψε· μπαίνει αριθμημένη πινέζα. Αν πατήσεις πάνω σε πινέζα που υπάρχει ήδη, ανοίγει η δική της επεξεργασία — δεν μπαίνει καινούργια από πάνω.": "tap an empty spot and write; a numbered pin appears. Tapping an existing pin opens that pin for editing — it does not add a new one on top.", "σύρε για μετακίνηση της εικόνας, πάτα πάνω σε σχήμα για να το πιάσεις, τράβα τις άσπρες κουκίδες για να το διορθώσεις.": "drag to move the image, tap a shape to grab it, drag the white dots to adjust it.", "κάθε μέτρηση βγαίνει «0» στη μονάδα που έχεις διαλέξει και τη γράφεις εσύ. Αν θες να μετράει μόνη της, όρισε κλίμακα.": "every measurement comes out as «0» in the unit you chose and you write it in yourself. If you want it measured automatically, set a scale.", "διπλό πάτημα πάνω σε μια μέτρηση (ή «✏️ Διάσταση / σχόλιο») και γράφεις εσύ την τιμή. Αν τσεκάρεις «διόρθωσε και την κλίμακα», διορθώνονται μαζί και όλες οι άλλες μετρήσεις.": "double-tap a measurement (or «✏️ Value / note») and type the value yourself. If you tick «fix the scale too», every other measurement is corrected along with it.", "κράτα το δάχτυλο πάνω σε μια γραμμή, σε ένα σχήμα ή πάνω στο ίδιο το νούμερο. Κουμπώνει (δονείται) και μετά ή το σέρνεις όπου θες, ή το αφήνεις και ανοίγει η επεξεργασία. Το νούμερο μετακινείται χωριστά από τη γραμμή, με αχνή γραμμούλα να δείχνει σε ποια ανήκει.": "hold your finger on a line, a shape or on the number itself. It locks on (with a small vibration) and then you either drag it wherever you want, or release it and editing opens. The number moves separately from the line, with a faint leader showing which one it belongs to.", "κάτω αριστερά: αναίρεση και επαναφορά.": "bottom left: undo and redo.", "(πάνω μπάρα): ανοίγει το κανονικό μενού του κινητού και στέλνει τη φωτογραφία με όλα τα σημάδια ολόκληρα — μαζί πάει και η λίστα των μετρήσεων ως κείμενο.": "(top bar): opens the phone's normal share menu and sends the photo with every mark written out in full — the measurement list goes along as text.", "η εργασία σώζεται μέσα στην εφαρμογή, όχι σε φάκελο του κινητού. Για να έχεις τη φωτογραφία και έξω από αυτήν, χρησιμοποίησε «Αποθήκευση στο κινητό» από το μενού.": "the project is saved inside the app, not in a phone folder. To have the photo outside it too, use «Share» from the menu.", "δεν χρειάζεται να πατάς τίποτα. Κάθε αλλαγή σώζεται μόνη της και όταν ξανανοίξεις την εφαρμογή συνεχίζεις από εκεί που έμεινες. Από το μενού δίνεις απλώς όνομα στην εργασία.": "you do not have to press anything. Every change saves itself and when you reopen the app you continue where you left off. From the menu you just give the project a name.", "Δύο δάχτυλα: μεγέθυνση και μετακίνηση, όποιο εργαλείο κι αν έχεις.": "Two fingers: zoom and pan, whatever tool you have selected."});
 Object.assign(EN,{"Βάλ' την σαν κανονική εφαρμογή στο κινητό": "Add it to your phone like a normal app", "⤓ Εγκατάσταση": "⤓ Install", "Ρυθμίσεις": "Settings", "Όχι τώρα": "Not now"});
 Object.assign(EN,{"Οι εργασίες μου": "My projects", "➕ Νέα εργασία": "➕ New project", "💾 Οι εργασίες μου": "💾 My projects", "🗑️ Διαγραφή": "🗑️ Delete", "Αλλαγή": "Edit", "Άκυρο": "Cancel"});
+Object.assign(EN,{"Άδειος φάκελος.": "Empty folder.", "📁 Νέος φάκελος": "📁 New folder", "Νέος φάκελος": "New folder", "π.χ. Πολυκατοικία Αθηνάς": "e.g. Athinas building", "Γράψε όνομα": "Enter a name", "Μετονομασία": "Rename", "Μετακίνηση σε φάκελο": "Move to folder", "Μετακίνηση": "Move", "Εδώ": "Here", "🏠 Αρχική": "🏠 Home", "Δεν υπάρχουν φάκελοι ακόμη.": "No folders yet.", "Μετακινήθηκε": "Moved", "Αντίγραφο": "Duplicate", "αντίγραφο": "copy", "Πίσω": "Back", "Αποστολή": "Send", "σβήνει και ό,τι έχει μέσα": "deletes everything inside it too"});
 const USYM={el:{'μ':'μ','εκ':'εκ','χιλ':'χιλ'},en:{'μ':'m','εκ':'cm','χιλ':'mm'}};
 const UNAMES={el:{'μ':'μέτρα','εκ':'εκατοστά','χιλ':'χιλιοστά'},en:{'μ':'meters','εκ':'centimeters','χιλ':'millimeters'}};
 function uSym(u){ return (USYM[S.lang]||USYM.el)[u]||u; }
@@ -910,7 +911,7 @@ function loadBlob(b){
 function setImage(im,blob){
   S.img=im; S.blob=blob; S.imgW=im.naturalWidth||im.width; S.imgH=im.naturalHeight||im.height;
   S.anns=[]; S.sel=null; S.scale=null; S.undoS=[]; S.redoS=[];
-  S.projId=null; S.projName=tr('Εργασία')+' '+new Date().toLocaleDateString(S.lang==='en'?'en-GB':'el-GR')+' '+new Date().toLocaleTimeString(S.lang==='en'?'en-GB':'el-GR',{hour:'2-digit',minute:'2-digit'});
+  S.projId=null; S.projFolder=S.path||''; S.projName=tr('Εργασία')+' '+new Date().toLocaleDateString(S.lang==='en'?'en-GB':'el-GR')+' '+new Date().toLocaleTimeString(S.lang==='en'?'en-GB':'el-GR',{hour:'2-digit',minute:'2-digit'});
   lastSaved=null;
   $('empty').style.display='none'; $('zoomBox').style.display='flex'; $('histBox').style.display='flex';
   fitView(); scaleTag(); refreshOpts();
@@ -1031,7 +1032,7 @@ async function backupAll(){
     const d=await db();
     const all=await new Promise((res,rej)=>{ const t=d.transaction('p','readonly'); const q=t.objectStore('p').getAll(); q.onsuccess=()=>res(q.result||[]); q.onerror=()=>rej(q.error); });
     const out={app:'fotometra',v:1,date:Date.now(),items:[]};
-    for(const r of all) out.items.push({id:r.id,name:r.name,date:r.date,anns:r.anns,scale:r.scale,unit:r.unit,owner:r.owner||'',mime:(r.blob&&r.blob.type)||'image/jpeg',img:r.blob?await blobB64(r.blob):null});
+    for(const r of all) out.items.push({id:r.id,kind:r.kind||'',name:r.name,date:r.date,folder:r.folder||'',anns:r.anns,scale:r.scale,unit:r.unit,owner:r.owner||'',mime:(r.blob&&r.blob.type)||'image/jpeg',img:r.blob?await blobB64(r.blob):null});
     const d2=new Date(), st=d2.getFullYear()+('0'+(d2.getMonth()+1)).slice(-2)+('0'+d2.getDate()).slice(-2);
     await saveToDevice('fotometra-antigrafo-'+st+'.json', new Blob([JSON.stringify(out)],{type:'application/json'}));
   }catch(e){ toast('Δεν έγινε το αντίγραφο'); }
@@ -1042,7 +1043,7 @@ async function restoreAll(file){
     if(!o||o.app!=='fotometra'||!Array.isArray(o.items)){ toast('Δεν είναι αρχείο ΦωτοΜέτρα'); return; }
     const d=await db();
     await new Promise((res,rej)=>{ const t=d.transaction('p','readwrite'); const st=t.objectStore('p');
-      o.items.forEach(r=>st.put({id:r.id,name:r.name,date:r.date,anns:r.anns||[],scale:r.scale||null,unit:r.unit||'μ',owner:r.owner||'',blob:r.img?b64Blob(r.img,r.mime):null}));
+      o.items.forEach(r=>st.put({id:r.id,kind:r.kind||undefined,name:r.name,date:r.date,folder:r.folder||'',anns:r.anns||[],scale:r.scale||null,unit:r.unit||'μ',owner:r.owner||'',blob:r.img?b64Blob(r.img,r.mime):null}));
       t.oncomplete=res; t.onerror=()=>rej(t.error); });
     toast(tr('Επαναφέρθηκαν')+' '+o.items.length+' '+tr('εργασίες'));
   }catch(e){ toast('Δεν διαβάστηκε το αρχείο'); }
@@ -1079,7 +1080,7 @@ async function autoSave(){
     let blob=S.blob;
     if(!blob) blob=await new Promise(r=>renderFull().toBlob(r,'image/jpeg',0.9));
     const th=await thumbBlob();
-    const rec={id:S.projId,name:S.projName,date:Date.now(),blob,thumb:th,anns:S.anns,scale:S.scale,unit:S.unit,owner:S.owner};
+    const rec={id:S.projId,name:S.projName,date:Date.now(),blob,thumb:th,anns:S.anns,scale:S.scale,unit:S.unit,owner:S.owner,folder:S.projFolder||''};
     await new Promise((res,rej)=>{ const t=d.transaction('p','readwrite'); t.objectStore('p').put(rec); t.oncomplete=res; t.onerror=()=>rej(t.error); });
     try{ localStorage.setItem('fotometra-last:'+S.owner,S.projId); }catch(_){}
     lastSaved=sig;
@@ -1121,48 +1122,174 @@ async function saveProject(){
       const id=S.projId||uid();
       let blob=S.blob;
       if(!blob) blob=await new Promise(r=>renderFull().toBlob(r,'image/jpeg',0.9));
-      const rec={id,name,date:Date.now(),blob,thumb:await thumbBlob(),anns:S.anns,scale:S.scale,unit:S.unit,owner:S.owner};
+      const rec={id,name,date:Date.now(),blob,thumb:await thumbBlob(),anns:S.anns,scale:S.scale,unit:S.unit,owner:S.owner,folder:S.projFolder||''};
       await new Promise((res,rej)=>{ const t=d.transaction('p','readwrite'); t.objectStore('p').put(rec); t.oncomplete=res; t.onerror=()=>rej(t.error); });
       S.projId=id; S.projName=name; closeSheet(); toast(tr('Αποθηκεύτηκε')+': '+name);
     }catch(e){ toast('Δεν έγινε η αποθήκευση'); }
   };
 }
+/* ---------- διαχειριστής εργασιών & φακέλων ---------- */
+function esc(t){ return String(t||'').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+function joinPath(p,n){ return p?(p+'/'+n):n; }
+function dstr(d){ return new Date(d).toLocaleDateString(S.lang==='en'?'en-GB':'el-GR',{day:'2-digit',month:'short',year:'numeric'}); }
+
+async function allRecs(){
+  try{
+    const d=await db();
+    const all=await new Promise((res,rej)=>{ const t=d.transaction('p','readonly'); const q=t.objectStore('p').getAll(); q.onsuccess=()=>res(q.result||[]); q.onerror=()=>rej(q.error); });
+    return (S.owner&&S.owner!=='*')?all.filter(r=>(r.owner||'')===S.owner):all;
+  }catch(e){ return []; }
+}
+async function putRec(r){ try{ const d=await db(); await new Promise(res=>{ const t=d.transaction('p','readwrite'); t.objectStore('p').put(r); t.oncomplete=res; }); }catch(e){} }
+async function delRec(id){ try{ const d=await db(); await new Promise(res=>{ const t=d.transaction('p','readwrite'); t.objectStore('p').delete(id); t.oncomplete=res; }); }catch(e){} }
+
 async function projectsSheet(){
   dropUrls();
-  let recs=[];
-  try{ const d=await db();
-    recs=await new Promise((res,rej)=>{ const t=d.transaction('p','readonly'); const q=t.objectStore('p').getAll(); q.onsuccess=()=>res(q.result||[]); q.onerror=()=>rej(q.error); });
-  }catch(e){ recs=[]; }
-  if(S.owner&&S.owner!=='*') recs=recs.filter(r=>(r.owner||'')===S.owner);
-  recs.sort((a,b)=>b.date-a.date);
-  const thumbs=recs.map(r=>{ const b=r.thumb||r.blob; if(!b)return ''; const u=URL.createObjectURL(b); sheetUrls.push(u); return u; });
-  const rows=recs.length?recs.map((r,i)=>`
+  const all=await allRecs();
+  const path=S.path||'';
+  const folders=all.filter(r=>r.kind==='folder'&&(r.folder||'')===path)
+                   .sort((a,b)=>a.name.localeCompare(b.name));
+  const items=all.filter(r=>r.kind!=='folder'&&(r.folder||'')===path)
+                 .sort((a,b)=>b.date-a.date);
+
+  const parts=path?path.split('/'):[];
+  const crumbs='<div style="display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:12px;margin-bottom:8px">'+
+    `<button class="mini" data-cd="">🏠</button>`+
+    parts.map((p,k)=>`<span style="color:var(--muted)">›</span><button class="mini" data-cd="${esc(parts.slice(0,k+1).join('/'))}">${esc(p)}</button>`).join('')+
+    '</div>';
+
+  const fRows=folders.map(r=>`
     <div class="row" style="gap:10px">
-      <div style="width:54px;height:54px;border-radius:10px;flex:0 0 auto;overflow:hidden;background:var(--panel2);border:1px solid var(--line)">
-        ${thumbs[i]?`<img src="${thumbs[i]}" data-o="${r.id}" style="width:100%;height:100%;object-fit:cover;display:block">`:''}
+      <div style="width:44px;height:44px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-size:26px" data-cd="${esc(joinPath(path,r.name))}">📁</div>
+      <div class="rowmain" data-cd="${esc(joinPath(path,r.name))}"><b>${esc(r.name)}</b><span>${dstr(r.date)}</span></div>
+      <button class="mini" data-menu="${r.id}">⋮</button>
+    </div>`).join('');
+
+  const thumbs=items.map(r=>{ const b=r.thumb||r.blob; if(!b)return ''; const u=URL.createObjectURL(b); sheetUrls.push(u); return u; });
+  const iRows=items.map((r,k)=>`
+    <div class="row" style="gap:10px">
+      <div style="width:54px;height:54px;border-radius:10px;flex:0 0 auto;overflow:hidden;background:var(--panel2);border:1px solid var(--line)" data-o="${r.id}">
+        ${thumbs[k]?`<img src="${thumbs[k]}" style="width:100%;height:100%;object-fit:cover;display:block">`:''}
       </div>
-      <div class="rowmain"><b>${r.name.replace(/</g,'&lt;')}</b>
-      <span>${new Date(r.date).toLocaleString(S.lang==='en'?'en-GB':'el-GR')} · ${r.anns.length} ${tr('σημάδια')}</span></div>
-      <button class="mini" data-o="${r.id}">Άνοιγμα</button>
-      <button class="mini del" data-x="${r.id}">✕</button>
-    </div>`).join(''):'<p class="hint">Δεν υπάρχουν αποθηκευμένα έργα ακόμη.</p>';
-  openSheet(`<h2>Οι εργασίες μου</h2>
-    <div class="acts" style="margin:0 0 10px"><button class="primary" id="prNew">➕ Νέα εργασία</button></div>
-    ${rows}
-    <div class="acts"><button ${S.img?'class="primary"':''} id="prC">${S.img?'Κλείσιμο':'Άκυρο'}</button></div>`);
+      <div class="rowmain" data-o="${r.id}"><b>${esc(r.name)}</b>
+        <span>${dstr(r.date)} · ${(r.anns||[]).length} ${tr('σημάδια')}</span></div>
+      <button class="mini" data-menu="${r.id}">⋮</button>
+    </div>`).join('');
+
+  const empty=(!folders.length&&!items.length)?'<p class="hint">Άδειος φάκελος.</p>':'';
+
+  openSheet(`<h2>Οι εργασίες μου</h2>${crumbs}${fRows}${iRows}${empty}
+    <div class="acts">
+      <button id="prFold">📁 Νέος φάκελος</button>
+      <button class="primary" id="prNew">➕ Νέα εργασία</button>
+    </div>
+    <div class="acts" style="margin-top:8px"><button id="prC">${S.img?'Κλείσιμο':'Άκυρο'}</button></div>`);
+
   $('prC').onclick=closeSheet;
   $('prNew').onclick=()=>{ closeSheet(); setTimeout(()=>$('bOpen').click(),120); };
-  $('sheetIn').querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>{
-    const r=recs.find(x=>x.id===b.dataset.o);
-    const url=URL.createObjectURL(r.blob); const im=new Image();
-    im.onload=()=>{ setImage(im,r.blob); S.anns=r.anns||[]; S.scale=r.scale||null; S.projId=r.id; S.projName=r.name;
-      draw(); scaleTag(); closeSheet(); };
-    im.src=url;
-  });
-  $('sheetIn').querySelectorAll('[data-x]').forEach(b=>b.onclick=async()=>{
-    try{ const d=await db(); await new Promise(res=>{const t=d.transaction('p','readwrite');t.objectStore('p').delete(b.dataset.x);t.oncomplete=res;}); }catch(e){}
+  $('prFold').onclick=newFolder;
+  $('sheetIn').querySelectorAll('[data-cd]').forEach(b=>b.onclick=()=>{ S.path=b.dataset.cd; projectsSheet(); });
+  $('sheetIn').querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>openProject(all.find(x=>x.id===b.dataset.o)));
+  $('sheetIn').querySelectorAll('[data-menu]').forEach(b=>b.onclick=()=>itemMenu(all.find(x=>x.id===b.dataset.menu)));
+}
+
+function openProject(r){
+  if(!r||!r.blob)return;
+  const im=new Image();
+  im.onload=()=>{ setImage(im,r.blob); S.anns=r.anns||[]; S.scale=r.scale||null; S.unit=r.unit||S.unit;
+    S.projId=r.id; S.projName=r.name; S.projFolder=r.folder||''; lastSaved=S.projName+'|'+snap();
+    draw(); scaleTag(); closeSheet(); };
+  im.src=URL.createObjectURL(r.blob);
+}
+
+async function newFolder(){
+  openSheet(`<h2>Νέος φάκελος</h2>
+    <input type="text" id="nfN" placeholder="π.χ. Πολυκατοικία Αθηνάς">
+    <div class="acts"><button id="nfC">Άκυρο</button><button class="primary" id="nfOk">Δημιουργία</button></div>`);
+  $('nfC').onclick=projectsSheet;
+  $('nfOk').onclick=async()=>{
+    const n=($('nfN').value||'').trim().replace(/\//g,'-');
+    if(!n){toast('Γράψε όνομα');return;}
+    await putRec({id:uid(),kind:'folder',name:n,folder:S.path||'',date:Date.now(),owner:S.owner});
     projectsSheet();
+  };
+}
+
+function itemMenu(r){
+  if(!r)return;
+  const isF=r.kind==='folder';
+  openSheet(`<h2>${esc(r.name)}</h2>
+    <div class="row"><div class="rowmain"><b>Μετονομασία</b></div><button class="mini" id="imRen">Αλλαγή</button></div>
+    <div class="row"><div class="rowmain"><b>Μετακίνηση σε φάκελο</b></div><button class="mini" id="imMove">Μετακίνηση</button></div>
+    ${isF?'':`<div class="row"><div class="rowmain"><b>Κοινοποίηση</b></div><button class="mini" id="imShare">Αποστολή</button></div>
+    <div class="row"><div class="rowmain"><b>Αντίγραφο</b></div><button class="mini" id="imDup">Δημιουργία</button></div>`}
+    <div class="row"><div class="rowmain"><b>Διαγραφή</b><span>${isF?'σβήνει και ό,τι έχει μέσα':''}</span></div><button class="mini del" id="imDel">Διαγραφή</button></div>
+    <div class="acts"><button class="primary" id="imC">Πίσω</button></div>`);
+  $('imC').onclick=projectsSheet;
+  $('imRen').onclick=()=>renameRec(r);
+  $('imMove').onclick=()=>moveRec(r);
+  $('imDel').onclick=()=>delTree(r);
+  if(!isF){
+    $('imShare').onclick=()=>{ openProject(r); setTimeout(sharePng,600); };
+    $('imDup').onclick=async()=>{
+      const c=Object.assign({},r,{id:uid(),name:r.name+' ('+tr('αντίγραφο')+')',date:Date.now()});
+      await putRec(c); projectsSheet();
+    };
+  }
+}
+
+function renameRec(r){
+  openSheet(`<h2>Μετονομασία</h2>
+    <input type="text" id="rnN" value="${esc(r.name)}">
+    <div class="acts"><button id="rnC">Άκυρο</button><button class="primary" id="rnOk">Αποθήκευση</button></div>`);
+  $('rnC').onclick=projectsSheet;
+  $('rnOk').onclick=async()=>{
+    const n=($('rnN').value||'').trim().replace(/\//g,'-');
+    if(!n){toast('Γράψε όνομα');return;}
+    if(r.kind==='folder'){
+      const oldP=joinPath(r.folder||'',r.name), newP=joinPath(r.folder||'',n);
+      const all=await allRecs();
+      for(const x of all){ const f=x.folder||'';
+        if(f===oldP||f.startsWith(oldP+'/')){ x.folder=newP+f.slice(oldP.length); await putRec(x); } }
+      if((S.path||'')===oldP||(S.path||'').startsWith(oldP+'/')) S.path=newP+S.path.slice(oldP.length);
+    }
+    r.name=n; await putRec(r);
+    if(S.projId===r.id)S.projName=n;
+    projectsSheet();
+  };
+}
+
+async function moveRec(r){
+  const all=await allRecs();
+  const self=r.kind==='folder'?joinPath(r.folder||'',r.name):null;
+  const dests=all.filter(x=>x.kind==='folder').map(x=>joinPath(x.folder||'',x.name))
+    .filter(p=>!self||(p!==self&&!p.startsWith(self+'/'))).sort();
+  openSheet(`<h2>Μετακίνηση σε φάκελο</h2>
+    <div class="row"><div class="rowmain"><b>🏠 Αρχική</b></div><button class="mini" data-mv="">Εδώ</button></div>
+    ${dests.map(p=>`<div class="row"><div class="rowmain"><b>📁 ${esc(p)}</b></div><button class="mini" data-mv="${esc(p)}">Εδώ</button></div>`).join('')}
+    ${dests.length?'':'<p class="hint">Δεν υπάρχουν φάκελοι ακόμη.</p>'}
+    <div class="acts"><button class="primary" id="mvC">Άκυρο</button></div>`);
+  $('mvC').onclick=projectsSheet;
+  $('sheetIn').querySelectorAll('[data-mv]').forEach(b=>b.onclick=async()=>{
+    r.folder=b.dataset.mv; await putRec(r);
+    if(S.projId===r.id)S.projFolder=r.folder;
+    toast('Μετακινήθηκε'); projectsSheet();
   });
+}
+
+function delTree(r){
+  openSheet(`<h2>Διαγραφή</h2>
+    <p class="hint">${esc(r.name)}${r.kind==='folder'?' — θα σβηστεί ο φάκελος και όλα όσα έχει μέσα.':''}</p>
+    <div class="acts"><button id="dlC">Άκυρο</button><button class="primary" id="dlOk" style="background:var(--danger)">Διαγραφή</button></div>`);
+  $('dlC').onclick=projectsSheet;
+  $('dlOk').onclick=async()=>{
+    if(r.kind==='folder'){
+      const p=joinPath(r.folder||'',r.name), all=await allRecs();
+      for(const x of all){ const f=x.folder||''; if(f===p||f.startsWith(p+'/')) await delRec(x.id); }
+    }
+    await delRec(r.id);
+    projectsSheet();
+  };
 }
 
 /* ---------- γραμμή εργαλείων ---------- */
@@ -1322,7 +1449,7 @@ if(EMBED){
     try{
       const d=await db();
       const all=await new Promise((res,rej)=>{ const t=d.transaction('p','readonly'); const q=t.objectStore('p').getAll(); q.onsuccess=()=>res(q.result||[]); q.onerror=()=>rej(q.error); });
-      const mine=(S.owner&&S.owner!=='*')?all.filter(r=>(r.owner||'')===S.owner):all;
+      const mine=((S.owner&&S.owner!=='*')?all.filter(r=>(r.owner||'')===S.owner):all).filter(r=>r.kind!=='folder');
       if(mine.length) projectsSheet(); else $('fCam').click();
     }catch(e){}
   })();
@@ -1339,7 +1466,7 @@ if(EMBED){
 })();
 
 /* ---------- εγκατάσταση ως εφαρμογή ---------- */
-const APPV='2.2.2';
+const APPV='2.3.0';
 let deferredPrompt=null;
 let instDismissed=false; try{ instDismissed=!!localStorage.getItem('fotometra-noinst'); }catch(_){}
 function showInstBar(v){ const b=document.getElementById('instBar'); if(b)b.style.display=v?'flex':'none'; }
