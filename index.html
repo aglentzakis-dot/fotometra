@@ -68,6 +68,7 @@ button{font-family:inherit;color:inherit}
 #scaleTag.warn{color:var(--danger)}
 #selBar{position:absolute; left:50%; transform:translateX(-50%); top:8px; display:flex; gap:6px; z-index:3}
 #selBar .zb{width:42px;height:42px;font-size:17px}
+#bottom.disabled, #bShare.disabled{opacity:.38; pointer-events:none}
 #autoTag{position:absolute; right:8px; top:8px; background:var(--panel); border:1px solid var(--line);
   border-radius:9px; padding:4px 8px; font-size:10.5px; font-weight:600; opacity:0; transition:opacity .4s;
   pointer-events:none; box-shadow:var(--shadow)}
@@ -143,7 +144,6 @@ ul.tips{margin:8px 0 0 16px;padding:0;font-size:12.5px;line-height:1.6;color:var
   <h1>ΦωτοΜέτρα</h1>
   <button class="tbtn" id="bOpen" title="Νέα φωτογραφία">📷</button>
   <button class="tbtn" id="bShare" title="Κοινοποίηση">📤</button>
-  <button class="tbtn" id="bList">Λίστα</button>
   <button class="tbtn primary" id="bDone" style="display:none">✓ Τέλος</button>
   <button class="tbtn" id="bMenu" title="Ρυθμίσεις">⚙️</button>
 </div>
@@ -266,6 +266,7 @@ Object.assign(EN,{"Κείμενο: κρυφό / σύντομο / πλήρες": 
 Object.assign(EN,{"Βάλ' την σαν κανονική εφαρμογή στο κινητό": "Add it to your phone like a normal app", "⤓ Εγκατάσταση": "⤓ Install", "Ρυθμίσεις": "Settings", "Όχι τώρα": "Not now"});
 Object.assign(EN,{"Οι εργασίες μου": "My projects", "➕ Νέα εργασία": "➕ New project", "💾 Οι εργασίες μου": "💾 My projects", "🗑️ Διαγραφή": "🗑️ Delete", "Αλλαγή": "Edit", "Άκυρο": "Cancel"});
 Object.assign(EN,{"Άδειος φάκελος.": "Empty folder.", "📁 Νέος φάκελος": "📁 New folder", "Νέος φάκελος": "New folder", "π.χ. Πολυκατοικία Αθηνάς": "e.g. Athinas building", "Γράψε όνομα": "Enter a name", "Μετονομασία": "Rename", "Μετακίνηση σε φάκελο": "Move to folder", "Μετακίνηση": "Move", "Εδώ": "Here", "🏠 Αρχική": "🏠 Home", "Δεν υπάρχουν φάκελοι ακόμη.": "No folders yet.", "Μετακινήθηκε": "Moved", "Αντίγραφο": "Duplicate", "αντίγραφο": "copy", "Πίσω": "Back", "Αποστολή": "Send", "σβήνει και ό,τι έχει μέσα": "deletes everything inside it too"});
+Object.assign(EN,{"Λίστα μετρήσεων": "Measurement list", "όλα τα σημάδια της τρέχουσας φωτογραφίας": "every mark on the current photo"});
 const USYM={el:{'μ':'μ','εκ':'εκ','χιλ':'χιλ'},en:{'μ':'m','εκ':'cm','χιλ':'mm'}};
 const UNAMES={el:{'μ':'μέτρα','εκ':'εκατοστά','χιλ':'χιλιοστά'},en:{'μ':'meters','εκ':'centimeters','χιλ':'millimeters'}};
 function uSym(u){ return (USYM[S.lang]||USYM.el)[u]||u; }
@@ -849,6 +850,7 @@ function menuSheet(){
   $('mClose').onclick=closeSheet;
   $('mInst').onclick=()=>{ closeSheet(); doInstall(); };
   $('mLang').onchange=e=>{ setLang(e.target.value); closeSheet(); setTimeout(menuSheet,150); };
+  $('mList').onclick=()=>{ if(!S.img){toast('Βάλε πρώτα φωτογραφία');return;} closeSheet(); listSheet(); };
   $('mUnit').onchange=e=>{ setUnit(e.target.value); toast(tr('Μονάδα')+': '+uName(e.target.value)); };
   $('mSave').onclick=()=>{ closeSheet(); saveProject(); };
   $('mOpen').onclick=()=>{ projectsSheet(); };
@@ -1408,7 +1410,7 @@ $('cTxt').onclick=()=>{
 $('hUndo').onclick=undo; $('hRedo').onclick=redo;
 $('cEdit').onclick=()=>{ const a=S.anns.find(x=>x.id===S.sel);
   if(!a){toast('Διάλεξε πρώτα μια μέτρηση (εργαλείο Επιλογή ή από τη Λίστα)');return;} editAnn(a); };
-$('bList').onclick=listSheet; $('bMenu').onclick=menuSheet;
+$('bMenu').onclick=menuSheet;
 $('selEdit').onclick=()=>{ const a=S.anns.find(x=>x.id===S.sel); if(a)editAnn(a); };
 $('selDel').onclick=delSel;
 $('bShare').onclick=()=>{ if(!S.img){toast('Βάλε πρώτα φωτογραφία');return;} sharePng(); };
@@ -1438,7 +1440,7 @@ try{ const c=JSON.parse(localStorage.getItem('fotometra-tools')||'null');
   if(c&&c.m&&c.m.length){S.mainTools=c.m; if(c.o&&c.o.length)S.toolOrder=c.o;} }catch(_){}
 try{ S.autoDev=!!localStorage.getItem('fotometra-autodev'); }catch(_){}
 try{ const t=localStorage.getItem('fotometra-txt'); if(t)S.noteText=t; }catch(_){}
-buildTools(); setTool('select'); fitCanvas(); refreshOpts(); applyLang(document.body);
+buildTools(); setTool('select'); fitCanvas(); refreshOpts(); updateEnabled(); applyLang(document.body);
 document.documentElement.lang=(S.lang==='en'?'en':'el');
 if(QP.get('title')) document.querySelector('#top h1').textContent=QP.get('title');
 if(EMBED){
@@ -1466,7 +1468,7 @@ if(EMBED){
 })();
 
 /* ---------- εγκατάσταση ως εφαρμογή ---------- */
-const APPV='2.3.0';
+const APPV='2.3.1';
 let deferredPrompt=null;
 let instDismissed=false; try{ instDismissed=!!localStorage.getItem('fotometra-noinst'); }catch(_){}
 function showInstBar(v){ const b=document.getElementById('instBar'); if(b)b.style.display=v?'flex':'none'; }
