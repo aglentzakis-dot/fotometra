@@ -41,6 +41,7 @@ button{font-family:inherit;color:inherit}
   display:flex; align-items:center; gap:6px; padding:8px 10px;
   background:var(--panel); border-bottom:1px solid var(--line); flex:0 0 auto;
 }
+body.home-open #top{ position:relative; z-index:41 }
 #top h1{font-size:15px;margin:0;font-weight:650;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tbtn{
   background:var(--panel2); border:1px solid var(--line); border-radius:10px;
@@ -690,8 +691,8 @@ function segDist(p,a,b){
 /* ---------- φύλλο / παράθυρα ---------- */
 let sheetAt=0, sheetUrls=[];
 function dropUrls(){ sheetUrls.forEach(u=>{ try{URL.revokeObjectURL(u);}catch(_){} }); sheetUrls=[]; }
-function openSheet(html){ sheetAt=Date.now(); $('sheetIn').innerHTML=html; applyLang($('sheetIn')); $('sheet').classList.add('show'); }
-function closeSheet(){ $('sheet').classList.remove('show'); dropUrls(); }
+function openSheet(html){ document.body.classList.remove('home-open'); sheetAt=Date.now(); $('sheetIn').innerHTML=html; applyLang($('sheetIn')); $('sheet').classList.add('show'); }
+function closeSheet(){ $('sheet').classList.remove('show'); dropUrls(); document.body.classList.remove('home-open'); }
 $('sheet').addEventListener('click',e=>{ if(e.target.id==='sheet'&&Date.now()-sheetAt>600)closeSheet(); });
 
 function askCalib(a){
@@ -1191,6 +1192,7 @@ async function projectsSheet(){
     </div>
     <div class="acts" style="margin-top:8px"><button id="prC">${S.img?'Κλείσιμο':'Άκυρο'}</button></div>`);
 
+  if(!S.img) document.body.classList.add('home-open');
   $('prC').onclick=closeSheet;
   $('prNew').onclick=()=>{ closeSheet(); setTimeout(()=>$('bOpen').click(),120); };
   $('prFold').onclick=newFolder;
@@ -1512,7 +1514,7 @@ if(QP.get('flat')==='1'){
 })();
 
 /* ---------- εγκατάσταση ως εφαρμογή ---------- */
-const APPV='2.4.0';
+const APPV='2.4.1';
 let deferredPrompt=null;
 let instDismissed=false; try{ instDismissed=!!localStorage.getItem('fotometra-noinst'); }catch(_){}
 function showInstBar(v){ const b=document.getElementById('instBar'); if(b)b.style.display=v?'flex':'none'; }
