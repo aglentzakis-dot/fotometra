@@ -12,6 +12,7 @@
        FotoMetra.open('pelatis:' + id, 'Παπαδόπουλος');   // μέσα στον πελάτη
        FotoMetra.open('*', 'Όλες οι φωτογραφίες');        // κεντρικό μενού
        FotoMetra.open('*', 'All photos', 'en');           // άνοιγμα στα αγγλικά
+       FotoMetra.flat(rec).then(dataUrl => ...);           // τελική εικόνα, ζωγραφισμένη, ως data URL
        FotoMetra.count('pelatis:' + id).then(n => ...);   // πόσες φωτό έχει
        FotoMetra.list('pelatis:' + id).then(recs => ...); // οι εγγραφές
    --------------------------------------------------------------- */
@@ -107,5 +108,38 @@
      Θυμήσου να καλέσεις URL.revokeObjectURL(url) όταν δεν τη χρειάζεσαι πια. */
   function thumb(rec) { return rec && rec.blob ? URL.createObjectURL(rec.blob) : null; }
 
-  window.FotoMetra = { open: open, close: close, list: list, count: count, thumb: thumb };
+  /* Τελική, "ζωγραφισμένη" εικόνα μιας εγγραφής (φωτογραφία + όλα τα σημάδια
+     πάνω της), σαν data URL έτοιμο να αποθηκευτεί ή να δείχνεις μόνιμα.
+     Δέχεται είτε ολόκληρη εγγραφή από list() είτε απλά το id της.
+     Δεν ζωγραφίζει τίποτα μόνο του εδώ· ανοίγει για ένα κλάσμα δευτερολέπτου
+     ένα αόρατο, δεύτερο αντίγραφο της ίδιας της ΦωτοΜέτρα, της ζητάει να
+     κάνει ό,τι κάνει ήδη όταν στέλνεις μια φωτογραφία, και παίρνει πίσω μόνο
+     το αποτέλεσμα — έτσι ακολουθεί αυτόματα κάθε μελλοντικό νέο εργαλείο
+     σχεδίασης, χωρίς να χρειάζεται να ξαναγραφτεί εδώ. */
+  function flat(recOrId) {
+    return new Promise(function (resolve, reject) {
+      var id = (recOrId && recOrId.id) ? recOrId.id : recOrId;
+      var owner = (recOrId && recOrId.owner) || '';
+      if (!id) { reject(new Error('FotoMetra.flat: λείπει το id')); return; }
+
+      var f = document.createElement('iframe');
+      f.style.cssText = 'position:fixed;left:-9999px;top:-9999px;width:8px;height:8px;border:0';
+      var q = (APP.indexOf('?') < 0 ? '?' : '&') + 'flat=1&id=' + encodeURIComponent(id) +
+              (owner ? '&owner=' + encodeURIComponent(owner) : '');
+      f.src = APP + q;
+
+      var done = false;
+      function cleanup() { window.removeEventListener('message', onMsg); if (f.parentNode) f.remove(); }
+      function onMsg(e) {
+        if (!e.data || e.data.id !== id || done) return;
+        if (e.data.type === 'fotometra-flat-result') { done = true; cleanup(); resolve(e.data.dataUrl); }
+        else if (e.data.type === 'fotometra-flat-error') { done = true; cleanup(); reject(new Error('FotoMetra.flat: ' + e.data.error)); }
+      }
+      window.addEventListener('message', onMsg);
+      document.body.appendChild(f);
+      setTimeout(function () { if (!done) { done = true; cleanup(); reject(new Error('FotoMetra.flat: timeout')); } }, 15000);
+    });
+  }
+
+  window.FotoMetra = { open: open, close: close, list: list, count: count, thumb: thumb, flat: flat };
 })();

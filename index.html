@@ -267,6 +267,7 @@ Object.assign(EN,{"Βάλ' την σαν κανονική εφαρμογή στ�
 Object.assign(EN,{"Οι εργασίες μου": "My projects", "➕ Νέα εργασία": "➕ New project", "💾 Οι εργασίες μου": "💾 My projects", "🗑️ Διαγραφή": "🗑️ Delete", "Αλλαγή": "Edit", "Άκυρο": "Cancel"});
 Object.assign(EN,{"Άδειος φάκελος.": "Empty folder.", "📁 Νέος φάκελος": "📁 New folder", "Νέος φάκελος": "New folder", "π.χ. Πολυκατοικία Αθηνάς": "e.g. Athinas building", "Γράψε όνομα": "Enter a name", "Μετονομασία": "Rename", "Μετακίνηση σε φάκελο": "Move to folder", "Μετακίνηση": "Move", "Εδώ": "Here", "🏠 Αρχική": "🏠 Home", "Δεν υπάρχουν φάκελοι ακόμη.": "No folders yet.", "Μετακινήθηκε": "Moved", "Αντίγραφο": "Duplicate", "αντίγραφο": "copy", "Πίσω": "Back", "Αποστολή": "Send", "σβήνει και ό,τι έχει μέσα": "deletes everything inside it too"});
 Object.assign(EN,{"Λίστα μετρήσεων": "Measurement list", "όλα τα σημάδια της τρέχουσας φωτογραφίας": "every mark on the current photo"});
+Object.assign(EN,{"Διορθώθηκε η θέση παλιών μετρήσεων": "Old measurements' position was corrected"});
 const USYM={el:{'μ':'μ','εκ':'εκ','χιλ':'χιλ'},en:{'μ':'m','εκ':'cm','χιλ':'mm'}};
 const UNAMES={el:{'μ':'μέτρα','εκ':'εκατοστά','χιλ':'χιλιοστά'},en:{'μ':'meters','εκ':'centimeters','χιλ':'millimeters'}};
 function uSym(u){ return (USYM[S.lang]||USYM.el)[u]||u; }
@@ -900,9 +901,12 @@ function loadBlob(b){
       const f=MAX/Math.max(w,h); const c2=document.createElement('canvas');
       c2.width=Math.round(w*f); c2.height=Math.round(h*f);
       c2.getContext('2d').drawImage(im,0,0,c2.width,c2.height);
-      const im2=new Image();
-      im2.onload=()=>{ URL.revokeObjectURL(url); setImage(im2,b); };
-      im2.src=c2.toDataURL('image/jpeg',0.92);
+      c2.toBlob(rb=>{
+        const useB = rb||b;   // αν αποτύχει η σμίκρυνση, μένει η αρχική
+        const im2=new Image();
+        im2.onload=()=>{ URL.revokeObjectURL(url); setImage(im2,useB); };
+        im2.src=URL.createObjectURL(useB);
+      },'image/jpeg',0.92);
       return;
     }
     setImage(im,b);
@@ -1082,7 +1086,7 @@ async function autoSave(){
     let blob=S.blob;
     if(!blob) blob=await new Promise(r=>renderFull().toBlob(r,'image/jpeg',0.9));
     const th=await thumbBlob();
-    const rec={id:S.projId,name:S.projName,date:Date.now(),blob,thumb:th,anns:S.anns,scale:S.scale,unit:S.unit,owner:S.owner,folder:S.projFolder||''};
+    const rec={id:S.projId,name:S.projName,date:Date.now(),blob,thumb:th,anns:S.anns,scale:S.scale,unit:S.unit,owner:S.owner,folder:S.projFolder||'',imgW:S.imgW,imgH:S.imgH};
     await new Promise((res,rej)=>{ const t=d.transaction('p','readwrite'); t.objectStore('p').put(rec); t.oncomplete=res; t.onerror=()=>rej(t.error); });
     try{ localStorage.setItem('fotometra-last:'+S.owner,S.projId); }catch(_){}
     lastSaved=sig;
@@ -1124,7 +1128,7 @@ async function saveProject(){
       const id=S.projId||uid();
       let blob=S.blob;
       if(!blob) blob=await new Promise(r=>renderFull().toBlob(r,'image/jpeg',0.9));
-      const rec={id,name,date:Date.now(),blob,thumb:await thumbBlob(),anns:S.anns,scale:S.scale,unit:S.unit,owner:S.owner,folder:S.projFolder||''};
+      const rec={id,name,date:Date.now(),blob,thumb:await thumbBlob(),anns:S.anns,scale:S.scale,unit:S.unit,owner:S.owner,folder:S.projFolder||'',imgW:S.imgW,imgH:S.imgH};
       await new Promise((res,rej)=>{ const t=d.transaction('p','readwrite'); t.objectStore('p').put(rec); t.oncomplete=res; t.onerror=()=>rej(t.error); });
       S.projId=id; S.projName=name; closeSheet(); toast(tr('Αποθηκεύτηκε')+': '+name);
     }catch(e){ toast('Δεν έγινε η αποθήκευση'); }
@@ -1195,12 +1199,29 @@ async function projectsSheet(){
   $('sheetIn').querySelectorAll('[data-menu]').forEach(b=>b.onclick=()=>itemMenu(all.find(x=>x.id===b.dataset.menu)));
 }
 
+function rescaleAnns(anns,sx,sy){
+  return (anns||[]).map(a=>{
+    const c=Object.assign({},a);
+    c.pts=(a.pts||[]).map(p=>({x:p.x*sx,y:p.y*sy}));
+    if(a.lo) c.lo={x:a.lo.x*sx,y:a.lo.y*sy};
+    if(a.width) c.width=a.width*((sx+sy)/2);
+    return c;
+  });
+}
 function openProject(r){
   if(!r||!r.blob)return;
   const im=new Image();
-  im.onload=()=>{ setImage(im,r.blob); S.anns=r.anns||[]; S.scale=r.scale||null; S.unit=r.unit||S.unit;
+  im.onload=()=>{
+    setImage(im,r.blob);
+    let anns=r.anns||[];
+    if(r.imgW&&r.imgH&&(r.imgW!==S.imgW||r.imgH!==S.imgH)){
+      const sx=S.imgW/r.imgW, sy=S.imgH/r.imgH;
+      if(isFinite(sx)&&isFinite(sy)&&sx>0&&sy>0){ anns=rescaleAnns(anns,sx,sy); toast('Διορθώθηκε η θέση παλιών μετρήσεων'); }
+    }
+    S.anns=anns; S.scale=r.scale||null; S.unit=r.unit||S.unit;
     S.projId=r.id; S.projName=r.name; S.projFolder=r.folder||''; lastSaved=S.projName+'|'+snap();
-    draw(); scaleTag(); closeSheet(); };
+    draw(); scaleTag(); closeSheet();
+  };
   im.src=URL.createObjectURL(r.blob);
 }
 
@@ -1443,7 +1464,30 @@ try{ const t=localStorage.getItem('fotometra-txt'); if(t)S.noteText=t; }catch(_)
 buildTools(); setTool('select'); fitCanvas(); refreshOpts(); updateEnabled(); applyLang(document.body);
 document.documentElement.lang=(S.lang==='en'?'en':'el');
 if(QP.get('title')) document.querySelector('#top h1').textContent=QP.get('title');
-if(EMBED){
+async function flattenAndPost(id,owner){
+  const post=(m)=>{ try{ parent.postMessage(m,'*'); }catch(e){} };
+  try{
+    if(!id){ post({type:'fotometra-flat-error',id,error:'no-id'}); return; }
+    const d=await db();
+    const rec=await new Promise((res,rej)=>{ const t=d.transaction('p','readonly'); const q=t.objectStore('p').get(id); q.onsuccess=()=>res(q.result); q.onerror=()=>rej(q.error); });
+    if(!rec||!rec.blob){ post({type:'fotometra-flat-error',id,error:'not-found'}); return; }
+    const im=new Image();
+    im.onload=()=>{
+      S.img=im; S.imgW=im.naturalWidth||im.width; S.imgH=im.naturalHeight||im.height;
+      S.anns=rec.anns||[]; S.scale=rec.scale||null; S.unit=rec.unit||S.unit;
+      try{
+        const dataUrl=renderFull().toDataURL('image/png');
+        post({type:'fotometra-flat-result',id,dataUrl,name:rec.name||''});
+      }catch(e){ post({type:'fotometra-flat-error',id,error:'render'}); }
+    };
+    im.onerror=()=>post({type:'fotometra-flat-error',id,error:'image'});
+    im.src=URL.createObjectURL(rec.blob);
+  }catch(e){ post({type:'fotometra-flat-error',id,error:'db'}); }
+}
+if(QP.get('flat')==='1'){
+  document.body.style.visibility='hidden';
+  flattenAndPost(QP.get('id'),QP.get('owner')||'');
+} else if(EMBED){
   $('bDone').style.display='flex';
   try{ parent.postMessage({type:'fotometra-ready'},'*'); }catch(_){}
   $('bDone').onclick=async()=>{ await autoSave(); try{parent.postMessage({type:'fotometra-close'},'*');}catch(_){} };
@@ -1455,7 +1499,7 @@ if(EMBED){
       if(mine.length) projectsSheet(); else $('fCam').click();
     }catch(e){}
   })();
-} else {
+} else if(QP.get('flat')!=='1') {
   (async()=>{
     try{
       const d=await db();
@@ -1468,7 +1512,7 @@ if(EMBED){
 })();
 
 /* ---------- εγκατάσταση ως εφαρμογή ---------- */
-const APPV='2.3.1';
+const APPV='2.4.0';
 let deferredPrompt=null;
 let instDismissed=false; try{ instDismissed=!!localStorage.getItem('fotometra-noinst'); }catch(_){}
 function showInstBar(v){ const b=document.getElementById('instBar'); if(b)b.style.display=v?'flex':'none'; }
