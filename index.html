@@ -69,6 +69,8 @@ body.home-open #top{ position:relative; z-index:41 }
 #scaleTag.warn{color:var(--danger)}
 #selBar{position:absolute; left:8px; top:8px; display:flex; gap:6px; z-index:3}
 #selBar .zb{width:42px;height:42px;font-size:17px}
+#loupe{position:absolute; width:124px; height:124px; border-radius:50%; border:3px solid #fff;
+  box-shadow:0 4px 18px rgba(0,0,0,.5); pointer-events:none; display:none; z-index:4; background:#000}
 #bottom.disabled, #bShare.disabled{opacity:.38; pointer-events:none}
 #autoTag{position:absolute; right:8px; top:8px; background:var(--panel); border:1px solid var(--line);
   border-radius:9px; padding:4px 8px; font-size:10.5px; font-weight:600; opacity:0; transition:opacity .4s;
@@ -164,6 +166,7 @@ ul.tips{margin:8px 0 0 16px;padding:0;font-size:12.5px;line-height:1.6;color:var
 
 <div id="stage">
   <canvas id="cv"></canvas>
+  <canvas id="loupe"></canvas>
   <div id="empty">
     <div class="big">Βάλε μια φωτογραφία για να ξεκινήσεις</div>
     <p>Τράβα ίσιες γραμμές, πάρε διαστάσεις σε πραγματικά μέτρα, βάλε σημειώσεις πάνω στην εικόνα και βγάλε την έτοιμη για αποστολή.</p>
@@ -389,10 +392,43 @@ function draw(){
     list.forEach((a,i)=>drawAnn(ctx,a,v,1,a.id===S.sel));
   }
   placeSelBar();
+  drawLoupe();
+}
+/* ---------- μεγεθυντικός φακός: δείχνει τι είναι κάτω από το δάχτυλο, πάνω από αυτό ---------- */
+let loupeAt=null;   // σημείο της οθόνης που μεγεθύνεται
+function hideLoupe(){ loupeAt=null; const l=$('loupe'); if(l) l.style.display='none'; }
+function drawLoupe(){
+  const l=$('loupe'); if(!l) return;
+  if(!loupeAt||!S.img){ l.style.display='none'; return; }
+  const D=124, Z=2.2, dpr=cv._dpr||1, src=D/Z;
+  if(l.width!==Math.round(D*dpr)){ l.width=Math.round(D*dpr); l.height=Math.round(D*dpr); }
+  const c=l.getContext('2d');
+  c.setTransform(1,0,0,1,0,0);
+  c.fillStyle='#000'; c.fillRect(0,0,l.width,l.height);
+  c.imageSmoothingEnabled=true; c.imageSmoothingQuality='high';
+  try{ c.drawImage(cv,(loupeAt.x-src/2)*dpr,(loupeAt.y-src/2)*dpr,src*dpr,src*dpr,0,0,l.width,l.height); }catch(_){}
+  const m=l.width/2, a=16*dpr, b=4*dpr;
+  const cross=()=>{ c.beginPath();
+    c.moveTo(m-a,m);c.lineTo(m-b,m); c.moveTo(m+b,m);c.lineTo(m+a,m);
+    c.moveTo(m,m-a);c.lineTo(m,m-b); c.moveTo(m,m+b);c.lineTo(m,m+a); c.stroke(); };
+  c.lineCap='round';
+  c.strokeStyle='rgba(0,0,0,.7)'; c.lineWidth=3.5*dpr; cross();
+  c.strokeStyle='#fff'; c.lineWidth=1.5*dpr; cross();
+  c.fillStyle='#fff'; c.beginPath(); c.arc(m,m,1.4*dpr,0,7); c.fill();
+  // θέση: πάνω από το δάχτυλο· αν δεν χωράει, στο πλάι
+  const W=cv._w||0, H=cv._h||0, off=64, mg=6;
+  let x=loupeAt.x-D/2, y=loupeAt.y-off-D;
+  if(y<mg){
+    y=Math.min(Math.max(loupeAt.y-D/2,mg),H-D-mg);
+    x = (loupeAt.x+off+D<=W-mg) ? loupeAt.x+off : loupeAt.x-off-D;
+  }
+  x=Math.min(Math.max(x,mg),Math.max(mg,W-D-mg));
+  l.style.left=x+'px'; l.style.top=y+'px'; l.style.display='block';
 }
 /* ---------- τοποθέτηση του πλαισίου ✏️/🗑️ ώστε να μην κρύβει το νούμερο της επιλεγμένης μέτρησης ---------- */
 function placeSelBar(){
   const sb=$('selBar');
+  if(sb) sb.style.visibility = loupeAt ? 'hidden' : '';
   if(!sb||!S.img||!S.sel)return;
   const a=S.anns.find(x=>x.id===S.sel);
   if(!a||!a.pts.length)return;
@@ -551,6 +587,7 @@ function armLongPress(p){
     const h=hitTest(q); if(!h)return;
     S.draft=null; lpFired=true; moved=false;
     S.sel=h.a.id; dragTarget=h; mode='drag'; start=q; startView={...S.view};
+    loupeAt = h.h>=0 ? toScreen(h.a.pts[h.h]) : null;
     push();
     if(navigator.vibrate)navigator.vibrate(25);
     toast('Σύρε για μετακίνηση · άσε το για επεξεργασία');
@@ -565,7 +602,7 @@ cv.addEventListener('pointerdown',e=>{
   const r=cv.getBoundingClientRect();
   ptrs.set(e.pointerId,{x:e.clientX-r.left,y:e.clientY-r.top});
   moved=false;
-  if(ptrs.size===2){ S.draft=null; mode='pinch'; const a=[...ptrs.values()];
+  if(ptrs.size===2){ S.draft=null; loupeAt=null; mode='pinch'; const a=[...ptrs.values()];
     pinchD=dist(a[0],a[1]); pinchC={x:(a[0].x+a[1].x)/2,y:(a[0].y+a[1].y)/2}; startView={...S.view}; draw(); return; }
   if(ptrs.size>2)return;
   start=[...ptrs.values()][0]; startView={...S.view};
@@ -573,15 +610,16 @@ cv.addEventListener('pointerdown',e=>{
   armLongPress(start);
   if(S.tool==='select'){
     const hit=hitTest(start);
-    if(hit){ S.sel=hit.a.id; dragTarget=hit; mode='drag'; push(); }
+    if(hit){ S.sel=hit.a.id; dragTarget=hit; mode='drag'; push(); if(hit.h>=0) loupeAt=toScreen(hit.a.pts[hit.h]); }
     else { S.sel=null; mode='pan'; }
     draw(); refreshOpts(); return;
   }
-  if(S.tool==='poly'||S.tool==='angle'||S.tool==='note'){ mode='tap'; return; }
+  if(S.tool==='poly'||S.tool==='angle'||S.tool==='note'){ mode='tap'; loupeAt={...start}; draw(); return; }
   // εργαλεία με σύρσιμο
   mode='draw';
   S.draft={id:uid(),type:S.tool,pts:[ip,ip],color:S.color,width:S.width,note:''};
   if(S.tool==='free')S.draft.pts=[ip];
+  loupeAt={...start};
   draw();
 });
 
@@ -601,13 +639,14 @@ cv.addEventListener('pointermove',e=>{
   }
   if(dist(p,start||p)>5){ moved=true; if(!lpFired)cancelLongPress(); }
   if(mode==='pan'||(mode==='tap'&&moved)){
+    loupeAt=null;
     S.view.tx=startView.tx+(p.x-start.x); S.view.ty=startView.ty+(p.y-start.y); draw(); return;
   }
   if(mode==='drag'&&dragTarget){
     const d={x:(p.x-start.x)/S.view.s, y:(p.y-start.y)/S.view.s};
     const a=dragTarget.a;
     if(dragTarget.h===-2){ a.lo={x:(dragTarget.lo.x||0)+d.x, y:(dragTarget.lo.y||0)+d.y}; }
-    else if(dragTarget.h>=0){ a.pts[dragTarget.h]={x:dragTarget.orig[dragTarget.h].x+d.x, y:dragTarget.orig[dragTarget.h].y+d.y}; }
+    else if(dragTarget.h>=0){ a.pts[dragTarget.h]={x:dragTarget.orig[dragTarget.h].x+d.x, y:dragTarget.orig[dragTarget.h].y+d.y}; loupeAt=toScreen(a.pts[dragTarget.h]); }
     else a.pts=dragTarget.orig.map(q=>({x:q.x+d.x,y:q.y+d.y}));
     draw(); return;
   }
@@ -615,6 +654,7 @@ cv.addEventListener('pointermove',e=>{
     let ip=toImg(p);
     if(S.draft.type==='free'){ S.draft.pts.push(ip); }
     else { if(S.snap&&S.draft.type!=='rect')ip=snapAngle(S.draft.pts[0],ip); S.draft.pts[1]=ip; }
+    loupeAt=toScreen(S.draft.pts[S.draft.pts.length-1]);
     draw(); return;
   }
 });
@@ -624,7 +664,7 @@ function endPtr(e){
   const r=cv.getBoundingClientRect();
   const p={x:e.clientX-r.left,y:e.clientY-r.top};
   ptrs.delete(e.pointerId);
-  cancelLongPress();
+  cancelLongPress(); hideLoupe();
   if(mode==='pinch'){ if(ptrs.size<2){mode=null;} return; }
   if(mode==='drag'&&lpFired){
     const a=dragTarget?dragTarget.a:null; const wasMoved=moved;
@@ -1580,7 +1620,7 @@ if(QP.get('flat')==='1'){
 })();
 
 /* ---------- εγκατάσταση ως εφαρμογή ---------- */
-const APPV='2.4.4';
+const APPV='2.4.5';
 let deferredPrompt=null;
 let instDismissed=false; try{ instDismissed=!!localStorage.getItem('fotometra-noinst'); }catch(_){}
 function showInstBar(v){ const b=document.getElementById('instBar'); if(b)b.style.display=v?'flex':'none'; }
