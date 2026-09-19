@@ -691,8 +691,42 @@ function segDist(p,a,b){
 /* ---------- φύλλο / παράθυρα ---------- */
 let sheetAt=0, sheetUrls=[];
 function dropUrls(){ sheetUrls.forEach(u=>{ try{URL.revokeObjectURL(u);}catch(_){} }); sheetUrls=[]; }
-function openSheet(html){ document.body.classList.remove('home-open'); sheetAt=Date.now(); $('sheetIn').innerHTML=html; applyLang($('sheetIn')); $('sheet').classList.add('show'); }
-function closeSheet(){ $('sheet').classList.remove('show'); dropUrls(); document.body.classList.remove('home-open'); }
+/* ---------- κουμπί «πίσω» της συσκευής: κλείνει παράθυρα/φωτογραφία αντί να βγαίνει από την εφαρμογή ---------- */
+const NAV_ON = !EMBED && QP.get('flat')!=='1';
+let navLevel=0, suppressPop=false, sheetLevel=false;
+if(NAV_ON){ try{ history.replaceState({fm:'base'},''); }catch(e){} }
+function navEnter(){
+  if(!NAV_ON) return;
+  navLevel++;
+  try{ history.pushState({fm:navLevel},''); }catch(e){}
+}
+function navExit(){
+  if(!NAV_ON||navLevel<=0) return;
+  navLevel--; suppressPop=true;
+  try{ history.back(); }catch(e){ suppressPop=false; }
+}
+async function goHome(){
+  S.img=null; S.blob=null; S.sel=null;
+  $('empty').style.display='flex'; $('zoomBox').style.display='none'; $('histBox').style.display='none';
+  updateEnabled(); refreshOpts(); draw(); scaleTag();
+  try{ const all=await allRecs(); if(all.length) projectsSheet(); }catch(e){}
+}
+if(NAV_ON) window.addEventListener('popstate',()=>{
+  if(suppressPop){ suppressPop=false; return; }
+  navLevel=Math.max(0,navLevel-1);
+  if($('sheet').classList.contains('show')){ closeSheet(true); }
+  else if(S.img){ autoSave().finally(goHome); }
+  // αλλιώς είμαστε ήδη στη βασική οθόνη· το επόμενο «πίσω» κλείνει κανονικά την εφαρμογή
+});
+
+function openSheet(html){
+  if(NAV_ON && !$('sheet').classList.contains('show')){ sheetLevel=true; navEnter(); }
+  document.body.classList.remove('home-open'); sheetAt=Date.now(); $('sheetIn').innerHTML=html; applyLang($('sheetIn')); $('sheet').classList.add('show');
+}
+function closeSheet(fromPop){
+  $('sheet').classList.remove('show'); dropUrls(); document.body.classList.remove('home-open');
+  if(sheetLevel){ sheetLevel=false; if(fromPop!==true) navExit(); }
+}
 $('sheet').addEventListener('click',e=>{ if(e.target.id==='sheet'&&Date.now()-sheetAt>600)closeSheet(); });
 
 function askCalib(a){
@@ -915,13 +949,20 @@ function loadBlob(b){
   im.onerror=()=>toast('Δεν άνοιξε η εικόνα');
   im.src=url;
 }
+function updateEnabled(){
+  const en=!!S.img;
+  const bo=$('bottom'), bs=$('bShare');
+  if(bo) bo.classList.toggle('disabled',!en);
+  if(bs) bs.classList.toggle('disabled',!en);
+}
 function setImage(im,blob){
+  if(NAV_ON && !S.img) navEnter();
   S.img=im; S.blob=blob; S.imgW=im.naturalWidth||im.width; S.imgH=im.naturalHeight||im.height;
   S.anns=[]; S.sel=null; S.scale=null; S.undoS=[]; S.redoS=[];
   S.projId=null; S.projFolder=S.path||''; S.projName=tr('Εργασία')+' '+new Date().toLocaleDateString(S.lang==='en'?'en-GB':'el-GR')+' '+new Date().toLocaleTimeString(S.lang==='en'?'en-GB':'el-GR',{hour:'2-digit',minute:'2-digit'});
   lastSaved=null;
   $('empty').style.display='none'; $('zoomBox').style.display='flex'; $('histBox').style.display='flex';
-  fitView(); scaleTag(); refreshOpts();
+  fitView(); scaleTag(); refreshOpts(); updateEnabled();
 }
 function scaleTag(){
   const t=$('scaleTag');
@@ -1502,19 +1543,13 @@ if(QP.get('flat')==='1'){
     }catch(e){}
   })();
 } else if(QP.get('flat')!=='1') {
-  (async()=>{
-    try{
-      const d=await db();
-      const all=await new Promise((res,rej)=>{ const t=d.transaction('p','readonly'); const q=t.objectStore('p').getAll(); q.onsuccess=()=>res(q.result||[]); q.onerror=()=>rej(q.error); });
-      if(all.length) projectsSheet();
-    }catch(e){}
-  })();
+  (async()=>{ try{ const all=await allRecs(); if(all.length) projectsSheet(); }catch(e){} })();
 }
 (async()=>{ try{ if(window.claude&&window.claude.use) dl=await window.claude.use('downloads'); }catch(_){}
 })();
 
 /* ---------- εγκατάσταση ως εφαρμογή ---------- */
-const APPV='2.4.1';
+const APPV='2.4.2';
 let deferredPrompt=null;
 let instDismissed=false; try{ instDismissed=!!localStorage.getItem('fotometra-noinst'); }catch(_){}
 function showInstBar(v){ const b=document.getElementById('instBar'); if(b)b.style.display=v?'flex':'none'; }
