@@ -67,7 +67,7 @@ body.home-open #top{ position:relative; z-index:41 }
   display:flex; align-items:center; gap:6px; max-width:calc(100% - 16px);
 }
 #scaleTag.warn{color:var(--danger)}
-#selBar{position:absolute; left:50%; transform:translateX(-50%); top:8px; display:flex; gap:6px; z-index:3}
+#selBar{position:absolute; left:8px; top:8px; display:flex; gap:6px; z-index:3}
 #selBar .zb{width:42px;height:42px;font-size:17px}
 #bottom.disabled, #bShare.disabled{opacity:.38; pointer-events:none}
 #autoTag{position:absolute; right:8px; top:8px; background:var(--panel); border:1px solid var(--line);
@@ -372,14 +372,36 @@ function zoomAt(cx,cy,f){
 function draw(){
   ctx.setTransform(cv._dpr||1,0,0,cv._dpr||1,0,0);
   ctx.clearRect(0,0,cv._w||0,cv._h||0);
-  if(!S.img)return;
+  if(!S.img){ placeSelBar(); return; }
   const v=S.view;
   ctx.imageSmoothingQuality='high';
   ctx.drawImage(S.img, v.tx, v.ty, S.imgW*v.s, S.imgH*v.s);
-  if(!S.show)return;
-  LR.clear();
-  const list=S.draft?S.anns.concat([S.draft]):S.anns;
-  list.forEach((a,i)=>drawAnn(ctx,a,v,1,a.id===S.sel));
+  if(S.show){
+    LR.clear();
+    const list=S.draft?S.anns.concat([S.draft]):S.anns;
+    list.forEach((a,i)=>drawAnn(ctx,a,v,1,a.id===S.sel));
+  }
+  placeSelBar();
+}
+/* ---------- τοποθέτηση του πλαισίου ✏️/🗑️ ώστε να μην κρύβει το νούμερο της επιλεγμένης μέτρησης ---------- */
+function placeSelBar(){
+  const sb=$('selBar');
+  if(!sb||!S.img||!S.sel)return;
+  const a=S.anns.find(x=>x.id===S.sel);
+  if(!a||!a.pts.length)return;
+  const P=a.pts.map(toScreen);
+  let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
+  P.forEach(p=>{ minX=Math.min(minX,p.x); minY=Math.min(minY,p.y); maxX=Math.max(maxX,p.x); maxY=Math.max(maxY,p.y); });
+  if(a.type==='note'){ minX-=16; maxX+=16; minY-=16; maxY+=16; }
+  const r=LR.get(a.id);
+  if(r){ minX=Math.min(minX,r.x); minY=Math.min(minY,r.y); maxX=Math.max(maxX,r.x+r.w); maxY=Math.max(maxY,r.y+r.h); }
+  const W=cv._w||0, H=cv._h||0, barW=94, barH=42, gap=10, margin=6;
+  let left=Math.min(Math.max(((minX+maxX)/2)-barW/2, margin), Math.max(margin,W-barW-margin)), top;
+  if(minY-gap-barH>=margin){ top=minY-gap-barH; }
+  else if(maxY+gap+barH<=H-margin){ top=maxY+gap; }
+  else if(maxX+gap+barW<=W-margin){ top=Math.min(Math.max(((minY+maxY)/2)-barH/2,margin),H-barH-margin); left=maxX+gap; }
+  else { top=Math.min(Math.max(((minY+maxY)/2)-barH/2,margin),H-barH-margin); left=Math.max(margin,minX-gap-barW); }
+  sb.style.left=left+'px'; sb.style.top=top+'px'; sb.style.transform='none';
 }
 
 function drawAnn(c,a,v,k,selected){
@@ -1549,7 +1571,7 @@ if(QP.get('flat')==='1'){
 })();
 
 /* ---------- εγκατάσταση ως εφαρμογή ---------- */
-const APPV='2.4.2';
+const APPV='2.4.3';
 let deferredPrompt=null;
 let instDismissed=false; try{ instDismissed=!!localStorage.getItem('fotometra-noinst'); }catch(_){}
 function showInstBar(v){ const b=document.getElementById('instBar'); if(b)b.style.display=v?'flex':'none'; }
