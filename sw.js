@@ -1,5 +1,5 @@
 /* ΦωτοΜέτρα — service worker */
-const V = 'fotometra-v27';
+const V = 'fotometra-v29';
 const FILES = [
   './', './index.html', './manifest.json',
   './embed.js', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'
