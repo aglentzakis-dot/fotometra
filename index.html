@@ -2,7 +2,7 @@
 <html lang="el">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
 <meta name="theme-color" content="#1a2a4a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -105,10 +105,12 @@ input[type=range]{width:78px;flex:0 0 auto;accent-color:var(--accent)}
 #sheet{
   position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; z-index:40;
   align-items:flex-end; justify-content:center;
+  padding-bottom:var(--kb,0px);              /* ανεβαίνει πάνω από το πληκτρολόγιο */
 }
 #sheet.show{display:flex}
 #sheetIn{
-  background:var(--panel); width:100%; max-width:560px; max-height:88vh; overflow:auto;
+  background:var(--panel); width:100%; max-width:560px; overflow:auto;
+  max-height:min(88vh, calc(100vh - var(--kb,0px) - 20px));
   border-radius:18px 18px 0 0; padding:14px 14px max(14px,env(safe-area-inset-bottom));
   box-shadow:var(--shadow);
 }
@@ -282,6 +284,7 @@ Object.assign(EN,{"Οι εργασίες μου": "My projects", "➕ Νέα ε�
 Object.assign(EN,{"Άδειος φάκελος.": "Empty folder.", "📁 Νέος φάκελος": "📁 New folder", "Νέος φάκελος": "New folder", "π.χ. Πολυκατοικία Αθηνάς": "e.g. Athinas building", "Γράψε όνομα": "Enter a name", "Μετονομασία": "Rename", "Μετακίνηση σε φάκελο": "Move to folder", "Μετακίνηση": "Move", "Εδώ": "Here", "🏠 Αρχική": "🏠 Home", "Δεν υπάρχουν φάκελοι ακόμη.": "No folders yet.", "Μετακινήθηκε": "Moved", "Αντίγραφο": "Duplicate", "αντίγραφο": "copy", "Πίσω": "Back", "Αποστολή": "Send", "σβήνει και ό,τι έχει μέσα": "deletes everything inside it too"});
 Object.assign(EN,{"Λίστα μετρήσεων": "Measurement list", "όλα τα σημάδια της τρέχουσας φωτογραφίας": "every mark on the current photo"});
 Object.assign(EN,{"Διορθώθηκε η θέση παλιών μετρήσεων": "Old measurements' position was corrected"});
+Object.assign(EN,{"Σημείο κλίμακας": "Scale point", "Τράβηξες μια γραμμή πάνω σε κάτι που ξέρεις πόσο είναι (πόρτα, πλακάκι, μέτρο). Γράψε το πραγματικό μήκος.": "You drew a line over something whose size you know (a door, a tile, a tape measure). Enter its real length.", "Μπορείς να βάλεις μέχρι 3 σημεία κλίμακας σε διαφορετικές αποστάσεις — ένα μπροστά κι ένα πιο πίσω. Τότε η εφαρμογή καταλαβαίνει το βάθος και διορθώνει μόνη της όσα είναι πιο μακριά.": "You can set up to 3 scale points at different distances — one near and one further back. The app then understands depth and corrects what is further away on its own.", "Έχεις ήδη 3 σημεία κλίμακας — σβήσε ένα πρώτα": "You already have 3 scale points — delete one first", "Κλίμακα με": "Scale with", "σημεία — υπολογίζεται και το βάθος": "points — depth is taken into account", "σημεία — με βάθος": "points — with depth", "Βάθος": "Depth", "βάλε μέχρι 3 σημεία κλίμακας σε διαφορετικές αποστάσεις — π.χ. το πόδι ενός τραπεζιού μπροστά και ένα ίδιο πόδι πιο πίσω, που στη φωτογραφία φαίνεται μικρότερο. Με δύο ή τρία σημεία η εφαρμογή καταλαβαίνει πόσο «μικραίνει» ο χώρος όσο πάει πίσω και δίνει σε κάθε μέτρηση τη δική της κλίμακα.": "set up to 3 scale points at different distances — e.g. a table leg at the front and an identical leg further back, which looks smaller in the photo. With two or three points the app works out how much the space shrinks with distance and gives every measurement its own scale."});
 Object.assign(EN,{"Διάσταση": "Dimension", "Περισσότερα…": "More…", "Γράψε τη διάσταση και πάτα Αποθήκευση": "Type the dimension and tap Save", "Διαγραφή εργασίας": "Delete project", "Θα σβηστεί η φωτογραφία μαζί με όλες τις μετρήσεις και τις σημειώσεις της. Δεν αναιρείται.": "The photo will be deleted along with all its measurements and notes. This cannot be undone.", "Η εργασία διαγράφηκε": "Project deleted"});
 Object.assign(EN,{"Φάκελος αντιγράφων": "Backup folder", "Επιλογή φακέλου": "Choose folder", "Αλλαγή φακέλου": "Change folder", "Επαναφορά από τον φάκελο": "Restore from the folder", "τα 10 νεότερα αντίγραφα — επαναφορά με ένα πάτημα": "the 10 newest backups — restore with one tap", "Επαναφορά από αρχείο": "Restore from file", "νεότερο": "newest", "Δεν υπάρχουν αντίγραφα στον φάκελο ακόμη.": "No backups in the folder yet.", "Αποθηκεύτηκε στον φάκελο": "Saved to the folder", "αποθηκεύεται στον φάκελο": "saved to the folder", "δεν έχει οριστεί — διάλεξε π.χ. Λήψεις/Backup": "not set — choose e.g. Downloads/Backup", "δεν υποστηρίζεται εδώ — τα αντίγραφα κατεβαίνουν ως αρχείο": "not supported here — backups download as a file", "Να σταματήσει η χρήση του φακέλου;": "Stop using the folder?", "Να σταματήσει η χρήση του φακέλου": "Stop using the folder", "Τα αρχεία που υπάρχουν ήδη στον φάκελο δεν σβήνονται.": "Files already in the folder are not deleted.", "Προσοχή: ο φάκελος είναι κοινός για όλες τις εφαρμογές σου, οπότε θα σταματήσει να χρησιμοποιείται και από αυτές, μέχρι να τον ξαναδιαλέξεις.": "Careful: the folder is shared by all your apps, so they will stop using it too until you choose it again.", "Αφαίρεση": "Remove", "Ο φάκελος αφαιρέθηκε": "Folder removed", "Δεν δόθηκε πρόσβαση στον φάκελο": "Folder access was not granted", "Δεν ορίστηκε φάκελος": "No folder was set", "Ορίστηκε ο φάκελος": "Folder set"});
 const USYM={el:{'μ':'μ','εκ':'εκ','χιλ':'χιλ'},en:{'μ':'m','εκ':'cm','χιλ':'mm'}};
@@ -326,8 +329,51 @@ const uid=()=>Math.random().toString(36).slice(2,9);
 const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
 function toast(t){const e=$('toast');e.textContent=tr(t);e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),2200);}
 function trimN(v){const a=Math.abs(v); if(a>=100)return v.toFixed(0); if(a>=10)return v.toFixed(1); if(a>=1)return v.toFixed(2); return v.toFixed(3);}
-function fmtLen(px){ if(!S.scale) return '0 '+uSym(S.unit); return trimN(px*S.scale.upp)+' '+uSym(S.scale.unit); }
-function fmtArea(px2){ if(!S.scale) return '0 '+uSym(S.unit)+'²'; return trimN(px2*S.scale.upp*S.scale.upp)+' '+uSym(S.scale.unit)+'²'; }
+/* ---------- κλίμακα με έως 3 σημεία αναφοράς ----------
+   Ό,τι είναι πιο μακριά φαίνεται μικρότερο στη φωτογραφία. Με δύο ή τρία σημεία
+   αναφοράς σε διαφορετικές αποστάσεις η κλίμακα παύει να είναι σταθερή: για κάθε
+   ύψος y της εικόνας βγαίνει η δική της, από τη σχέση 1/κλίμακα = A*y + B
+   (αυτό ακριβώς λέει η προοπτική για ένα επίπεδο, π.χ. το δάπεδο). */
+const MAXREF=3;
+function migrateCalib(){        // παλιές εργασίες: η μονή κλίμακα γίνεται σημείο αναφοράς
+  if(!S.scale||!S.scale.upp) return;
+  S.anns.forEach(a=>{
+    if(a.type==='calib'&&!a.real&&a.pts.length>1){
+      const px=dist(a.pts[0],a.pts[1])||1;
+      a.real={v:+(px*S.scale.upp).toFixed(4),unit:S.scale.unit||S.unit};
+    }
+  });
+}
+function scaleRefs(){
+  migrateCalib();
+  const u=(S.scale&&S.scale.unit)||S.unit;
+  return S.anns.filter(a=>a.type==='calib'&&a.real&&a.real.v>0&&a.pts.length>1).map(a=>{
+    const px=dist(a.pts[0],a.pts[1])||1;
+    return { y:(a.pts[0].y+a.pts[1].y)/2, upp:(a.real.v*UF[a.real.unit]/UF[u])/px };
+  });
+}
+function fitDepth(R){
+  if(R.length<2) return null;
+  const n=R.length; let sy=0,su=0,syy=0,syu=0;
+  R.forEach(r=>{ const u=1/r.upp; sy+=r.y; su+=u; syy+=r.y*r.y; syu+=r.y*u; });
+  const den=n*syy-sy*sy;
+  if(Math.abs(den)<1e-9) return null;
+  const A=(n*syu-sy*su)/den, B=(su-A*sy)/n;
+  return (A>0&&isFinite(A)&&isFinite(B))?{A,B}:null;   // A>0: ό,τι είναι ψηλότερα στην εικόνα είναι πιο μακριά
+}
+function uppAt(y){              // μονάδες ανά εικονοστοιχείο στο ύψος y
+  const s=S.scale; if(!s) return 0;
+  const k=s.k||1, R=scaleRefs();
+  if(!R.length) return (s.upp||0)*k;
+  if(R.length===1) return R[0].upp*k;
+  const f=fitDepth(R);
+  if(f){ const d=f.A*y+f.B; if(d>1e-9) return k/d; }
+  let best=R[0]; R.forEach(r=>{ if(Math.abs(r.y-y)<Math.abs(best.y-y)) best=r; });
+  return best.upp*k;            // αν το μοντέλο δεν βγάζει νόημα, το πλησιέστερο σημείο
+}
+function annY(a){ let s=0; (a.pts||[]).forEach(p=>s+=p.y); return a.pts&&a.pts.length?s/a.pts.length:0; }
+function fmtLen(px,y){ const u=uppAt(y); if(!u) return '0 '+uSym(S.unit); return trimN(px*u)+' '+uSym(S.scale.unit); }
+function fmtArea(px2,y){ const u=uppAt(y); if(!u) return '0 '+uSym(S.unit)+'²'; return trimN(px2*u*u)+' '+uSym(S.scale.unit)+'²'; }
 function toScreen(p){return {x:p.x*S.view.s+S.view.tx, y:p.y*S.view.s+S.view.ty};}
 function toImg(p){return {x:(p.x-S.view.tx)/S.view.s, y:(p.y-S.view.ty)/S.view.s};}
 
@@ -350,11 +396,12 @@ function measureOf(a){
   return autoMeasure(a);
 }
 function autoMeasure(a){
-  if(a.type==='line'||a.type==='arrow'||a.type==='calib'){ if(a.pts.length<2)return ''; return fmtLen(dist(a.pts[0],a.pts[1])); }
+  const y=annY(a);
+  if(a.type==='line'||a.type==='arrow'||a.type==='calib'){ if(a.pts.length<2)return ''; return fmtLen(dist(a.pts[0],a.pts[1]),y); }
   if(a.type==='rect'){ if(a.pts.length<2)return ''; const w=Math.abs(a.pts[1].x-a.pts[0].x), h=Math.abs(a.pts[1].y-a.pts[0].y);
-    return fmtLen(w)+' × '+fmtLen(h)+'  ·  '+fmtArea(w*h); }
+    return fmtLen(w,y)+' × '+fmtLen(h,y)+'  ·  '+fmtArea(w*h,y); }
   if(a.type==='poly'){ if(a.pts.length<2)return ''; const per=polyLen(a.pts,a.closed);
-    return tr(a.closed?'περίμετρος':'μήκος')+' '+fmtLen(per)+(a.closed&&a.pts.length>2?'  ·  '+fmtArea(polyArea(a.pts)):''); }
+    return tr(a.closed?'περίμετρος':'μήκος')+' '+fmtLen(per,y)+(a.closed&&a.pts.length>2?'  ·  '+fmtArea(polyArea(a.pts),y):''); }
   if(a.type==='angle'){ if(a.pts.length<3)return ''; return angleOf(a.pts).toFixed(1)+'°'; }
   return '';
 }
@@ -682,7 +729,10 @@ function endPtr(e){
     const ok = d.type==='free' ? d.pts.length>2 : dist(d.pts[0],d.pts[1])>4/S.view.s;
     if(ok){
       push();
-      if(d.type==='calib'){ S.anns=S.anns.filter(a=>a.type!=='calib'); S.anns.push(d); S.sel=d.id; draw(); askCalib(d); }
+      if(d.type==='calib'){
+        if(S.anns.filter(x=>x.type==='calib').length>=MAXREF){ toast('Έχεις ήδη 3 σημεία κλίμακας — σβήσε ένα πρώτα'); draw(); }
+        else { S.anns.push(d); S.sel=d.id; draw(); askCalib(d); }
+      }
       else { S.anns.push(d); S.sel=d.id; draw(); }
       refreshOpts();
     } else draw();
@@ -803,11 +853,20 @@ function closeSheet(fromPop){
 }
 $('sheet').addEventListener('click',e=>{ if(e.target.id==='sheet'&&Date.now()-sheetAt>600)closeSheet(); });
 
-function askCalib(a){
+function askCalib(a,isEdit){
   const px=dist(a.pts[0],a.pts[1]);
+  const n=S.anns.filter(x=>x!==a&&x.type==='calib'&&x.real).length+1;
+  const cur=a.real||null;
   openSheet(`
-    <h2>Ορισμός κλίμακας</h2>
-    <p class="hint">Τράβηξες μια γραμμή πάνω σε κάτι που ξέρεις πόσο είναι (πόρτα, πλακάκι, μέτρο). Γράψε το πραγματικό μήκος και όλες οι μετρήσεις θα βγαίνουν σε πραγματικές μονάδες.</p>
+    <h2><span>Σημείο κλίμακας</span> ${n}/${MAXREF}</h2>
+    <p class="hint">Τράβηξες μια γραμμή πάνω σε κάτι που ξέρεις πόσο είναι (πόρτα, πλακάκι, μέτρο). Γράψε το πραγματικό μήκος.</p>
+    <label class="fld">Πραγματικό μήκος</label>
+    <div style="display:flex;gap:8px">
+      <input type="text" id="cVal" inputmode="decimal" placeholder="π.χ. 2,10" style="flex:2" value="${cur?esc(String(cur.v).replace('.',',')):''}">
+      <select id="cUnit" style="flex:1">${UNITS.map(u=>'<option value="'+u+'">'+uName(u)+'</option>').join('')}</select>
+    </div>
+    <p class="hint">${tr('Μήκος γραμμής')}: ${Math.round(px)} ${tr('εικονοστοιχεία')}.</p>
+    ${n<MAXREF?'<p class="hint">Μπορείς να βάλεις μέχρι 3 σημεία κλίμακας σε διαφορετικές αποστάσεις — ένα μπροστά κι ένα πιο πίσω. Τότε η εφαρμογή καταλαβαίνει το βάθος και διορθώνει μόνη της όσα είναι πιο μακριά.</p>':''}
     <div style="background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:10px 12px;margin-top:10px">
       <b style="font-size:12.5px">Προσοχή — οι μετρήσεις είναι κατά προσέγγιση</b>
       <ul class="tips" style="margin-top:6px">
@@ -828,15 +887,20 @@ function askCalib(a){
       <button id="cCancel">Άκυρο</button>
       <button class="primary" id="cOk">Εφαρμογή</button>
     </div>`);
-  const unitSel=$('cUnit'); unitSel.value=S.scale?S.scale.unit:S.unit;
-  $('cVal').focus();
-  $('cCancel').onclick=()=>{ S.anns=S.anns.filter(x=>x!==a); draw(); closeSheet(); };
+  const unitSel=$('cUnit'); unitSel.value=(cur&&cur.unit)||(S.scale?S.scale.unit:S.unit);
+  setTimeout(()=>{ try{ $('cVal').focus(); $('cVal').select(); }catch(_){} },60);
+  $('cVal').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); $('cOk').click(); } });
+  $('cCancel').onclick=()=>{ if(!isEdit){ S.anns=S.anns.filter(x=>x!==a); draw(); } closeSheet(); };
   $('cOk').onclick=()=>{
     const v=parseFloat(($('cVal').value||'').replace(',','.'));
     if(!v||v<=0){toast('Γράψε έγκυρο μήκος');return;}
-    S.scale={upp:v/px, unit:unitSel.value}; S.unit=unitSel.value;
-    a.note='κλίμακα αναφοράς';
-    closeSheet(); draw(); scaleTag(); toast('Η κλίμακα ορίστηκε');
+    const un=unitSel.value;
+    a.real={v,unit:un};
+    if(!a.note) a.note='κλίμακα αναφοράς';
+    S.scale={upp:v/px, unit:un, k:(S.scale&&S.scale.k)||1}; S.unit=un;
+    closeSheet(); draw(); scaleTag();
+    const R=scaleRefs();
+    toast(R.length>=2 ? (tr('Κλίμακα με')+' '+R.length+' '+tr('σημεία — υπολογίζεται και το βάθος')) : 'Η κλίμακα ορίστηκε');
   };
 }
 
@@ -860,6 +924,7 @@ function manNum(a){ return (a.man||'').replace(/[^0-9.,-]/g,'').trim(); }
 function quickAnn(a){
   if(!a)return;
   if(a.type==='note'||a.type==='free'){ editNote(a); return; }
+  if(a.type==='calib'){ askCalib(a,true); return; }
   const i=S.anns.indexOf(a)+1, auto=autoMeasure(a);
   openSheet(`<h2>#${i} · ${tr(TNAME[a.type]||a.type)}</h2>
     <label class="fld">Διάσταση</label>
@@ -922,8 +987,12 @@ function editAnn(a,pre){
     const fix=$('eFix')&&$('eFix').checked;
     const num=parseFloat((v.replace(',','.').match(/-?\d+(\.\d+)?/)||[''])[0]);
     if(fix&&num>0){
-      S.scale={upp:num/dist(a.pts[0],a.pts[1]), unit:un};
-      S.unit=un; a.man=''; a.manU=null; scaleTag(); toast('Η κλίμακα διορθώθηκε — μπήκαν σωστά όλες οι μετρήσεις');
+      const y=annY(a), pxl=dist(a.pts[0],a.pts[1])||1, R=scaleRefs();
+      if(R.length&&S.scale){                       // με σημεία αναφοράς: διορθώνεται όλο το μοντέλο αναλογικά
+        const want=num*UF[un]/UF[S.scale.unit], curv=pxl*uppAt(y);
+        if(curv>0) S.scale.k=(S.scale.k||1)*(want/curv);
+      } else { S.scale={upp:num/pxl, unit:un, k:1}; S.unit=un; }
+      a.man=''; a.manU=null; scaleTag(); toast('Η κλίμακα διορθώθηκε — μπήκαν σωστά όλες οι μετρήσεις');
     } else {
       a.man = v ? v : ''; a.manU = v ? un : null;
       if(v&&!S.scale)S.unit=un;
@@ -984,7 +1053,7 @@ function menuSheet(){
         <option value="en"${S.lang==='en'?' selected':''}>English</option></select></div>
     <div class="row"><div class="rowmain"><b>Μονάδα μέτρησης</b><span>σε τι θα γράφονται οι διαστάσεις</span></div>
       <select id="mUnit" style="width:auto;padding:6px 8px;font-size:12px">${UNITS.map(u=>`<option value="${u}"${u===(S.scale?S.scale.unit:S.unit)?' selected':''}>${uName(u)}</option>`).join('')}</select></div>
-    <div class="row"><div class="rowmain"><b>Νέα κλίμακα</b><span>${S.scale?(S.lang==='en'?'now: 1 px = ':'τώρα: 1 εικ. = ')+trimN(S.scale.upp)+' '+uSym(S.scale.unit):tr('δεν έχει οριστεί')}</span></div><button class="mini" id="mScale">Ορισμός</button></div>
+    <div class="row"><div class="rowmain"><b>Νέα κλίμακα</b><span>${!S.scale?tr('δεν έχει οριστεί'):(scaleRefs().length>=2?scaleRefs().length+' '+tr('σημεία — με βάθος'):(S.lang==='en'?'now: 1 px = ':'τώρα: 1 εικ. = ')+trimN(uppAt(S.imgH/2))+' '+uSym(S.scale.unit))}</span></div><button class="mini" id="mScale">Ορισμός</button></div>
     <div class="row"><div class="rowmain"><b>Καθάρισμα σημαδιών</b><span>σβήνει όλα όσα ζωγράφισες</span></div><button class="mini del" id="mClear">Καθάρισμα</button></div>
     <div class="row"><div class="rowmain"><b>Οδηγίες</b><span>πώς δουλεύει το κάθε εργαλείο</span></div><button class="mini" id="mHelp">Άνοιγμα</button></div>
     <div class="row"><div class="rowmain"><b>Εγκατάσταση στο κινητό</b><span>να μπει σαν κανονική εφαρμογή</span></div><button class="mini" id="mInst">Εγκατάσταση</button></div>
@@ -1021,6 +1090,7 @@ function helpSheet(){
   openSheet(`<h2>Οδηγίες</h2>
   <ul class="tips">
     <li><b>Κλίμακα</b>: τράβα μια γραμμή πάνω σε κάτι που ξέρεις (πόρτα 2,10 μ, πλακάκι 60 εκ) και δώσε το μήκος. Από κει και πέρα κάθε μέτρηση βγαίνει σε πραγματικά μέτρα — κατά προσέγγιση πάντα, γιατί η φωτογραφία είναι επίπεδη εικόνα χώρου με βάθος. Η κλίμακα ισχύει στο επίπεδο της γραμμής αναφοράς, γι' αυτό συμφέρει να παίρνεις χωριστά πλάτος και βάθος (και ύψος όπου χρειάζεται).</li>
+    <li><b>Βάθος</b>: βάλε μέχρι 3 σημεία κλίμακας σε διαφορετικές αποστάσεις — π.χ. το πόδι ενός τραπεζιού μπροστά και ένα ίδιο πόδι πιο πίσω, που στη φωτογραφία φαίνεται μικρότερο. Με δύο ή τρία σημεία η εφαρμογή καταλαβαίνει πόσο «μικραίνει» ο χώρος όσο πάει πίσω και δίνει σε κάθε μέτρηση τη δική της κλίμακα.</li>
     <li><b>Μέτρηση</b>: σύρε για ίσια γραμμή με τη διάσταση πάνω της.</li>
     <li><b>Κλείδωμα γωνίας</b>: κουμπώνει τις γραμμές στις 0°, 45°, 90° για τελείως ίσια σημάδια.</li>
     <li><b>Ορθογώνιο</b>: δίνει πλάτος × ύψος και εμβαδόν.</li>
@@ -1101,7 +1171,9 @@ function scaleTag(){
   const t=$('scaleTag');
   if(!S.img){t.style.display='none';return;}
   t.style.display='flex';
-  if(S.scale){ t.className=''; t.innerHTML='📐 '+tr('Κλίμακα')+': 1 px = '+trimN(S.scale.upp)+' '+uSym(S.scale.unit); }
+  const R=S.scale?scaleRefs():[];
+  if(S.scale&&R.length>=2){ t.className=''; t.innerHTML='📐 '+tr('Κλίμακα')+': '+R.length+' '+tr('σημεία — με βάθος'); }
+  else if(S.scale){ t.className=''; t.innerHTML='📐 '+tr('Κλίμακα')+': 1 px = '+trimN(uppAt(S.imgH/2))+' '+uSym(S.scale.unit); }
   else { t.className='warn'; t.innerHTML=(S.lang==='en'?'No scale — measurements come out 0 ':'Χωρίς κλίμακα — οι μετρήσεις βγαίνουν 0 ')+uSym(S.unit); }
   t.onclick=()=>{ setTool('calib'); toast('Τράβα γραμμή σε κάτι με γνωστό μήκος'); };
 }
@@ -1411,7 +1483,8 @@ function exportCsv(){
   if(!S.anns.length){toast('Δεν υπάρχουν μετρήσεις');return;}
   const lines=[[tr('Αρ.'),tr('Τύπος'),tr('Μέτρηση'),tr('Σχόλιο')].join(';')];
   S.anns.forEach((a,i)=>lines.push([i+1,tr(TNAME[a.type]||a.type),(measureOf(a)||'').replace(/;/g,','),(a.note||'').replace(/;/g,',').replace(/\n/g,' ')].join(';')));
-  if(S.scale)lines.push(['',tr('Κλίμακα'),'1 px = '+trimN(S.scale.upp)+' '+uSym(S.scale.unit),''].join(';'));
+  if(S.scale){ const R=scaleRefs();
+    lines.push(['',tr('Κλίμακα'), R.length>=2 ? (R.length+' '+tr('σημεία — με βάθος')) : ('1 px = '+trimN(uppAt(S.imgH/2))+' '+uSym(S.scale.unit)), ''].join(';')); }
   const name='metriseis-'+photoName('.csv');
   const blob=new Blob(['\ufeff'+lines.join('\n')],{type:'text/csv'});
   bkAppDir(true).then(async dir=>{ if(!(await bkWrite(dir,name,blob))) saveFile(name,blob); });
@@ -1805,6 +1878,15 @@ window.addEventListener('keydown',e=>{
   if(e.key==='Enter')finishPoly();
 });
 
+/* όταν ανοίγει το πληκτρολόγιο του κινητού, το παράθυρο ανεβαίνει από πάνω του */
+if(window.visualViewport){
+  const vv=window.visualViewport;
+  const kbFit=()=>{
+    const kb=Math.round(window.innerHeight - vv.height - vv.offsetTop);
+    document.documentElement.style.setProperty('--kb',(kb>80?kb:0)+'px');
+  };
+  vv.addEventListener('resize',kbFit); vv.addEventListener('scroll',kbFit); kbFit();
+}
 new ResizeObserver(fitCanvas).observe($('stage'));
 try{ if(navigator.storage&&navigator.storage.persist)navigator.storage.persist(); }catch(_){}
 try{ const l=localStorage.getItem('fotometra-lang'); if(l==='el'||l==='en')S.lang=l; }catch(_){}
@@ -1860,7 +1942,7 @@ if(QP.get('flat')==='1'){
 })();
 
 /* ---------- εγκατάσταση ως εφαρμογή ---------- */
-const APPV='2.6.0';
+const APPV='2.7.0';
 let deferredPrompt=null;
 let instDismissed=false; try{ instDismissed=!!localStorage.getItem('fotometra-noinst'); }catch(_){}
 function showInstBar(v){ const b=document.getElementById('instBar'); if(b)b.style.display=v?'flex':'none'; }
