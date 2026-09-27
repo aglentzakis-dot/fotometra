@@ -1,5 +1,5 @@
 /* ΦωτοΜέτρα — service worker */
-const V = 'fotometra-v32';
+const V = 'fotometra-v33';
 const FILES = [
   './', './index.html', './manifest.json',
   './embed.js', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'
@@ -15,6 +15,8 @@ self.addEventListener('activate', e => {
       .then(() => self.clients.claim())
   );
 });
+
+self.addEventListener('message', e => { if (e.data === 'skipWaiting') self.skipWaiting(); });
 
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;

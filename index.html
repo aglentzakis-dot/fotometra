@@ -50,9 +50,11 @@ body.home-open #top{ position:relative; z-index:41 }
 }
 .tbtn:active{transform:scale(.96)}
 .tbtn.primary{background:var(--accent);color:var(--accent-txt);border-color:transparent}
-#instBar{display:none; align-items:center; gap:8px; padding:7px 10px; background:var(--panel2);
+#instBar,#updBar{display:none; align-items:center; gap:8px; padding:7px 10px; background:var(--panel2);
   border-bottom:1px solid var(--line); flex:0 0 auto; font-size:12px; font-weight:600}
-#instBar span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#instBar span,#updBar span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#updBar{background:#e8f0ff}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) #updBar{background:#1b2740} }
 #stage{flex:1 1 auto; position:relative; background:var(--canvasbg); overflow:hidden; min-height:0}
 #cv{position:absolute;inset:0;width:100%;height:100%;touch-action:none;display:block}
 #empty{
@@ -173,6 +175,12 @@ ul.tips{margin:8px 0 0 16px;padding:0;font-size:12.5px;line-height:1.6;color:var
   <span>Βάλ' την σαν κανονική εφαρμογή στο κινητό</span>
   <button class="tbtn primary" id="instGo">⤓ Εγκατάσταση</button>
   <button class="tbtn" id="instNo" title="Όχι τώρα">✕</button>
+</div>
+
+<div id="updBar">
+  <span>Υπάρχει νεότερη έκδοση</span>
+  <button class="tbtn primary" id="updGo">⟳ Ενημέρωση</button>
+  <button class="tbtn" id="updNo" title="Όχι τώρα">✕</button>
 </div>
 
 <div id="stage">
@@ -303,6 +311,7 @@ Object.assign(EN,{"Άδειος φάκελος.": "Empty folder.", "📁 Νέο�
 Object.assign(EN,{"Λίστα μετρήσεων": "Measurement list", "όλα τα σημάδια της τρέχουσας φωτογραφίας": "every mark on the current photo"});
 Object.assign(EN,{"Διορθώθηκε η θέση παλιών μετρήσεων": "Old measurements' position was corrected"});
 Object.assign(EN,{"πάτα τις 4 γωνίες μιας επίπεδης επιφάνειας (τοίχος, δάπεδο, πόρτα) και δώσε πλάτος και ύψος. Όποια μέτρηση πέφτει μέσα της βγαίνει σωστή ακόμη κι αν η φωτογραφία είναι τραβηγμένη λοξά — είναι ο πιο ακριβής τρόπος.": "tap the 4 corners of a flat surface (wall, floor, door) and give its width and height. Any measurement inside it comes out right even if the photo was taken at an angle — it is the most accurate way.", "Πολλές φωτογραφίες": "Several photos", "με το ＋ κάτω από την εικόνα βάζεις κι άλλη φωτογραφία στην ίδια εργασία, π.χ. τους τέσσερις τοίχους ενός δωματίου. Με τα βελάκια αλλάζεις φωτογραφία· η καθεμία έχει τις δικές της μετρήσεις.": "the ＋ under the image adds another photo to the same project, e.g. the four walls of a room. The arrows switch photos; each one has its own measurements.", "🎤 Φωνή": "🎤 Voice", "στο παράθυρο της διάστασης λες «ένα και ογδόντα τέσσερα» και γράφεται μόνο του. Το δεύτερο μέρος μετά το «και» μπαίνει σαν εκατοστά.": "in the dimension window say the number out loud and it is typed in for you. What comes after «and» is taken as centimetres.", "από το μενού, βγάζει σε ένα αρχείο τις φωτογραφίες με τα σημάδια, τον πίνακα των μετρήσεων και τα σύνολα.": "from the menu, it puts the marked photos, the measurement table and the totals into one file."});
+Object.assign(EN,{"Έκδοση και ενημέρωση": "Version and update", "Έλεγχος": "Check", "τώρα": "now", "πάτα για έλεγχο νέας έκδοσης": "tap to check for a new version", "προεπισκόπηση — δεν χρειάζεται ενημέρωση": "preview — no update needed", "Υπάρχει νεότερη έκδοση": "A newer version is available", "⟳ Ενημέρωση": "⟳ Update", "Νεότερη έκδοση": "Newer version", "Τώρα έχεις": "You have", "Διαθέσιμη": "Available", "Οι εργασίες, οι φωτογραφίες και οι ρυθμίσεις σου μένουν όπως είναι.": "Your projects, photos and settings stay as they are.", "⟳ Ενημέρωση τώρα": "⟳ Update now", "Έλεγχος για νεότερη έκδοση…": "Checking for a newer version…", "Έχεις την τελευταία έκδοση": "You have the latest version", "Δεν έγινε ο έλεγχος — δες τη σύνδεση": "Check failed — look at your connection", "Γίνεται ενημέρωση…": "Updating…", "Ανανέωση…": "Refreshing…"});
 Object.assign(EN,{"Επίπεδο": "Plane", "Επίπεδη επιφάνεια": "Flat surface", "Πάτα τις 4 γωνίες μιας επίπεδης επιφάνειας, με τη σειρά": "Tap the 4 corners of a flat surface, in order", "Μάρκαρες τις 4 γωνίες μιας επίπεδης επιφάνειας (τοίχος, δάπεδο, πόρτα, πλακάκι). Γράψε τις πραγματικές της διαστάσεις και όποια μέτρηση πέσει μέσα της θα βγαίνει σωστή, ακόμη κι αν η φωτογραφία είναι τραβηγμένη λοξά.": "You marked the 4 corners of a flat surface (wall, floor, door, tile). Enter its real dimensions and any measurement inside it will come out right, even if the photo was taken at an angle.", "Πλάτος × Ύψος": "Width × Height", "πλάτος": "width", "ύψος": "height", "Γράψε έγκυρες διαστάσεις": "Enter valid dimensions", "Το επίπεδο ορίστηκε — οι μετρήσεις μέσα του διορθώνονται": "Plane set — measurements inside it are corrected", "Αναφορά για πελάτη": "Report for the client", "φωτογραφίες, μετρήσεις και σύνολα σε ένα αρχείο": "photos, measurements and totals in one file", "Αναφορά": "Report", "Ετοιμάζεται η αναφορά…": "Preparing the report…", "Δεν έγινε η αναφορά": "Report failed", "οι μετρήσεις είναι κατά προσέγγιση": "measurements are approximate", "Πες τη διάσταση": "Say the dimension", "Πες τη διάσταση…": "Say the dimension…", "Δεν κατάλαβα — γράψ' το με το χέρι": "I did not catch that — type it instead"});
 Object.assign(EN,{"Φωτογραφία": "Photo", "Φωτογραφία στην ίδια εργασία": "Photo in the same project", "Μπαίνει σαν δεύτερη σελίδα στην ίδια εργασία — π.χ. οι τέσσερις τοίχοι ενός δωματίου. Κάθε φωτογραφία έχει τις δικές της μετρήσεις και τη δική της κλίμακα.": "It goes in as another page of the same project — e.g. the four walls of a room. Every photo has its own measurements and its own scale.", "➕ Φωτογραφία στην ίδια εργασία": "➕ Photo in the same project", "🗑️ Διαγραφή αυτής της φωτογραφίας": "🗑️ Delete this photo", "Διαγραφή φωτογραφίας": "Delete photo", "Είναι η μόνη φωτογραφία — σβήσε όλη την εργασία": "It is the only photo — delete the whole project", "Προηγούμενη φωτογραφία": "Previous photo", "Επόμενη φωτογραφία": "Next photo"});
 Object.assign(EN,{"πάχος γραμμής": "line thickness", "Αρίθμηση": "Numbering", "Σύνολα": "Totals", "μήκη": "lengths", "εμβαδά": "areas"});
@@ -975,7 +984,14 @@ function dropUrls(){ sheetUrls.forEach(u=>{ try{URL.revokeObjectURL(u);}catch(_)
 /* ---------- κουμπί «πίσω» της συσκευής: κλείνει παράθυρα/φωτογραφία αντί να βγαίνει από την εφαρμογή ---------- */
 const NAV_ON = !EMBED && QP.get('flat')!=='1';
 let navLevel=0, suppressPop=false, sheetLevel=false;
-if(NAV_ON){ try{ history.replaceState({fm:'base'},''); }catch(e){} }
+if(NAV_ON){ try{ if(QP.get('u')) history.replaceState({},'',location.pathname); }catch(e){}
+  try{ history.replaceState({fm:'base'},''); }catch(e){} }
+if(!EMBED && QP.get('flat')!=='1'){
+  setTimeout(()=>checkUpdate(false),2500);
+  document.addEventListener('visibilitychange',()=>{
+    if(!document.hidden && Date.now()-updLast>10*60*1000) checkUpdate(false);
+  });
+}
 function navEnter(){
   if(!NAV_ON) return;
   navLevel++;
@@ -1322,6 +1338,7 @@ function menuSheet(){
       <select id="mUnit" style="width:auto;padding:6px 8px;font-size:12px">${UNITS.map(u=>`<option value="${u}"${u===(S.scale?S.scale.unit:S.unit)?' selected':''}>${uName(u)}</option>`).join('')}</select></div>
     <div class="row"><div class="rowmain"><b>Νέα κλίμακα</b><span>${!S.scale?tr('δεν έχει οριστεί'):(scaleRefs().length>=2?scaleRefs().length+' '+tr('σημεία — με βάθος'):(S.lang==='en'?'now: 1 px = ':'τώρα: 1 εικ. = ')+trimN(uppAt(S.imgH/2))+' '+uSym(S.scale.unit))}</span></div><button class="mini" id="mScale">Ορισμός</button></div>
     <div class="row"><div class="rowmain"><b>Καθάρισμα σημαδιών</b><span>σβήνει όλα όσα ζωγράφισες</span></div><button class="mini del" id="mClear">Καθάρισμα</button></div>
+    <div class="row"><div class="rowmain"><b>Έκδοση και ενημέρωση</b><span id="mVer">…</span></div><button class="mini" id="mUpd">Έλεγχος</button></div>
     <div class="row"><div class="rowmain"><b>Οδηγίες</b><span>πώς δουλεύει το κάθε εργαλείο</span></div><button class="mini" id="mHelp">Άνοιγμα</button></div>
     <div class="row"><div class="rowmain"><b>Εγκατάσταση στο κινητό</b><span>να μπει σαν κανονική εφαρμογή</span></div><button class="mini" id="mInst">Εγκατάσταση</button></div>
     <p class="hint">${tr("Έκδοση")} ${APPV}</p>
@@ -1353,6 +1370,9 @@ function menuSheet(){
   $('mScale').onclick=()=>{ closeSheet(); setTool('calib'); toast('Τράβα γραμμή πάνω σε κάτι με γνωστό μήκος'); };
   $('mClear').onclick=()=>{ push(); S.anns=[]; S.sel=null; draw(); closeSheet(); };
   $('mHelp').onclick=helpSheet;
+  $('mUpd').onclick=()=>checkUpdate(true);
+  const mv=$('mVer');
+  if(mv) mv.textContent = appVer() ? (tr('τώρα')+' '+appVer()+' · '+tr('πάτα για έλεγχο νέας έκδοσης')) : tr('προεπισκόπηση — δεν χρειάζεται ενημέρωση');
 }
 function helpSheet(){
   openSheet(`<h2>Οδηγίες</h2>
@@ -1531,6 +1551,8 @@ $('fFile').onchange=e=>{ const a=pendingAdd; pendingAdd=false; if(e.target.files
 $('pgPrev').onclick=()=>gotoPage(S.pi-1);
 $('pgNext').onclick=()=>gotoPage(S.pi+1);
 $('pgAdd').onclick=addPhotoSheet;
+$('updGo').onclick=doUpdate;
+$('updNo').onclick=()=>showUpd(false);
 $('fBack').onchange=e=>{ if(e.target.files[0])restoreAll(e.target.files[0]); e.target.value=''; };
 $('bCam').onclick=()=>$('fCam').click();
 $('bFile').onclick=()=>$('fFile').click();
@@ -1676,6 +1698,56 @@ async function backupAll(){
     }
     await bkDownload(name,blob);
   }catch(e){ toast('Δεν έγινε το αντίγραφο'); }
+}
+
+/* ---------- έλεγχος και εγκατάσταση νεότερης έκδοσης ----------
+   Η εγκατεστημένη εφαρμογή κρατάει τα αρχεία της τοπικά για να δουλεύει χωρίς
+   σύνδεση. Εδώ ρωτάμε τον διακομιστή ποια έκδοση υπάρχει και, αν είναι νεότερη,
+   σβήνουμε την τοπική μνήμη και ξαναφορτώνουμε. Οι εργασίες δεν πειράζονται. */
+function appVer(){ try{ return (typeof APPV!=='undefined'&&APPV)?String(APPV):''; }catch(_){ return ''; } }
+function showUpd(v){ const b=$('updBar'); if(b)b.style.display=v?'flex':'none'; }
+async function remoteVer(){
+  const r=await fetch('index.html?v='+Date.now(),{cache:'no-store'});
+  if(!r.ok) throw new Error('http');
+  const t=await r.text();
+  const m=t.match(/APPV\s*=\s*['"]([^'"]+)['"]/);
+  return m?m[1]:null;
+}
+let updBusy=false, updLast=0;
+async function checkUpdate(manual){
+  const cur=appVer();
+  if(!cur){ if(manual){ toast('Ανανέωση…'); setTimeout(()=>location.reload(),300); } return; }
+  if(updBusy) return;
+  updBusy=true; updLast=Date.now();
+  if(manual) toast('Έλεγχος για νεότερη έκδοση…');
+  try{
+    if('serviceWorker' in navigator){
+      try{ const rs=await navigator.serviceWorker.getRegistrations(); rs.forEach(r=>{ try{ r.update(); }catch(_){} }); }catch(_){}
+    }
+    const v=await remoteVer();
+    if(v&&v!==cur){ showUpd(true); if(manual) updateSheet(v); }
+    else if(manual) toast(tr('Έχεις την τελευταία έκδοση')+' ('+cur+')');
+  }catch(e){ if(manual) toast('Δεν έγινε ο έλεγχος — δες τη σύνδεση'); }
+  updBusy=false;
+}
+function updateSheet(v){
+  openSheet(`<h2>Νεότερη έκδοση</h2>
+    <p class="hint">${tr('Τώρα έχεις')} <b>${esc(appVer())}</b>. ${tr('Διαθέσιμη')}: <b>${esc(v)}</b>.</p>
+    <p class="hint">Οι εργασίες, οι φωτογραφίες και οι ρυθμίσεις σου μένουν όπως είναι.</p>
+    <div class="acts"><button id="upC">Όχι τώρα</button><button class="primary" id="upOk">⟳ Ενημέρωση τώρα</button></div>`);
+  $('upC').onclick=closeSheet;
+  $('upOk').onclick=doUpdate;
+}
+async function doUpdate(){
+  toast('Γίνεται ενημέρωση…');
+  try{ const ks=await caches.keys(); await Promise.all(ks.map(k=>caches.delete(k))); }catch(_){}
+  try{
+    if('serviceWorker' in navigator){
+      const rs=await navigator.serviceWorker.getRegistrations();
+      await Promise.all(rs.map(r=>r.unregister().catch(()=>{})));
+    }
+  }catch(_){}
+  setTimeout(()=>{ try{ location.replace(location.pathname+'?u='+Date.now()); }catch(_){ location.reload(); } },400);
 }
 
 /* ---------- κοινός φάκελος αντιγράφων ----------
@@ -2431,7 +2503,7 @@ if(QP.get('flat')==='1'){
 })();
 
 /* ---------- εγκατάσταση ως εφαρμογή ---------- */
-const APPV='2.8.0';
+const APPV='2.8.1';
 let deferredPrompt=null;
 let instDismissed=false; try{ instDismissed=!!localStorage.getItem('fotometra-noinst'); }catch(_){}
 function showInstBar(v){ const b=document.getElementById('instBar'); if(b)b.style.display=v?'flex':'none'; }
