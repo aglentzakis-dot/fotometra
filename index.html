@@ -76,6 +76,12 @@ body.home-open #top{ position:relative; z-index:41 }
   border-radius:9px; padding:4px 8px; font-size:10.5px; font-weight:600; opacity:0; transition:opacity .4s;
   pointer-events:none; box-shadow:var(--shadow)}
 #zoomBox{position:absolute; right:8px; bottom:8px; display:flex; flex-direction:column; gap:6px}
+#pageBox{position:absolute; left:50%; transform:translateX(-50%); bottom:8px; z-index:3;
+  display:flex; align-items:center; gap:2px; background:var(--panel); border:1px solid var(--line);
+  border-radius:14px; padding:3px 5px; box-shadow:var(--shadow)}
+#pageBox .zb{width:32px;height:32px;font-size:18px;box-shadow:none;border:0;background:transparent}
+#pageBox .zb.off{opacity:.25}
+#pgTxt{font-size:12px;font-weight:700;min-width:32px;text-align:center}
 #histBox{position:absolute; left:8px; bottom:8px; display:flex; gap:6px}
 #histBox .zb{font-size:19px}
 .zb.off{opacity:.35}
@@ -187,6 +193,13 @@ ul.tips{margin:8px 0 0 16px;padding:0;font-size:12.5px;line-height:1.6;color:var
     <button class="zb" id="selDel" title="Διαγραφή">🗑️</button>
   </div>
   <div id="autoTag">💾 αποθηκεύτηκε</div>
+  <div id="pageBox" style="display:none">
+    <button class="zb" id="pgPrev" title="Προηγούμενη φωτογραφία">‹</button>
+    <span id="pgTxt">1/1</span>
+    <button class="zb" id="pgNext" title="Επόμενη φωτογραφία">›</button>
+    <span class="sep" style="height:18px"></span>
+    <button class="zb" id="pgAdd" title="Φωτογραφία στην ίδια εργασία">＋</button>
+  </div>
   <div id="histBox" style="display:none">
     <button class="zb" id="hUndo" title="Αναίρεση">↶</button>
     <button class="zb" id="hRedo" title="Επανάληψη">↷</button>
@@ -208,6 +221,7 @@ ul.tips{margin:8px 0 0 16px;padding:0;font-size:12.5px;line-height:1.6;color:var
     <span class="sep"></span>
     <button class="chip" id="cSnap">📐 Κλείδωμα γωνίας</button>
     <button class="chip" id="cShow">👁️ Σημάδια</button>
+    <button class="chip" id="cNum">🔢 Αρίθμηση</button>
     <button class="chip" id="cTxt">📝 Κείμενο: κρυφό</button>
     <span class="sep"></span>
     <button class="chip" id="cEdit">✏️ Διάσταση / σχόλιο</button>
@@ -240,9 +254,11 @@ const S = {
   autoDev:false,            // αυτόματο γράψιμο αρχείου στο κινητό (μόνο με εφαρμογή Android)
   lang:'el',
   mainTools:['select','note','line','calib'],
-  toolOrder:['select','note','line','calib','rect','poly','angle','arrow','free'],
+  toolOrder:['select','note','line','calib','plane','rect','poly','angle','arrow','free'],
   noteText:'hide',            // hide | short | full — πόσο κείμενο φαίνεται πάνω στην εικόνα
+  nums:true,                  // αριθμοί πάνω στις μετρήσεις, ίδιοι με του πίνακα
   view:{s:1,tx:0,ty:0},
+  pages:[], pi:0,             // πολλές φωτογραφίες στην ίδια εργασία
   draft:null, undoS:[], redoS:[],
   projId:null, projName:'Χωρίς όνομα'
 };
@@ -267,9 +283,10 @@ const TOOLS=[
  {k:'poly',   n:'Πολύγωνο', i:'<path d="M4 17l4-9 6 4 6-7"/><circle cx="4" cy="17" r="1.6"/><circle cx="20" cy="5" r="1.6"/>'},
  {k:'angle',  n:'Γωνία', i:'<path d="M4 20h16M4 20L15 5"/><path d="M12 20a8 8 0 0 0-1.6-4.7"/>'},
  {k:'arrow',  n:'Βέλος', i:'<path d="M4 20L20 4M20 4h-7M20 4v7"/>'},
- {k:'free',   n:'Σχέδιο', i:'<path d="M3 16c3-8 6 5 9-2s4 3 9-3"/>'}
+ {k:'free',   n:'Σχέδιο', i:'<path d="M3 16c3-8 6 5 9-2s4 3 9-3"/>'},
+ {k:'plane',  n:'Επίπεδο', i:'<path d="M3 17l6-11 12 4-6 10z"/><circle cx="3" cy="17" r="1.4"/><circle cx="21" cy="10" r="1.4"/>'}
 ];
-const TNAME={calib:'Κλίμακα',line:'Μήκος',rect:'Ορθογώνιο',poly:'Πολύγωνο',angle:'Γωνία',arrow:'Βέλος',note:'Σημείωση',free:'Σχέδιο'};
+const TNAME={calib:'Κλίμακα',line:'Μήκος',rect:'Ορθογώνιο',poly:'Πολύγωνο',angle:'Γωνία',arrow:'Βέλος',note:'Σημείωση',free:'Σχέδιο',plane:'Επίπεδο'};
 
 const LR=new Map();   // πλαίσια ετικετών (για πιάσιμο με το δάχτυλο)
 
@@ -285,7 +302,10 @@ Object.assign(EN,{"Οι εργασίες μου": "My projects", "➕ Νέα ε�
 Object.assign(EN,{"Άδειος φάκελος.": "Empty folder.", "📁 Νέος φάκελος": "📁 New folder", "Νέος φάκελος": "New folder", "π.χ. Πολυκατοικία Αθηνάς": "e.g. Athinas building", "Γράψε όνομα": "Enter a name", "Μετονομασία": "Rename", "Μετακίνηση σε φάκελο": "Move to folder", "Μετακίνηση": "Move", "Εδώ": "Here", "🏠 Αρχική": "🏠 Home", "Δεν υπάρχουν φάκελοι ακόμη.": "No folders yet.", "Μετακινήθηκε": "Moved", "Αντίγραφο": "Duplicate", "αντίγραφο": "copy", "Πίσω": "Back", "Αποστολή": "Send", "σβήνει και ό,τι έχει μέσα": "deletes everything inside it too"});
 Object.assign(EN,{"Λίστα μετρήσεων": "Measurement list", "όλα τα σημάδια της τρέχουσας φωτογραφίας": "every mark on the current photo"});
 Object.assign(EN,{"Διορθώθηκε η θέση παλιών μετρήσεων": "Old measurements' position was corrected"});
-Object.assign(EN,{"πάχος γραμμής": "line thickness"});
+Object.assign(EN,{"πάτα τις 4 γωνίες μιας επίπεδης επιφάνειας (τοίχος, δάπεδο, πόρτα) και δώσε πλάτος και ύψος. Όποια μέτρηση πέφτει μέσα της βγαίνει σωστή ακόμη κι αν η φωτογραφία είναι τραβηγμένη λοξά — είναι ο πιο ακριβής τρόπος.": "tap the 4 corners of a flat surface (wall, floor, door) and give its width and height. Any measurement inside it comes out right even if the photo was taken at an angle — it is the most accurate way.", "Πολλές φωτογραφίες": "Several photos", "με το ＋ κάτω από την εικόνα βάζεις κι άλλη φωτογραφία στην ίδια εργασία, π.χ. τους τέσσερις τοίχους ενός δωματίου. Με τα βελάκια αλλάζεις φωτογραφία· η καθεμία έχει τις δικές της μετρήσεις.": "the ＋ under the image adds another photo to the same project, e.g. the four walls of a room. The arrows switch photos; each one has its own measurements.", "🎤 Φωνή": "🎤 Voice", "στο παράθυρο της διάστασης λες «ένα και ογδόντα τέσσερα» και γράφεται μόνο του. Το δεύτερο μέρος μετά το «και» μπαίνει σαν εκατοστά.": "in the dimension window say the number out loud and it is typed in for you. What comes after «and» is taken as centimetres.", "από το μενού, βγάζει σε ένα αρχείο τις φωτογραφίες με τα σημάδια, τον πίνακα των μετρήσεων και τα σύνολα.": "from the menu, it puts the marked photos, the measurement table and the totals into one file."});
+Object.assign(EN,{"Επίπεδο": "Plane", "Επίπεδη επιφάνεια": "Flat surface", "Πάτα τις 4 γωνίες μιας επίπεδης επιφάνειας, με τη σειρά": "Tap the 4 corners of a flat surface, in order", "Μάρκαρες τις 4 γωνίες μιας επίπεδης επιφάνειας (τοίχος, δάπεδο, πόρτα, πλακάκι). Γράψε τις πραγματικές της διαστάσεις και όποια μέτρηση πέσει μέσα της θα βγαίνει σωστή, ακόμη κι αν η φωτογραφία είναι τραβηγμένη λοξά.": "You marked the 4 corners of a flat surface (wall, floor, door, tile). Enter its real dimensions and any measurement inside it will come out right, even if the photo was taken at an angle.", "Πλάτος × Ύψος": "Width × Height", "πλάτος": "width", "ύψος": "height", "Γράψε έγκυρες διαστάσεις": "Enter valid dimensions", "Το επίπεδο ορίστηκε — οι μετρήσεις μέσα του διορθώνονται": "Plane set — measurements inside it are corrected", "Αναφορά για πελάτη": "Report for the client", "φωτογραφίες, μετρήσεις και σύνολα σε ένα αρχείο": "photos, measurements and totals in one file", "Αναφορά": "Report", "Ετοιμάζεται η αναφορά…": "Preparing the report…", "Δεν έγινε η αναφορά": "Report failed", "οι μετρήσεις είναι κατά προσέγγιση": "measurements are approximate", "Πες τη διάσταση": "Say the dimension", "Πες τη διάσταση…": "Say the dimension…", "Δεν κατάλαβα — γράψ' το με το χέρι": "I did not catch that — type it instead"});
+Object.assign(EN,{"Φωτογραφία": "Photo", "Φωτογραφία στην ίδια εργασία": "Photo in the same project", "Μπαίνει σαν δεύτερη σελίδα στην ίδια εργασία — π.χ. οι τέσσερις τοίχοι ενός δωματίου. Κάθε φωτογραφία έχει τις δικές της μετρήσεις και τη δική της κλίμακα.": "It goes in as another page of the same project — e.g. the four walls of a room. Every photo has its own measurements and its own scale.", "➕ Φωτογραφία στην ίδια εργασία": "➕ Photo in the same project", "🗑️ Διαγραφή αυτής της φωτογραφίας": "🗑️ Delete this photo", "Διαγραφή φωτογραφίας": "Delete photo", "Είναι η μόνη φωτογραφία — σβήσε όλη την εργασία": "It is the only photo — delete the whole project", "Προηγούμενη φωτογραφία": "Previous photo", "Επόμενη φωτογραφία": "Next photo"});
+Object.assign(EN,{"πάχος γραμμής": "line thickness", "Αρίθμηση": "Numbering", "Σύνολα": "Totals", "μήκη": "lengths", "εμβαδά": "areas"});
 Object.assign(EN,{"Σημείο κλίμακας": "Scale point", "Τράβηξες μια γραμμή πάνω σε κάτι που ξέρεις πόσο είναι (πόρτα, πλακάκι, μέτρο). Γράψε το πραγματικό μήκος.": "You drew a line over something whose size you know (a door, a tile, a tape measure). Enter its real length.", "Μπορείς να βάλεις μέχρι 3 σημεία κλίμακας σε διαφορετικές αποστάσεις — ένα μπροστά κι ένα πιο πίσω. Τότε η εφαρμογή καταλαβαίνει το βάθος και διορθώνει μόνη της όσα είναι πιο μακριά.": "You can set up to 3 scale points at different distances — one near and one further back. The app then understands depth and corrects what is further away on its own.", "Έχεις ήδη 3 σημεία κλίμακας — σβήσε ένα πρώτα": "You already have 3 scale points — delete one first", "Κλίμακα με": "Scale with", "σημεία — υπολογίζεται και το βάθος": "points — depth is taken into account", "σημεία — με βάθος": "points — with depth", "Βάθος": "Depth", "βάλε μέχρι 3 σημεία κλίμακας σε διαφορετικές αποστάσεις — π.χ. το πόδι ενός τραπεζιού μπροστά και ένα ίδιο πόδι πιο πίσω, που στη φωτογραφία φαίνεται μικρότερο. Με δύο ή τρία σημεία η εφαρμογή καταλαβαίνει πόσο «μικραίνει» ο χώρος όσο πάει πίσω και δίνει σε κάθε μέτρηση τη δική της κλίμακα.": "set up to 3 scale points at different distances — e.g. a table leg at the front and an identical leg further back, which looks smaller in the photo. With two or three points the app works out how much the space shrinks with distance and gives every measurement its own scale."});
 Object.assign(EN,{"Διάσταση": "Dimension", "Περισσότερα…": "More…", "Γράψε τη διάσταση και πάτα Αποθήκευση": "Type the dimension and tap Save", "Διαγραφή εργασίας": "Delete project", "Θα σβηστεί η φωτογραφία μαζί με όλες τις μετρήσεις και τις σημειώσεις της. Δεν αναιρείται.": "The photo will be deleted along with all its measurements and notes. This cannot be undone.", "Η εργασία διαγράφηκε": "Project deleted"});
 Object.assign(EN,{"Φάκελος αντιγράφων": "Backup folder", "Επιλογή φακέλου": "Choose folder", "Αλλαγή φακέλου": "Change folder", "Επαναφορά από τον φάκελο": "Restore from the folder", "τα 10 νεότερα αντίγραφα — επαναφορά με ένα πάτημα": "the 10 newest backups — restore with one tap", "Επαναφορά από αρχείο": "Restore from file", "νεότερο": "newest", "Δεν υπάρχουν αντίγραφα στον φάκελο ακόμη.": "No backups in the folder yet.", "Αποθηκεύτηκε στον φάκελο": "Saved to the folder", "αποθηκεύεται στον φάκελο": "saved to the folder", "δεν έχει οριστεί — διάλεξε π.χ. Λήψεις/Backup": "not set — choose e.g. Downloads/Backup", "δεν υποστηρίζεται εδώ — τα αντίγραφα κατεβαίνουν ως αρχείο": "not supported here — backups download as a file", "Να σταματήσει η χρήση του φακέλου;": "Stop using the folder?", "Να σταματήσει η χρήση του φακέλου": "Stop using the folder", "Τα αρχεία που υπάρχουν ήδη στον φάκελο δεν σβήνονται.": "Files already in the folder are not deleted.", "Προσοχή: ο φάκελος είναι κοινός για όλες τις εφαρμογές σου, οπότε θα σταματήσει να χρησιμοποιείται και από αυτές, μέχρι να τον ξαναδιαλέξεις.": "Careful: the folder is shared by all your apps, so they will stop using it too until you choose it again.", "Αφαίρεση": "Remove", "Ο φάκελος αφαιρέθηκε": "Folder removed", "Δεν δόθηκε πρόσβαση στον φάκελο": "Folder access was not granted", "Δεν ορίστηκε φάκελος": "No folder was set", "Ορίστηκε ο φάκελος": "Folder set"});
@@ -373,6 +393,98 @@ function uppAt(y){              // μονάδες ανά εικονοστοιχ�
   let best=R[0]; R.forEach(r=>{ if(Math.abs(r.y-y)<Math.abs(best.y-y)) best=r; });
   return best.upp*k;            // αν το μοντέλο δεν βγάζει νόημα, το πλησιέστερο σημείο
 }
+/* ---------- επίπεδο με 4 γωνίες: ξεστραβώνει την προοπτική ----------
+   Ξέροντας τις 4 γωνίες μιας επίπεδης επιφάνειας και τις πραγματικές της
+   διαστάσεις, βγαίνει ο μετασχηματισμός εικόνα → επιφάνεια. Κάθε μέτρηση
+   που πέφτει μέσα σε αυτήν υπολογίζεται πάνω στην ίσια όψη, οπότε βγαίνει
+   σωστή ακόμη κι αν η φωτογραφία είναι τραβηγμένη λοξά. */
+function solve8(M,b){                       // απαλοιφή Gauss με οδήγηση
+  const n=8;
+  for(let i=0;i<n;i++){
+    let p=i; for(let r=i+1;r<n;r++) if(Math.abs(M[r][i])>Math.abs(M[p][i])) p=r;
+    if(Math.abs(M[p][i])<1e-12) return null;
+    [M[i],M[p]]=[M[p],M[i]]; [b[i],b[p]]=[b[p],b[i]];
+    for(let r=0;r<n;r++){
+      if(r===i) continue;
+      const f=M[r][i]/M[i][i];
+      if(!f) continue;
+      for(let ccc=i;ccc<n;ccc++) M[r][ccc]-=f*M[i][ccc];
+      b[r]-=f*b[i];
+    }
+  }
+  const out=[]; for(let i=0;i<n;i++) out.push(b[i]/M[i][i]);
+  return out.every(v=>isFinite(v))?out:null;
+}
+const PLH=new WeakMap();
+function planeH(a){                          // μετασχηματισμός εικόνας → πραγματικές μονάδες
+  if(!a||a.type!=='plane'||!a.real||!(a.pts&&a.pts.length>=4))return null;
+  const u=(S.scale&&S.scale.unit)||S.unit;
+  const key=JSON.stringify([a.pts.slice(0,4),a.real,u]);
+  const hit=PLH.get(a); if(hit&&hit.key===key) return hit.h;
+  const W=a.real.w*UF[a.real.unit]/UF[u], H=a.real.h*UF[a.real.unit]/UF[u];
+  if(!(W>0&&H>0))return null;
+  const dst=[[0,0],[W,0],[W,H],[0,H]], M=[], b=[];
+  for(let i=0;i<4;i++){
+    const x=a.pts[i].x, y=a.pts[i].y, X=dst[i][0], Y=dst[i][1];
+    M.push([x,y,1,0,0,0,-X*x,-X*y]); b.push(X);
+    M.push([0,0,0,x,y,1,-Y*x,-Y*y]); b.push(Y);
+  }
+  const h=solve8(M,b);
+  PLH.set(a,{key,h});
+  return h;
+}
+function planeMap(h,p){
+  const d=h[6]*p.x+h[7]*p.y+1;
+  if(!isFinite(d)||Math.abs(d)<1e-9) return null;
+  return {x:(h[0]*p.x+h[1]*p.y+h[2])/d, y:(h[3]*p.x+h[4]*p.y+h[5])/d};
+}
+function inQuad(q,p){                       // μέσα ή πάνω στην άκρη του τετράπλευρου
+  let pos=0,neg=0;
+  for(let i=0;i<4;i++){
+    const A=q[i], B=q[(i+1)%4];
+    const cr=(B.x-A.x)*(p.y-A.y)-(B.y-A.y)*(p.x-A.x);
+    const s=Math.max(1,Math.hypot(B.x-A.x,B.y-A.y));
+    if(cr/s>0.5)pos++; else if(cr/s<-0.5)neg++;   // μισό εικονοστοιχείο ανοχή
+  }
+  return pos===0||neg===0;
+}
+function planeFor(pts){                      // το πρώτο επίπεδο που τα περιέχει όλα
+  if(!pts||!pts.length)return null;
+  for(const a of S.anns){
+    if(a.type!=='plane'||!a.real||!a.pts||a.pts.length<4) continue;
+    const q=a.pts.slice(0,4);
+    if(pts.every(p=>inQuad(q,p))){ const h=planeH(a); if(h) return h; }
+  }
+  return null;
+}
+function planeLen(h,p1,p2){
+  const A=planeMap(h,p1), B=planeMap(h,p2);
+  return (A&&B)?Math.hypot(A.x-B.x,A.y-B.y):null;
+}
+function askPlane(a,isEdit){
+  const cur=a.real||null;
+  openSheet(`<h2>Επίπεδη επιφάνεια</h2>
+    <p class="hint">Μάρκαρες τις 4 γωνίες μιας επίπεδης επιφάνειας (τοίχος, δάπεδο, πόρτα, πλακάκι). Γράψε τις πραγματικές της διαστάσεις και όποια μέτρηση πέσει μέσα της θα βγαίνει σωστή, ακόμη κι αν η φωτογραφία είναι τραβηγμένη λοξά.</p>
+    <label class="fld">Πλάτος × Ύψος</label>
+    <div style="display:flex;gap:8px">
+      <input type="text" id="plW" inputmode="decimal" placeholder="πλάτος" style="flex:1" value="${cur?esc(String(cur.w).replace('.',',')):''}">
+      <input type="text" id="plH" inputmode="decimal" placeholder="ύψος" style="flex:1" value="${cur?esc(String(cur.h).replace('.',',')):''}">
+      <select id="plU" style="flex:1">${UNITS.map(u=>'<option value="'+u+'">'+uName(u)+'</option>').join('')}</select>
+    </div>
+    <div class="acts"><button id="plC">Άκυρο</button><button class="primary" id="plOk">Εφαρμογή</button></div>`);
+  $('plU').value=(cur&&cur.unit)||(S.scale?S.scale.unit:S.unit);
+  setTimeout(()=>{ try{ $('plW').focus(); }catch(_){} },60);
+  $('plC').onclick=()=>{ if(!isEdit){ S.anns=S.anns.filter(x=>x!==a); draw(); } closeSheet(); };
+  $('plOk').onclick=()=>{
+    const w=parseFloat(($('plW').value||'').replace(',','.')), h=parseFloat(($('plH').value||'').replace(',','.'));
+    if(!(w>0)||!(h>0)){ toast('Γράψε έγκυρες διαστάσεις'); return; }
+    const un=$('plU').value;
+    a.real={w,h,unit:un};
+    if(!S.scale) S.scale={unit:un,k:1,upp:0};
+    S.unit=un;
+    closeSheet(); draw(); scaleTag(); toast('Το επίπεδο ορίστηκε — οι μετρήσεις μέσα του διορθώνονται');
+  };
+}
 function annY(a){ let s=0; (a.pts||[]).forEach(p=>s+=p.y); return a.pts&&a.pts.length?s/a.pts.length:0; }
 function fmtLen(px,y){ const u=uppAt(y); if(!u) return '0 '+uSym(S.unit); return trimN(px*u)+' '+uSym(S.scale.unit); }
 function fmtArea(px2,y){ const u=uppAt(y); if(!u) return '0 '+uSym(S.unit)+'²'; return trimN(px2*u*u)+' '+uSym(S.scale.unit)+'²'; }
@@ -397,11 +509,29 @@ function measureOf(a){
   if(a.man) return a.manU?(a.man+' '+uSym(a.manU)):a.man;
   return autoMeasure(a);
 }
+function num2(v,sq){ return trimN(v)+' '+uSym((S.scale&&S.scale.unit)||S.unit)+(sq?'²':''); }
 function autoMeasure(a){
   const y=annY(a);
+  if(a.type==='plane'){ return a.real?(trimN(a.real.w)+' × '+trimN(a.real.h)+' '+uSym(a.real.unit)):''; }
+  const h=(a.type!=='calib')?planeFor(a.pts):null;   // αν πέφτει μέσα σε ορισμένο επίπεδο
+  if(h){
+    if(a.type==='line'||a.type==='arrow'){ if(a.pts.length<2)return ''; const L=planeLen(h,a.pts[0],a.pts[1]); if(L!=null) return num2(L); }
+    if(a.type==='rect'&&a.pts.length>1){
+      const p0=a.pts[0],p1=a.pts[1];
+      const W=planeLen(h,{x:p0.x,y:p0.y},{x:p1.x,y:p0.y}), H=planeLen(h,{x:p0.x,y:p0.y},{x:p0.x,y:p1.y});
+      if(W!=null&&H!=null) return num2(W)+' × '+num2(H)+'  ·  '+num2(W*H,true);
+    }
+    if(a.type==='poly'&&a.pts.length>1){
+      const Q=a.pts.map(p=>planeMap(h,p));
+      if(Q.every(Boolean)){
+        const per=polyLen(Q,a.closed);
+        return tr(a.closed?'περίμετρος':'μήκος')+' '+num2(per)+(a.closed&&Q.length>2?'  ·  '+num2(polyArea(Q),true):'');
+      }
+    }
+  }
   if(a.type==='line'||a.type==='arrow'||a.type==='calib'){ if(a.pts.length<2)return ''; return fmtLen(dist(a.pts[0],a.pts[1]),y); }
-  if(a.type==='rect'){ if(a.pts.length<2)return ''; const w=Math.abs(a.pts[1].x-a.pts[0].x), h=Math.abs(a.pts[1].y-a.pts[0].y);
-    return fmtLen(w,y)+' × '+fmtLen(h,y)+'  ·  '+fmtArea(w*h,y); }
+  if(a.type==='rect'){ if(a.pts.length<2)return ''; const w=Math.abs(a.pts[1].x-a.pts[0].x), h2=Math.abs(a.pts[1].y-a.pts[0].y);
+    return fmtLen(w,y)+' × '+fmtLen(h2,y)+'  ·  '+fmtArea(w*h2,y); }
   if(a.type==='poly'){ if(a.pts.length<2)return ''; const per=polyLen(a.pts,a.closed);
     return tr(a.closed?'περίμετρος':'μήκος')+' '+fmtLen(per,y)+(a.closed&&a.pts.length>2?'  ·  '+fmtArea(polyArea(a.pts),y):''); }
   if(a.type==='angle'){ if(a.pts.length<3)return ''; return angleOf(a.pts).toFixed(1)+'°'; }
@@ -441,7 +571,7 @@ function draw(){
   ctx.imageSmoothingQuality='high';
   ctx.drawImage(S.img, v.tx, v.ty, S.imgW*v.s, S.imgH*v.s);
   if(S.show){
-    LR.clear();
+    LR.clear(); placedL=[];
     const list=S.draft?S.anns.concat([S.draft]):S.anns;
     list.forEach((a,i)=>drawAnn(ctx,a,v,1,a.id===S.sel));
   }
@@ -524,11 +654,12 @@ function drawAnn(c,a,v,k,selected){
     const nm=noteMode(a,v);
     let ntxt='';
     if(a.note){ ntxt = nm==='full'?a.note : nm==='short'?shortTxt(a.note) : '💬'; }
-    const txt=(m?m:'')+(ntxt?(m?'  ·  ':'')+ntxt:'');
+    let txt=(m?m:'')+(ntxt?(m?'  ·  ':'')+ntxt:'');
+    if(txt&&S.nums&&a.type!=='plane') txt=n+'. '+txt;
     if(txt){
       const pos=labelPos(a,P);
       if(a.lo){ pos.x+=a.lo.x*v.s; pos.y+=a.lo.y*v.s; }
-      const r=drawLabel(c,pos,txt,a.color,k);
+      const r=drawLabel(c,pos,txt,a.color,k,!!a.lo);
       if(v===S.view)LR.set(a.id,r);
       if(a.lo&&(Math.abs(a.lo.x)+Math.abs(a.lo.y))*v.s>18){
         c.save(); c.setLineDash([3*k,3*k]); c.globalAlpha=.6; c.lineWidth=1.2*k; c.strokeStyle=a.color;
@@ -553,6 +684,14 @@ function strokePath(c,a,P,k){
     if(P.length<2)return;
     c.rect(Math.min(P[0].x,P[1].x),Math.min(P[0].y,P[1].y),Math.abs(P[1].x-P[0].x),Math.abs(P[1].y-P[0].y));
     c.stroke(); tickEnds(c,a,P,k); return;
+  }
+  if(a.type==='plane'){
+    c.save(); c.setLineDash([7*k,5*k]);
+    c.moveTo(P[0].x,P[0].y);
+    for(let i=1;i<P.length;i++)c.lineTo(P[i].x,P[i].y);
+    if(P.length>2)c.closePath();
+    c.stroke(); c.restore();
+    return;
   }
   c.moveTo(P[0].x,P[0].y);
   for(let i=1;i<P.length;i++)c.lineTo(P[i].x,P[i].y);
@@ -586,15 +725,30 @@ function arcMark(c,P,k){
 function labelPos(a,P){
   if(a.type==='rect'){const x=(P[0].x+P[1].x)/2, y=Math.min(P[0].y,P[1].y); return {x,y:y-4};}
   if(a.type==='angle'&&P.length>=3)return {x:P[1].x, y:P[1].y-10};
-  if(a.type==='poly'){let sx=0,sy=0;P.forEach(p=>{sx+=p.x;sy+=p.y});return {x:sx/P.length,y:sy/P.length};}
+  if(a.type==='poly'||a.type==='plane'){let sx=0,sy=0;P.forEach(p=>{sx+=p.x;sy+=p.y});return {x:sx/P.length,y:sy/P.length};}
   if(P.length>1)return {x:(P[0].x+P[1].x)/2, y:(P[0].y+P[1].y)/2-6};
   return {x:P[0].x,y:P[0].y-6};
 }
-function drawLabel(c,pos,txt,color,k){
+let placedL=[];                       // πλαίσια ετικετών που έχουν ήδη μπει σε αυτό το πέρασμα
+function hitsPlaced(x,y,w,h){ return placedL.some(r=>x<r.x+r.w+2&&x+w+2>r.x&&y<r.y+r.h+2&&y+h+2>r.y); }
+function drawLabel(c,pos,txt,color,k,fixed){
   const fs=13*k; c.font='600 '+fs+'px -apple-system,Segoe UI,Roboto,sans-serif';
   const lines=wrap(c,txt,260*k); const wmax=Math.max(...lines.map(l=>c.measureText(l).width));
   const padX=7*k,padY=5*k, h=lines.length*fs*1.25+padY*2, w=wmax+padX*2;
   let x=pos.x-w/2, y=pos.y-h;
+  if(!fixed&&hitsPlaced(x,y,w,h)){        // αν πέφτει πάνω σε άλλη, μετακινείται λίγο
+    const step=h+4*k; let done=false;
+    for(let i=1;i<=6&&!done;i++){
+      if(!hitsPlaced(x,y-i*step,w,h)){ y-=i*step; done=true; break; }
+      if(!hitsPlaced(x,y+i*step,w,h)){ y+=i*step; done=true; break; }
+      if(!hitsPlaced(x-i*(w+6*k),y,w,h)){ x-=i*(w+6*k); done=true; break; }
+      if(!hitsPlaced(x+i*(w+6*k),y,w,h)){ x+=i*(w+6*k); done=true; break; }
+    }
+  }
+  const CW=(c===ctx)?(cv._w||0):c.canvas.width, CH=(c===ctx)?(cv._h||0):c.canvas.height;
+  if(CW>w+8*k) x=Math.min(Math.max(x,3*k),CW-w-3*k);
+  if(CH>h+8*k) y=Math.min(Math.max(y,3*k),CH-h-3*k);
+  placedL.push({x,y,w,h});
   c.globalAlpha=.92; c.fillStyle='#000'; roundRect(c,x,y,w,h,7*k); c.fill();
   c.globalAlpha=1; c.strokeStyle=color; c.lineWidth=1.5*k; roundRect(c,x,y,w,h,7*k); c.stroke();
   c.fillStyle='#fff'; c.textBaseline='top';
@@ -615,7 +769,7 @@ function drawPin(c,p,n,a,k,v,nm){
       return null;
     }
     const pos={x:p.x+(a.lo?a.lo.x*v.s:0), y:p.y-r-4*k+(a.lo?a.lo.y*v.s:0)};
-    return drawLabel(c,pos, nm==='short'?shortTxt(a.note):a.note, a.color,k);
+    return drawLabel(c,pos, nm==='short'?shortTxt(a.note):a.note, a.color,k,!!a.lo);
   }
   return null;
 }
@@ -668,7 +822,7 @@ cv.addEventListener('pointerdown',e=>{
     else { S.sel=null; mode='pan'; }
     draw(); refreshOpts(); return;
   }
-  if(S.tool==='poly'||S.tool==='angle'||S.tool==='note'){ mode='tap'; loupeAt={...start}; draw(); return; }
+  if(S.tool==='poly'||S.tool==='angle'||S.tool==='note'||S.tool==='plane'){ mode='tap'; loupeAt={...start}; draw(); return; }
   // εργαλεία με σύρσιμο
   mode='draw';
   S.draft={id:uid(),type:S.tool,pts:[ip,ip],color:S.color,width:S.width,note:''};
@@ -771,6 +925,7 @@ function handleTap(ip){
   if(S.snap&&cur.pts.length)pt=snapAngle(cur.pts[cur.pts.length-1],ip);
   cur.pts.push(pt);
   if(S.tool==='angle'&&cur.pts.length>=3){ delete cur._open; }
+  if(S.tool==='plane'&&cur.pts.length>=4){ delete cur._open; draw(); refreshOpts(); askPlane(cur); return; }
   draw(); refreshOpts();
 }
 function finishPoly(){
@@ -921,18 +1076,75 @@ function editNote(a,isNew){
 }
 
 function manNum(a){ return (a.man||'').replace(/[^0-9.,-]/g,'').trim(); }
+/* ---------- φωνητική καταχώρηση διάστασης ---------- */
+const SRC=window.SpeechRecognition||window.webkitSpeechRecognition||null;
+function micOK(){ return !!SRC; }
+const GRN={'μηδεν':0,'ενα':1,'ενας':1,'μια':1,'μιας':1,'δυο':2,'τρια':3,'τρεις':3,'τεσσερα':4,'τεσσερις':4,'πεντε':5,'εξι':6,'εφτα':7,'επτα':7,'οχτω':8,'οκτω':8,'εννια':9,'εννεα':9,
+'δεκα':10,'εντεκα':11,'ενδεκα':11,'δωδεκα':12,'δεκατρια':13,'δεκατεσσερα':14,'δεκαπεντε':15,'δεκαεξι':16,'δεκαεφτα':17,'δεκαεπτα':17,'δεκαοχτω':18,'δεκαοκτω':18,'δεκαεννια':19,
+'εικοσι':20,'τριαντα':30,'σαραντα':40,'πενηντα':50,'εξηντα':60,'εβδομηντα':70,'ογδοντα':80,'ενενηντα':90,
+'εκατο':100,'εκατον':100,'διακοσια':200,'τριακοσια':300,'τετρακοσια':400,'πεντακοσια':500,'εξακοσια':600,'εφτακοσια':700,'επτακοσια':700,'οχτακοσια':800,'οκτακοσια':800,'εννιακοσια':900};
+function noTone(s){ return String(s||'').toLowerCase()
+  .replace(/[άΆ]/g,'α').replace(/[έΈ]/g,'ε').replace(/[ήΉ]/g,'η').replace(/[ίΊϊΐ]/g,'ι')
+  .replace(/[όΌ]/g,'ο').replace(/[ύΎϋΰ]/g,'υ').replace(/[ώΏ]/g,'ω'); }
+function wordsNum(ws){ let n=0,got=false; ws.forEach(w=>{ if(GRN[w]!==undefined){ n+=GRN[w]; got=true; } }); return got?n:null; }
+function parseSpoken(txt){
+  const t=noTone(txt);
+  let unit=null;
+  if(/εκατοστ|ποντ/.test(t))unit='εκ'; else if(/χιλιοστ/.test(t))unit='χιλ'; else if(/μετρ/.test(t))unit='μ';
+  const d=t.replace(/[^0-9.,]/g,' ').trim().split(/\s+/).filter(Boolean);
+  if(d.length){ const s=d.join('').replace('.',','); if(/\d/.test(s)) return {v:s,unit}; }
+  const toks=t.replace(/[^α-ωa-z ]/g,' ').split(/\s+/).filter(Boolean);
+  const ki=toks.indexOf('και');
+  const head=ki<0?toks:toks.slice(0,ki), tail=ki<0?[]:toks.slice(ki+1);
+  if(/εν[αο]μισ/.test(t)) return {v:'1,5',unit};
+  const A=wordsNum(head);
+  if(A===null) return {v:null,unit};
+  let v=String(A);
+  if(tail.length){
+    if(tail.some(w=>/^μισ/.test(w))) v+=',5';
+    else {
+      const B=wordsNum(tail);
+      // «δύο και πέντε» σημαίνει 2,05 — το δεύτερο μέρος είναι εκατοστά
+      if(B!==null) v+=','+(B<10?'0'+B:String(B));
+    }
+  }
+  return {v,unit};
+}
+function listenNum(btn,cb){
+  if(!SRC){ cb(null); return; }
+  let r;
+  try{ r=new SRC(); }catch(e){ cb(null); return; }
+  r.lang=(S.lang==='en'?'en-GB':'el-GR'); r.interimResults=false; r.maxAlternatives=4;
+  const old=btn?btn.textContent:'';
+  if(btn){ btn.textContent='●'; btn.style.color='var(--danger)'; }
+  const done=()=>{ if(btn){ btn.textContent=old; btn.style.color=''; } };
+  r.onresult=e=>{
+    let best=null,unit=null;
+    for(let i=0;i<e.results[0].length;i++){
+      const g=parseSpoken(e.results[0][i].transcript);
+      if(g.unit&&!unit)unit=g.unit;
+      if(g.v){ best=g.v; break; }
+    }
+    done(); cb(best,unit);
+  };
+  r.onerror=()=>{ done(); cb(null); };
+  r.onend=done;
+  try{ r.start(); toast('Πες τη διάσταση…'); }catch(e){ done(); cb(null); }
+}
 /* Γρήγορη καταχώρηση: ανοίγει πρώτα μόνο το νούμερο και η μονάδα, με το πληκτρολόγιο έτοιμο.
    Τα υπόλοιπα (σχόλιο, κλίμακα, θέση νούμερου) μένουν στο «Περισσότερα…». */
 function quickAnn(a){
   if(!a)return;
   if(a.type==='note'||a.type==='free'){ editNote(a); return; }
   if(a.type==='calib'){ askCalib(a,true); return; }
+  if(a.type==='plane'){ askPlane(a,true); return; }
   const i=S.anns.indexOf(a)+1, auto=autoMeasure(a);
   openSheet(`<h2>#${i} · ${tr(TNAME[a.type]||a.type)}</h2>
     <label class="fld">Διάσταση</label>
     <div style="display:flex;gap:8px">
       <input type="text" id="qVal" inputmode="decimal" style="flex:2" value="${esc(manNum(a))}" placeholder="π.χ. 2,15">
       <select id="qUnit" style="flex:1">${UNITS.map(u=>`<option value="${u}"${u===manUnit(a)?' selected':''}>${uName(u)}</option>`).join('')}</select>
+      ${micOK()?'<button class="mini" id="qMic" title="Πες τη διάσταση" style="flex:0 0 auto;padding:0 14px;font-size:20px">🎤</button>':''}
     </div>
     <p class="hint">${auto?tr('Αυτόματη μέτρηση')+': '+auto:tr('Γράψε τη διάσταση και πάτα Αποθήκευση')}</p>
     <div class="acts">
@@ -950,6 +1162,12 @@ function quickAnn(a){
   };
   v.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); save(); } });
   $('qOk').onclick=save;
+  const mic=$('qMic');
+  if(mic) mic.onclick=()=>listenNum(mic,(val,un)=>{
+    if(!val){ toast('Δεν κατάλαβα — γράψ\' το με το χέρι'); return; }
+    v.value=val;
+    if(un&&$('qUnit')) $('qUnit').value=un;
+  });
   $('qMore').onclick=()=>editAnn(a,{v:(v.value||'').trim(),u:($('qUnit')&&$('qUnit').value)||S.unit});
 }
 function manUnit(a){ return a.manU || ['χιλ','εκ','μ'].find(u=>(a.man||'').includes(u)) || (S.scale?S.scale.unit:S.unit); }
@@ -1003,6 +1221,48 @@ function editAnn(a,pre){
   };
 }
 
+/* αριθμητικό μήκος/εμβαδόν μιας μέτρησης, στη μονάδα που εμφανίζεται */
+function annLen(a){
+  const u=(S.scale&&S.scale.unit)||S.unit;
+  if(a.man){
+    const m=String(a.man).replace(',','.').match(/-?\d+(\.\d+)?/);
+    const n=m?parseFloat(m[0]):NaN;
+    if(!isFinite(n))return 0;
+    const mu=UF[a.manU]?a.manU:u;
+    return n*UF[mu]/UF[u];
+  }
+  const h=planeFor(a.pts);
+  if(h){
+    if((a.type==='line'||a.type==='arrow')&&a.pts.length>1){ const L=planeLen(h,a.pts[0],a.pts[1]); if(L!=null)return L; }
+    if(a.type==='poly'&&!a.closed&&a.pts.length>1){ const Q=a.pts.map(p=>planeMap(h,p)); if(Q.every(Boolean))return polyLen(Q,false); }
+  }
+  if(!S.scale)return 0;
+  const up=uppAt(annY(a));
+  if((a.type==='line'||a.type==='arrow')&&a.pts.length>1) return dist(a.pts[0],a.pts[1])*up;
+  if(a.type==='poly'&&!a.closed&&a.pts.length>1) return polyLen(a.pts,false)*up;
+  return 0;
+}
+function annArea(a){
+  const hh=planeFor(a.pts);
+  if(hh){
+    if(a.type==='rect'&&a.pts.length>1){
+      const p0=a.pts[0],p1=a.pts[1];
+      const W=planeLen(hh,{x:p0.x,y:p0.y},{x:p1.x,y:p0.y}), H=planeLen(hh,{x:p0.x,y:p0.y},{x:p0.x,y:p1.y});
+      if(W!=null&&H!=null) return W*H;
+    }
+    if(a.type==='poly'&&a.closed&&a.pts.length>2){ const Q=a.pts.map(p=>planeMap(hh,p)); if(Q.every(Boolean)) return polyArea(Q); }
+  }
+  if(!S.scale)return 0;
+  const up=uppAt(annY(a));
+  if(a.type==='rect'&&a.pts.length>1) return Math.abs(a.pts[1].x-a.pts[0].x)*Math.abs(a.pts[1].y-a.pts[0].y)*up*up;
+  if(a.type==='poly'&&a.closed&&a.pts.length>2) return polyArea(a.pts)*up*up;
+  return 0;
+}
+function totals(){
+  let L=0,A=0;
+  S.anns.forEach(a=>{ if(a.type==='calib'||a.type==='plane'||a.type==='note')return; L+=annLen(a)||0; A+=annArea(a)||0; });
+  return {L,A};
+}
 function listSheet(){
   if(!S.anns.length){ openSheet('<h2>Λίστα μετρήσεων</h2><p class="hint">Δεν υπάρχει ακόμη τίποτα πάνω στη φωτογραφία.</p><div class="acts"><button class="primary" id="x1">Κλείσιμο</button></div>'); $('x1').onclick=closeSheet; return; }
   const rows=S.anns.map((a,i)=>`
@@ -1016,7 +1276,11 @@ function listSheet(){
       <button class="mini" data-e="${a.id}">Αλλαγή</button>
       <button class="mini del" data-d="${a.id}">✕</button>
     </div>`).join('');
-  openSheet(`<h2>Λίστα μετρήσεων &amp; σημειώσεων</h2>${rows}
+  const T=totals();
+  const sum=(T.L||T.A)?`<div class="row" style="border-top:2px solid var(--line);border-bottom:0">
+      <div class="rowmain"><b>Σύνολα</b><span>${T.L?tr('μήκη')+': '+trimN(T.L)+' '+uSym((S.scale&&S.scale.unit)||S.unit):''}${T.L&&T.A?' · ':''}${T.A?tr('εμβαδά')+': '+trimN(T.A)+' '+uSym((S.scale&&S.scale.unit)||S.unit)+'²':''}</span></div>
+    </div>`:'';
+  openSheet(`<h2>Λίστα μετρήσεων &amp; σημειώσεων</h2>${rows}${sum}
     <div class="acts">
       <button id="lCsv">Εξαγωγή πίνακα</button>
       <button class="primary" id="lClose">Κλείσιμο</button>
@@ -1049,6 +1313,7 @@ function menuSheet(){
     <div class="row"><div class="rowmain"><b>Αυτόματη αποθήκευση στο κινητό</b><span>${native()?'ενεργή — κάθε εργασία γράφεται σε φάκελο':'θα ενεργοποιηθεί μόλις γίνει εφαρμογή Android'}</span></div>
       <button class="mini" id="mAuto">${native()?(S.autoDev?'Ναι':'Όχι'):'—'}</button></div>
     <div class="row"><div class="rowmain"><b>Εξαγωγή πίνακα μετρήσεων</b><span>αρχείο για υπολογιστικό φύλλο</span></div><button class="mini" id="mCsv">Πίνακας</button></div>
+    <div class="row"><div class="rowmain"><b>Αναφορά για πελάτη</b><span>φωτογραφίες, μετρήσεις και σύνολα σε ένα αρχείο</span></div><button class="mini" id="mRep">Αναφορά</button></div>
     <div class="row"><div class="rowmain"><b>Γλώσσα</b><span>Ελληνικά / English</span></div>
       <select id="mLang" style="width:auto;padding:6px 8px;font-size:12px">
         <option value="el"${S.lang==='el'?' selected':''}>Ελληνικά</option>
@@ -1084,6 +1349,7 @@ function menuSheet(){
     $('mAuto').textContent=S.autoDev?'Ναι':'Όχι'; };
   $('mPng').onclick=()=>{ closeSheet(); exportPng(); };
   $('mCsv').onclick=()=>{ closeSheet(); exportCsv(); };
+  $('mRep').onclick=()=>{ closeSheet(); exportReport(); };
   $('mScale').onclick=()=>{ closeSheet(); setTool('calib'); toast('Τράβα γραμμή πάνω σε κάτι με γνωστό μήκος'); };
   $('mClear').onclick=()=>{ push(); S.anns=[]; S.sel=null; draw(); closeSheet(); };
   $('mHelp').onclick=helpSheet;
@@ -1093,6 +1359,10 @@ function helpSheet(){
   <ul class="tips">
     <li><b>Κλίμακα</b>: τράβα μια γραμμή πάνω σε κάτι που ξέρεις (πόρτα 2,10 μ, πλακάκι 60 εκ) και δώσε το μήκος. Από κει και πέρα κάθε μέτρηση βγαίνει σε πραγματικά μέτρα — κατά προσέγγιση πάντα, γιατί η φωτογραφία είναι επίπεδη εικόνα χώρου με βάθος. Η κλίμακα ισχύει στο επίπεδο της γραμμής αναφοράς, γι' αυτό συμφέρει να παίρνεις χωριστά πλάτος και βάθος (και ύψος όπου χρειάζεται).</li>
     <li><b>Βάθος</b>: βάλε μέχρι 3 σημεία κλίμακας σε διαφορετικές αποστάσεις — π.χ. το πόδι ενός τραπεζιού μπροστά και ένα ίδιο πόδι πιο πίσω, που στη φωτογραφία φαίνεται μικρότερο. Με δύο ή τρία σημεία η εφαρμογή καταλαβαίνει πόσο «μικραίνει» ο χώρος όσο πάει πίσω και δίνει σε κάθε μέτρηση τη δική της κλίμακα.</li>
+    <li><b>Επίπεδο</b>: πάτα τις 4 γωνίες μιας επίπεδης επιφάνειας (τοίχος, δάπεδο, πόρτα) και δώσε πλάτος και ύψος. Όποια μέτρηση πέφτει μέσα της βγαίνει σωστή ακόμη κι αν η φωτογραφία είναι τραβηγμένη λοξά — είναι ο πιο ακριβής τρόπος.</li>
+    <li><b>Πολλές φωτογραφίες</b>: με το ＋ κάτω από την εικόνα βάζεις κι άλλη φωτογραφία στην ίδια εργασία, π.χ. τους τέσσερις τοίχους ενός δωματίου. Με τα βελάκια αλλάζεις φωτογραφία· η καθεμία έχει τις δικές της μετρήσεις.</li>
+    <li><b>🎤 Φωνή</b>: στο παράθυρο της διάστασης λες «ένα και ογδόντα τέσσερα» και γράφεται μόνο του. Το δεύτερο μέρος μετά το «και» μπαίνει σαν εκατοστά.</li>
+    <li><b>Αναφορά για πελάτη</b>: από το μενού, βγάζει σε ένα αρχείο τις φωτογραφίες με τα σημάδια, τον πίνακα των μετρήσεων και τα σύνολα.</li>
     <li><b>Μέτρηση</b>: σύρε για ίσια γραμμή με τη διάσταση πάνω της.</li>
     <li><b>Κλείδωμα γωνίας</b>: κουμπώνει τις γραμμές στις 0°, 45°, 90° για τελείως ίσια σημάδια.</li>
     <li><b>Ορθογώνιο</b>: δίνει πλάτος × ύψος και εμβαδόν.</li>
@@ -1115,7 +1385,81 @@ function helpSheet(){
 }
 
 /* ---------- φόρτωση εικόνας ---------- */
-function loadBlob(b){
+/* ---------- πολλές φωτογραφίες σε μία εργασία ---------- */
+function pageCount(){ return (S.pages&&S.pages.length)||(S.img?1:0); }
+function syncPage(){
+  if(!S.pages||!S.pages[S.pi])return;
+  Object.assign(S.pages[S.pi],{img:S.img,blob:S.blob,anns:S.anns,scale:S.scale,unit:S.unit,imgW:S.imgW,imgH:S.imgH,view:{...S.view}});
+}
+function ensureImg(p){
+  if(p.img) return Promise.resolve(p.img);
+  return new Promise(res=>{
+    if(!p.blob){ res(null); return; }
+    const im=new Image();
+    im.onload=()=>{ p.img=im; if(!p.imgW){p.imgW=im.naturalWidth;p.imgH=im.naturalHeight;} res(im); };
+    im.onerror=()=>res(null);
+    im.src=URL.createObjectURL(p.blob);
+  });
+}
+async function gotoPage(i){
+  if(!S.pages||i<0||i>=S.pages.length||i===S.pi)return;
+  syncPage();
+  const p=S.pages[i];
+  if(!(await ensureImg(p))){ toast('Δεν άνοιξε η εικόνα'); return; }
+  S.pi=i;
+  S.img=p.img; S.blob=p.blob; S.anns=p.anns||[]; S.scale=p.scale||null; S.unit=p.unit||S.unit;
+  S.imgW=p.imgW; S.imgH=p.imgH; S.sel=null; S.undoS=[]; S.redoS=[]; S.draft=null;
+  if(p.view) S.view={...p.view}; else fitView();
+  draw(); scaleTag(); refreshOpts(); pageBar();
+}
+function pageBar(){
+  const b=$('pageBox'); if(!b)return;
+  const n=pageCount();
+  b.style.display = S.img ? 'flex' : 'none';
+  const t=$('pgTxt'); if(t)t.textContent=(S.pi+1)+'/'+Math.max(1,n);
+  const pv=$('pgPrev'), nx=$('pgNext');
+  if(pv)pv.classList.toggle('off',S.pi<=0);
+  if(nx)nx.classList.toggle('off',S.pi>=n-1);
+}
+function addPage(im,blob){
+  syncPage();
+  S.pages.push({img:im,blob,anns:[],scale:null,unit:S.unit,imgW:im.naturalWidth||im.width,imgH:im.naturalHeight||im.height});
+  S.pi=S.pages.length-1;
+  const p=S.pages[S.pi];
+  S.img=p.img; S.blob=p.blob; S.anns=p.anns; S.scale=null; S.imgW=p.imgW; S.imgH=p.imgH;
+  S.sel=null; S.undoS=[]; S.redoS=[]; S.draft=null; lastSaved=null;
+  fitView(); draw(); scaleTag(); refreshOpts(); pageBar();
+  toast(tr('Φωτογραφία')+' '+(S.pi+1)+'/'+pageCount());
+}
+function delPage(){
+  if(pageCount()<=1){ toast('Είναι η μόνη φωτογραφία — σβήσε όλη την εργασία'); return; }
+  openSheet(`<h2>Διαγραφή φωτογραφίας</h2>
+    <p class="hint">Θα φύγει η φωτογραφία ${S.pi+1} από ${pageCount()} μαζί με τις μετρήσεις της. Οι υπόλοιπες μένουν.</p>
+    <div class="acts"><button id="dgC">Άκυρο</button><button class="primary" id="dgOk" style="background:var(--danger)">Διαγραφή</button></div>`);
+  $('dgC').onclick=closeSheet;
+  $('dgOk').onclick=async()=>{
+    S.pages.splice(S.pi,1);
+    const i=Math.min(S.pi,S.pages.length-1);
+    S.pi=-1; lastSaved=null; closeSheet();
+    await gotoPage(i);
+    autoSave();
+  };
+}
+function addPhotoSheet(){
+  openSheet(`<h2>Φωτογραφία στην ίδια εργασία</h2>
+    <p class="hint">Μπαίνει σαν δεύτερη σελίδα στην ίδια εργασία — π.χ. οι τέσσερις τοίχοι ενός δωματίου. Κάθε φωτογραφία έχει τις δικές της μετρήσεις και τη δική της κλίμακα.</p>
+    <div class="acts" style="flex-direction:column">
+      <button class="primary" id="agCam">📸 Τράβα φωτογραφία</button>
+      <button id="agFile">🗂️ Διάλεξε από τα αρχεία</button>
+    </div>
+    ${pageCount()>1?'<div class="acts"><button id="agDel" style="color:var(--danger)">🗑️ Διαγραφή αυτής της φωτογραφίας</button></div>':''}`);
+  $('agCam').onclick=()=>{ pendingAdd=true; closeSheet(); $('fCam').click(); };
+  $('agFile').onclick=()=>{ pendingAdd=true; closeSheet(); $('fFile').click(); };
+  const d=$('agDel'); if(d)d.onclick=delPage;
+}
+let pendingAdd=false;
+
+function loadBlob(b,add){
   const url=URL.createObjectURL(b); const im=new Image();
   im.onload=()=>{
     const MAX=3200; let w=im.naturalWidth,h=im.naturalHeight;
@@ -1126,12 +1470,12 @@ function loadBlob(b){
       c2.toBlob(rb=>{
         const useB = rb||b;   // αν αποτύχει η σμίκρυνση, μένει η αρχική
         const im2=new Image();
-        im2.onload=()=>{ URL.revokeObjectURL(url); setImage(im2,useB); };
+        im2.onload=()=>{ URL.revokeObjectURL(url); (add&&S.img)?addPage(im2,useB):setImage(im2,useB); };
         im2.src=URL.createObjectURL(useB);
       },'image/jpeg',0.92);
       return;
     }
-    setImage(im,b);
+    (add&&S.img)?addPage(im,b):setImage(im,b);
   };
   im.onerror=()=>toast('Δεν άνοιξε η εικόνα');
   im.src=url;
@@ -1142,6 +1486,7 @@ function updateEnabled(){
   if(bo) bo.classList.toggle('disabled',!en);
   if(bs) bs.classList.toggle('disabled',!en);
   if(bd) bd.style.display = en ? 'flex' : 'none';   // διαγραφή εργασίας — μόνο όσο είσαι μέσα σε φωτογραφία
+  pageBar();
 }
 $('bDelP').onclick=()=>{
   if(!S.img){ toast('Δεν υπάρχει φωτογραφία'); return; }
@@ -1166,8 +1511,9 @@ function setImage(im,blob){
   S.anns=[]; S.sel=null; S.scale=null; S.undoS=[]; S.redoS=[];
   S.projId=null; S.projFolder=S.path||''; S.projName=tr('Εργασία')+' '+new Date().toLocaleDateString(S.lang==='en'?'en-GB':'el-GR')+' '+new Date().toLocaleTimeString(S.lang==='en'?'en-GB':'el-GR',{hour:'2-digit',minute:'2-digit'});
   lastSaved=null;
+  S.pages=[{img:im,blob,anns:S.anns,scale:null,unit:S.unit,imgW:S.imgW,imgH:S.imgH}]; S.pi=0;
   $('empty').style.display='none'; $('zoomBox').style.display='flex'; $('histBox').style.display='flex';
-  fitView(); scaleTag(); refreshOpts(); updateEnabled();
+  fitView(); scaleTag(); refreshOpts(); updateEnabled(); pageBar();
 }
 function scaleTag(){
   const t=$('scaleTag');
@@ -1180,8 +1526,11 @@ function scaleTag(){
   t.onclick=()=>{ setTool('calib'); toast('Τράβα γραμμή σε κάτι με γνωστό μήκος'); };
 }
 
-$('fCam').onchange=e=>{ if(e.target.files[0])loadBlob(e.target.files[0]); e.target.value=''; };
-$('fFile').onchange=e=>{ if(e.target.files[0])loadBlob(e.target.files[0]); e.target.value=''; };
+$('fCam').onchange=e=>{ const a=pendingAdd; pendingAdd=false; if(e.target.files[0])loadBlob(e.target.files[0],a); e.target.value=''; };
+$('fFile').onchange=e=>{ const a=pendingAdd; pendingAdd=false; if(e.target.files[0])loadBlob(e.target.files[0],a); e.target.value=''; };
+$('pgPrev').onclick=()=>gotoPage(S.pi-1);
+$('pgNext').onclick=()=>gotoPage(S.pi+1);
+$('pgAdd').onclick=addPhotoSheet;
 $('fBack').onchange=e=>{ if(e.target.files[0])restoreAll(e.target.files[0]); e.target.value=''; };
 $('bCam').onclick=()=>$('fCam').click();
 $('bFile').onclick=()=>$('fFile').click();
@@ -1192,11 +1541,13 @@ $('bOpen').onclick=()=>{
     <button class="primary" id="oCam">📸 Τράβα φωτογραφία</button>
     <button id="oFile">🗂️ Διάλεξε από τα αρχεία</button>
     <button id="oSaved">💾 Αποθηκευμένα έργα</button>
+    ${S.img?'<button id="oAdd">➕ Φωτογραφία στην ίδια εργασία</button>':''}
   </div>
   <p class="hint">Μπορείς επίσης να σύρεις μια φωτογραφία μέσα στο παράθυρο ή να την κάνεις επικόλληση.</p>`);
   $('oCam').onclick=()=>{closeSheet();$('fCam').click();};
   $('oFile').onclick=()=>{closeSheet();$('fFile').click();};
   $('oSaved').onclick=()=>projectsSheet();
+  const oa=$('oAdd'); if(oa)oa.onclick=addPhotoSheet;
 };
 window.addEventListener('paste',e=>{ const it=[...(e.clipboardData?.items||[])].find(i=>i.type.startsWith('image/')); if(it)loadBlob(it.getAsFile()); });
 ['dragover','drop'].forEach(t=>document.addEventListener(t,e=>{e.preventDefault(); if(t==='drop'&&e.dataTransfer.files[0])loadBlob(e.dataTransfer.files[0]);}));
@@ -1230,6 +1581,7 @@ function renderFull(){
   const x=c.getContext('2d'); x.drawImage(S.img,0,0,S.imgW,S.imgH);
   const k=Math.max(1,Math.min(6,S.imgW/900));
   const v={s:1,tx:0,ty:0};
+  placedL=[];
   S.anns.forEach(a=>drawAnn(x,a,v,k,false));
   return c;
 }
@@ -1241,10 +1593,27 @@ function renderThumb(max){
   const x=c.getContext('2d');
   x.drawImage(S.img,0,0,c.width,c.height);
   const v={s:sc,tx:0,ty:0};
+  placedL=[];
   S.anns.forEach(a=>drawAnn(x,a,v,Math.max(.7,sc*1.6),false));
   return c;
 }
 function thumbBlob(){ try{ return new Promise(r=>renderThumb().toBlob(r,'image/jpeg',0.82)); }catch(e){ return Promise.resolve(null); } }
+/* τρέχει κάτι με τα δεδομένα μιας άλλης σελίδας, χωρίς να αλλάξει η τρέχουσα */
+function withPage(p,fn){
+  const sv={img:S.img,anns:S.anns,scale:S.scale,unit:S.unit,imgW:S.imgW,imgH:S.imgH};
+  S.img=p.img||S.img; S.anns=p.anns||[]; S.scale=p.scale||null; S.unit=p.unit||S.unit; S.imgW=p.imgW||S.imgW; S.imgH=p.imgH||S.imgH;
+  let out=null; try{ out=fn(); }catch(e){}
+  Object.assign(S,sv);
+  return out;
+}
+async function pageThumb(p){
+  if(!p) return null;
+  if(!p.img) await ensureImg(p);
+  if(!p.img) return null;
+  const c=withPage(p,()=>renderThumb());
+  if(!c) return null;
+  return await new Promise(r=>c.toBlob(r,'image/jpeg',0.82));
+}
 
 async function saveFile(name,data){
   try{
@@ -1289,7 +1658,13 @@ async function backupAll(){
     const d=await db();
     const all=await new Promise((res,rej)=>{ const t=d.transaction('p','readonly'); const q=t.objectStore('p').getAll(); q.onsuccess=()=>res(q.result||[]); q.onerror=()=>rej(q.error); });
     const out={app:'fotometra',v:1,date:Date.now(),items:[]};
-    for(const r of all) out.items.push({id:r.id,kind:r.kind||'',name:r.name,date:r.date,folder:r.folder||'',anns:r.anns,scale:r.scale,unit:r.unit,owner:r.owner||'',mime:(r.blob&&r.blob.type)||'image/jpeg',img:r.blob?await blobB64(r.blob):null});
+    for(const r of all){
+      const it={id:r.id,kind:r.kind||'',name:r.name,date:r.date,folder:r.folder||'',anns:r.anns,scale:r.scale,unit:r.unit,owner:r.owner||'',mime:(r.blob&&r.blob.type)||'image/jpeg',img:r.blob?await blobB64(r.blob):null};
+      if(r.pages&&r.pages.length>1) it.pages=await Promise.all(r.pages.map(async p=>({
+        anns:p.anns||[],scale:p.scale||null,unit:p.unit||'μ',imgW:p.imgW,imgH:p.imgH,
+        mime:(p.blob&&p.blob.type)||'image/jpeg', img:p.blob?await blobB64(p.blob):null })));
+      out.items.push(it);
+    }
     const name=BK_PRE+bkToday()+'.json';
     const blob=new Blob([JSON.stringify(out)],{type:'application/json'});
     if(dir){
@@ -1462,7 +1837,11 @@ async function restoreAll(file){
     if(!o||o.app!=='fotometra'||!Array.isArray(o.items)){ toast('Δεν είναι αρχείο ΦωτοΜέτρα'); return; }
     const d=await db();
     await new Promise((res,rej)=>{ const t=d.transaction('p','readwrite'); const st=t.objectStore('p');
-      o.items.forEach(r=>st.put({id:r.id,kind:r.kind||undefined,name:r.name,date:r.date,folder:r.folder||'',anns:r.anns||[],scale:r.scale||null,unit:r.unit||'μ',owner:r.owner||'',blob:r.img?b64Blob(r.img,r.mime):null}));
+      o.items.forEach(r=>{
+        const rec={id:r.id,kind:r.kind||undefined,name:r.name,date:r.date,folder:r.folder||'',anns:r.anns||[],scale:r.scale||null,unit:r.unit||'μ',owner:r.owner||'',blob:r.img?b64Blob(r.img,r.mime):null};
+        if(r.pages) rec.pages=r.pages.map(p=>({anns:p.anns||[],scale:p.scale||null,unit:p.unit||'μ',imgW:p.imgW,imgH:p.imgH,blob:p.img?b64Blob(p.img,p.mime):null}));
+        st.put(rec);
+      });
       t.oncomplete=res; t.onerror=()=>rej(t.error); });
     toast(tr('Επαναφέρθηκαν')+' '+o.items.length+' '+tr('εργασίες'));
     if(!S.img) setTimeout(()=>{ if(!$('sheet').classList.contains('show')) projectsSheet(); },350);
@@ -1481,12 +1860,104 @@ function photoName(ext){
   const base=(S.projName||'fotometra').replace(/[^\p{L}\p{N} _-]/gu,'').trim()||'fotometra';
   return base+'-'+bkToday()+ext;
 }
+/* ---------- αναφορά για πελάτη: φωτογραφίες + πίνακας σε ένα αρχείο ---------- */
+async function reportCanvas(){
+  syncPage();
+  const list=(S.pages&&S.pages.length)?S.pages:[{img:S.img,anns:S.anns,scale:S.scale,unit:S.unit,imgW:S.imgW,imgH:S.imgH}];
+  for(const p of list) await ensureImg(p);
+  const W=1240, pad=44, rowH=42, headH=150;
+  const meas=document.createElement('canvas').getContext('2d');
+  meas.font='400 23px -apple-system,Segoe UI,Roboto,sans-serif';
+  const blocks=list.map(p=>withPage(p,()=>{
+    const rows=S.anns.filter(a=>measureOf(a)||a.note)
+      .map(a=>({n:S.anns.indexOf(a)+1, t:tr(TNAME[a.type]||a.type), m:measureOf(a)||'', note:a.note||''}));
+    const T=totals();
+    const ph=(S.imgW&&S.imgH)?Math.round(Math.min(860,(W-2*pad)*S.imgH/S.imgW)):0;
+    return {p,rows,T,ph,img:S.img,unit:uSym((S.scale&&S.scale.unit)||S.unit)};
+  }));
+  let H=headH;
+  blocks.forEach(b=>{ H+=50+b.ph+18+rowH+b.rows.length*rowH+((b.T.L||b.T.A)?rowH+6:0)+28; });
+  H=Math.max(H+30,600);
+  const c=document.createElement('canvas'); c.width=W; c.height=H;
+  const x=c.getContext('2d');
+  x.fillStyle='#ffffff'; x.fillRect(0,0,W,H);
+  x.fillStyle='#12161b'; x.font='700 36px -apple-system,Segoe UI,Roboto,sans-serif';
+  x.fillText(S.projName||'ΦωτοΜέτρα',pad,64);
+  x.fillStyle='#68707c'; x.font='400 22px -apple-system,Segoe UI,Roboto,sans-serif';
+  x.fillText(new Date().toLocaleDateString(S.lang==='en'?'en-GB':'el-GR',{day:'2-digit',month:'long',year:'numeric'}),pad,100);
+  x.strokeStyle='#dfe4ea'; x.lineWidth=2; x.beginPath(); x.moveTo(pad,124); x.lineTo(W-pad,124); x.stroke();
+  let y=headH;
+  blocks.forEach((b,bi)=>{
+    if(blocks.length>1){
+      x.fillStyle='#12161b'; x.font='700 26px -apple-system,Segoe UI,Roboto,sans-serif';
+      x.fillText(tr('Φωτογραφία')+' '+(bi+1),pad,y+10); y+=40;
+    }
+    if(b.ph){
+      const cv2=withPage(b.p,()=>renderFull());
+      if(cv2){ try{ x.drawImage(cv2,pad,y,W-2*pad,b.ph); }catch(e){} }
+      x.strokeStyle='#dfe4ea'; x.lineWidth=1; x.strokeRect(pad,y,W-2*pad,b.ph);
+      y+=b.ph+18;
+    }
+    x.fillStyle='#68707c'; x.font='700 20px -apple-system,Segoe UI,Roboto,sans-serif';
+    x.fillText(tr('Αρ.'),pad,y+26); x.fillText(tr('Τύπος'),pad+70,y+26);
+    x.fillText(tr('Μέτρηση'),pad+300,y+26); x.fillText(tr('Σχόλιο'),pad+620,y+26);
+    y+=rowH;
+    x.font='400 23px -apple-system,Segoe UI,Roboto,sans-serif';
+    b.rows.forEach((r,i)=>{
+      if(i%2===0){ x.fillStyle='#f6f8fa'; x.fillRect(pad-8,y-6,W-2*pad+16,rowH); }
+      x.fillStyle='#12161b';
+      x.fillText(String(r.n),pad,y+22);
+      x.fillText(r.t,pad+70,y+22);
+      x.fillText(r.m,pad+300,y+22);
+      let nt=r.note.replace(/\n/g,' ');
+      while(nt&&meas.measureText(nt).width>W-pad-620-10) nt=nt.slice(0,-2);
+      x.fillText(nt,pad+620,y+22);
+      y+=rowH;
+    });
+    if(b.T.L||b.T.A){
+      x.fillStyle='#12161b'; x.font='700 23px -apple-system,Segoe UI,Roboto,sans-serif';
+      const s=(b.T.L?tr('μήκη')+' '+trimN(b.T.L)+' '+b.unit:'')+((b.T.L&&b.T.A)?'   ·   ':'')+(b.T.A?tr('εμβαδά')+' '+trimN(b.T.A)+' '+b.unit+'²':'');
+      x.fillText(tr('Σύνολα')+': '+s,pad,y+24); y+=rowH+6;
+    }
+    y+=28;
+  });
+  x.fillStyle='#9aa4b2'; x.font='400 19px -apple-system,Segoe UI,Roboto,sans-serif';
+  x.fillText('ΦωτοΜέτρα — '+tr('οι μετρήσεις είναι κατά προσέγγιση'),pad,H-24);
+  return c;
+}
+async function exportReport(){
+  if(!S.img){toast('Βάλε πρώτα φωτογραφία');return;}
+  const dir=await bkAppDir(true);
+  toast('Ετοιμάζεται η αναφορά…');
+  const c=await reportCanvas();
+  const b=await new Promise(r=>c.toBlob(r,'image/jpeg',0.92));
+  if(!b){toast('Δεν έγινε η αναφορά');return;}
+  const name='anafora-'+photoName('.jpg');
+  try{
+    const f=new File([b],name,{type:'image/jpeg'});
+    if(navigator.canShare&&navigator.canShare({files:[f]})){ await navigator.share({files:[f],title:S.projName||'ΦωτοΜέτρα'}); }
+  }catch(e){}
+  if(await bkWrite(dir,name,b)) return;
+  saveFile(name,b);
+}
 function exportCsv(){
-  if(!S.anns.length){toast('Δεν υπάρχουν μετρήσεις');return;}
-  const lines=[[tr('Αρ.'),tr('Τύπος'),tr('Μέτρηση'),tr('Σχόλιο')].join(';')];
-  S.anns.forEach((a,i)=>lines.push([i+1,tr(TNAME[a.type]||a.type),(measureOf(a)||'').replace(/;/g,','),(a.note||'').replace(/;/g,',').replace(/\n/g,' ')].join(';')));
-  if(S.scale){ const R=scaleRefs();
-    lines.push(['',tr('Κλίμακα'), R.length>=2 ? (R.length+' '+tr('σημεία — με βάθος')) : ('1 px = '+trimN(uppAt(S.imgH/2))+' '+uSym(S.scale.unit)), ''].join(';')); }
+  syncPage();
+  const list=(S.pages&&S.pages.length)?S.pages:[{anns:S.anns,scale:S.scale,unit:S.unit,imgW:S.imgW,imgH:S.imgH}];
+  const multi=list.length>1;
+  const head=[tr('Αρ.'),tr('Τύπος'),tr('Μέτρηση'),tr('Σχόλιο')];
+  if(multi)head.unshift(tr('Φωτογραφία'));
+  const lines=[head.join(';')]; let any=false;
+  const put=(pi,arr)=>{ if(multi)arr.unshift(pi+1); lines.push(arr.join(';')); };
+  list.forEach((p,pi)=>withPage(p,()=>{
+    S.anns.forEach((a,i)=>{ any=true;
+      put(pi,[i+1,tr(TNAME[a.type]||a.type),(measureOf(a)||'').replace(/;/g,','),(a.note||'').replace(/;/g,',').replace(/\n/g,' ')]); });
+    if(S.scale){ const R=scaleRefs();
+      put(pi,['',tr('Κλίμακα'), R.length>=2 ? (R.length+' '+tr('σημεία — με βάθος')) : ('1 px = '+trimN(uppAt(S.imgH/2))+' '+uSym(S.scale.unit)), '']); }
+    const T=totals(); const u=uSym((S.scale&&S.scale.unit)||S.unit);
+    if(T.L||T.A) put(pi,['',tr('Σύνολα'),
+      (T.L?tr('μήκη')+' '+trimN(T.L)+' '+u:'')+(T.L&&T.A?' · ':'')+(T.A?tr('εμβαδά')+' '+trimN(T.A)+' '+u+'²':''), '']);
+  }));
+  if(!any){toast('Δεν υπάρχουν μετρήσεις');return;}
   const name='metriseis-'+photoName('.csv');
   const blob=new Blob(['\ufeff'+lines.join('\n')],{type:'text/csv'});
   bkAppDir(true).then(async dir=>{ if(!(await bkWrite(dir,name,blob))) saveFile(name,blob); });
@@ -1503,7 +1974,7 @@ function db(){
 let lastSaved=null, autoBusy=false;
 async function autoSave(){
   if(!S.img||autoBusy)return;
-  const sig=S.projName+'|'+snap();
+  const sig=S.projName+'|'+S.pi+'|'+snap();
   if(sig===lastSaved)return;
   autoBusy=true;
   try{
@@ -1511,8 +1982,13 @@ async function autoSave(){
     if(!S.projId)S.projId=uid();
     let blob=S.blob;
     if(!blob) blob=await new Promise(r=>renderFull().toBlob(r,'image/jpeg',0.9));
-    const th=await thumbBlob();
-    const rec={id:S.projId,name:S.projName,date:Date.now(),blob,thumb:th,anns:S.anns,scale:S.scale,unit:S.unit,owner:S.owner,folder:S.projFolder||'',imgW:S.imgW,imgH:S.imgH};
+    syncPage();
+    if(!S.pages.length) S.pages=[{img:S.img,blob,anns:S.anns,scale:S.scale,unit:S.unit,imgW:S.imgW,imgH:S.imgH}];
+    const pages=S.pages.map(p=>({blob:p.blob,anns:p.anns||[],scale:p.scale||null,unit:p.unit||S.unit,imgW:p.imgW,imgH:p.imgH}));
+    if(!pages[0].blob) pages[0].blob=blob;
+    const th=(await pageThumb(S.pages[0]))||await thumbBlob();
+    const p0=pages[0];
+    const rec={id:S.projId,name:S.projName,date:Date.now(),blob:p0.blob,thumb:th,anns:p0.anns,scale:p0.scale,unit:p0.unit,owner:S.owner,folder:S.projFolder||'',imgW:p0.imgW,imgH:p0.imgH,pages};
     await new Promise((res,rej)=>{ const t=d.transaction('p','readwrite'); t.objectStore('p').put(rec); t.oncomplete=res; t.onerror=()=>rej(t.error); });
     try{ localStorage.setItem('fotometra-last:'+S.owner,S.projId); }catch(_){}
     lastSaved=sig;
@@ -1533,8 +2009,7 @@ async function restoreLast(){
     const r=await new Promise((res,rej)=>{ const t=d.transaction('p','readonly'); const q=t.objectStore('p').get(id); q.onsuccess=()=>res(q.result); q.onerror=()=>rej(q.error); });
     if(!r||!r.blob)return;
     const im=new Image();
-    im.onload=()=>{ setImage(im,r.blob); S.anns=r.anns||[]; S.scale=r.scale||null; S.unit=r.unit||S.unit; S.projId=r.id; S.projName=r.name;
-      lastSaved=S.projName+'|'+snap(); draw(); scaleTag(); toast('Συνεχίζεις από εκεί που έμεινες'); };
+    im.onload=()=>{ applyRec(im,r,false); toast('Συνεχίζεις από εκεί που έμεινες'); };
     im.src=URL.createObjectURL(r.blob);
   }catch(e){}
 }
@@ -1549,15 +2024,9 @@ async function saveProject(){
   $('pC').onclick=closeSheet;
   $('pS').onclick=async()=>{
     const name=($('pN').value||tr('Χωρίς όνομα')).trim();
-    try{
-      const d=await db();
-      const id=S.projId||uid();
-      let blob=S.blob;
-      if(!blob) blob=await new Promise(r=>renderFull().toBlob(r,'image/jpeg',0.9));
-      const rec={id,name,date:Date.now(),blob,thumb:await thumbBlob(),anns:S.anns,scale:S.scale,unit:S.unit,owner:S.owner,folder:S.projFolder||'',imgW:S.imgW,imgH:S.imgH};
-      await new Promise((res,rej)=>{ const t=d.transaction('p','readwrite'); t.objectStore('p').put(rec); t.oncomplete=res; t.onerror=()=>rej(t.error); });
-      S.projId=id; S.projName=name; closeSheet(); toast(tr('Αποθηκεύτηκε')+': '+name);
-    }catch(e){ toast('Δεν έγινε η αποθήκευση'); }
+    S.projName=name; lastSaved=null;
+    await autoSave();
+    closeSheet(); toast(tr('Αποθηκεύτηκε')+': '+name);
   };
 }
 /* ---------- διαχειριστής εργασιών & φακέλων ---------- */
@@ -1637,21 +2106,29 @@ function rescaleAnns(anns,sx,sy){
     return c;
   });
 }
+function applyRec(im,r,fixOld){
+  const first=(r.pages&&r.pages[0])||{blob:r.blob,anns:r.anns,scale:r.scale,unit:r.unit,imgW:r.imgW,imgH:r.imgH};
+  setImage(im, first.blob||r.blob);
+  let anns=first.anns||[];
+  if(fixOld&&first.imgW&&first.imgH&&(first.imgW!==S.imgW||first.imgH!==S.imgH)){
+    const sx=S.imgW/first.imgW, sy=S.imgH/first.imgH;
+    if(isFinite(sx)&&isFinite(sy)&&sx>0&&sy>0){ anns=rescaleAnns(anns,sx,sy); toast('Διορθώθηκε η θέση παλιών μετρήσεων'); }
+  }
+  S.anns=anns; S.scale=first.scale||null; S.unit=first.unit||S.unit;
+  S.pages=[{img:im,blob:first.blob||r.blob,anns:S.anns,scale:S.scale,unit:S.unit,imgW:S.imgW,imgH:S.imgH}];
+  if(r.pages) r.pages.slice(1).forEach(p=>{ if(p&&p.blob)
+    S.pages.push({img:null,blob:p.blob,anns:p.anns||[],scale:p.scale||null,unit:p.unit||S.unit,imgW:p.imgW,imgH:p.imgH}); });
+  S.pi=0;
+  S.projId=r.id; S.projName=r.name; S.projFolder=r.folder||'';
+  lastSaved=S.projName+'|'+S.pi+'|'+snap();
+  draw(); scaleTag(); pageBar(); updateEnabled();
+}
 function openProject(r){
-  if(!r||!r.blob)return;
+  const first=(r&&r.pages&&r.pages[0])||r;
+  if(!r||!first||!first.blob)return;
   const im=new Image();
-  im.onload=()=>{
-    setImage(im,r.blob);
-    let anns=r.anns||[];
-    if(r.imgW&&r.imgH&&(r.imgW!==S.imgW||r.imgH!==S.imgH)){
-      const sx=S.imgW/r.imgW, sy=S.imgH/r.imgH;
-      if(isFinite(sx)&&isFinite(sy)&&sx>0&&sy>0){ anns=rescaleAnns(anns,sx,sy); toast('Διορθώθηκε η θέση παλιών μετρήσεων'); }
-    }
-    S.anns=anns; S.scale=r.scale||null; S.unit=r.unit||S.unit;
-    S.projId=r.id; S.projName=r.name; S.projFolder=r.folder||''; lastSaved=S.projName+'|'+snap();
-    draw(); scaleTag(); closeSheet();
-  };
-  im.src=URL.createObjectURL(r.blob);
+  im.onload=()=>{ applyRec(im,r,true); closeSheet(); };
+  im.src=URL.createObjectURL(first.blob);
 }
 
 async function newFolder(){
@@ -1797,7 +2274,7 @@ function toolsCfgSheet(){
   const redo=()=>{ saveTools(); buildTools(); setTool(S.tool); toolsCfgSheet(); };
   $('tOk').onclick=closeSheet;
   $('tRes').onclick=()=>{ S.mainTools=['select','note','line','calib'];
-    S.toolOrder=['select','note','line','calib','rect','poly','angle','arrow','free']; redo(); };
+    S.toolOrder=['select','note','line','calib','plane','rect','poly','angle','arrow','free']; redo(); };
   $('sheetIn').querySelectorAll('[data-up]').forEach(b=>b.onclick=()=>{ move(b.dataset.up,-1); redo(); });
   $('sheetIn').querySelectorAll('[data-dn]').forEach(b=>b.onclick=()=>{ move(b.dataset.dn,1); redo(); });
   $('sheetIn').querySelectorAll('[data-sw]').forEach(b=>b.onclick=()=>{
@@ -1819,6 +2296,7 @@ function setTool(t){
   $('tools').querySelectorAll('[data-t]').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
   const mb=$('tMore'); if(mb)mb.classList.toggle('on',!S.mainTools.includes(t));
   if(t==='calib'&&S.img)toast('Τράβα γραμμή σε κάτι με γνωστό μήκος');
+  if(t==='plane'&&S.img)toast('Πάτα τις 4 γωνίες μιας επίπεδης επιφάνειας, με τη σειρά');
   if(t==='poly')toast('Πάτα σημείο-σημείο · μετά «Ολοκλήρωση»');
   if(t==='angle')toast('Τρία πατήματα: άκρη, κορυφή, άκρη');
   draw(); refreshOpts();
@@ -1830,6 +2308,7 @@ function refreshOpts(){
   const hu=$('hUndo'), hr=$('hRedo');
   if(hu){ hu.classList.toggle('off',!S.undoS.length); hr.classList.toggle('off',!S.redoS.length); }
   $('cShow').classList.toggle('on',S.show);
+  const cn=$('cNum'); if(cn)cn.classList.toggle('on',S.nums);
   const ct=$('cTxt');
   if(ct){ ct.textContent='📝 '+tr('Κείμενο')+': '+tr(S.noteText==='hide'?'κρυφό':S.noteText==='short'?'σύντομο':'πλήρες');
     ct.classList.toggle('on',S.noteText!=='hide'); }
@@ -1857,6 +2336,7 @@ $('wRange').oninput=e=>{
 };
 $('cSnap').onclick=()=>{ S.snap=!S.snap; refreshOpts(); toast(S.snap?'Γωνίες κλειδωμένες σε 0°/45°/90°':'Ελεύθερη γωνία'); };
 $('cShow').onclick=()=>{ S.show=!S.show; draw(); refreshOpts(); };
+$('cNum').onclick=()=>{ S.nums=!S.nums; try{ localStorage.setItem('fotometra-nums',S.nums?'1':''); }catch(_){} draw(); refreshOpts(); };
 $('cTxt').onclick=()=>{
   S.noteText = S.noteText==='hide'?'short':S.noteText==='short'?'full':'hide';
   try{ localStorage.setItem('fotometra-txt',S.noteText); }catch(_){}
@@ -1904,6 +2384,7 @@ try{ const c=JSON.parse(localStorage.getItem('fotometra-tools')||'null');
   if(c&&c.m&&c.m.length){S.mainTools=c.m; if(c.o&&c.o.length)S.toolOrder=c.o;} }catch(_){}
 try{ S.autoDev=!!localStorage.getItem('fotometra-autodev'); }catch(_){}
 try{ const t=localStorage.getItem('fotometra-txt'); if(t)S.noteText=t; }catch(_){}
+try{ const n=localStorage.getItem('fotometra-nums'); if(n!==null)S.nums=!!n; }catch(_){}
 try{ const w=parseFloat(localStorage.getItem('fotometra-w')); if(w>0){ S.width=w; $('wRange').value=w; $('wNum').textContent=String(w).replace('.',','); } }catch(_){}
 buildTools(); setTool('select'); fitCanvas(); refreshOpts(); updateEnabled(); applyLang(document.body);
 document.documentElement.lang=(S.lang==='en'?'en':'el');
@@ -1950,7 +2431,7 @@ if(QP.get('flat')==='1'){
 })();
 
 /* ---------- εγκατάσταση ως εφαρμογή ---------- */
-const APPV='2.7.1';
+const APPV='2.8.0';
 let deferredPrompt=null;
 let instDismissed=false; try{ instDismissed=!!localStorage.getItem('fotometra-noinst'); }catch(_){}
 function showInstBar(v){ const b=document.getElementById('instBar'); if(b)b.style.display=v?'flex':'none'; }
