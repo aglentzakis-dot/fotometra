@@ -203,7 +203,8 @@ ul.tips{margin:8px 0 0 16px;padding:0;font-size:12.5px;line-height:1.6;color:var
   <div id="opts">
     <span id="swatches" style="display:flex;gap:6px"></span>
     <span class="sep"></span>
-    <input type="range" id="wRange" min="1" max="10" step="1" value="3" title="πάχος">
+    <input type="range" id="wRange" min="0.5" max="8" step="0.5" value="1.5" title="πάχος γραμμής">
+    <span id="wNum" style="font-size:11px;font-weight:700;color:var(--muted);min-width:22px;text-align:center">1,5</span>
     <span class="sep"></span>
     <button class="chip" id="cSnap">📐 Κλείδωμα γωνίας</button>
     <button class="chip" id="cShow">👁️ Σημάδια</button>
@@ -233,7 +234,7 @@ const S = {
   owner:OWNER, path:'', projFolder:'',
   img:null, blob:null, imgW:0, imgH:0,
   anns:[], sel:null, tool:'select',
-  color:'#ff3b30', width:3, snap:false, show:true,
+  color:'#ff3b30', width:1.5, snap:false, show:true,
   scale:null,                 // {upp, unit}
   unit:'μ',                   // μονάδα εμφάνισης όταν δεν έχει οριστεί κλίμακα
   autoDev:false,            // αυτόματο γράψιμο αρχείου στο κινητό (μόνο με εφαρμογή Android)
@@ -284,6 +285,7 @@ Object.assign(EN,{"Οι εργασίες μου": "My projects", "➕ Νέα ε�
 Object.assign(EN,{"Άδειος φάκελος.": "Empty folder.", "📁 Νέος φάκελος": "📁 New folder", "Νέος φάκελος": "New folder", "π.χ. Πολυκατοικία Αθηνάς": "e.g. Athinas building", "Γράψε όνομα": "Enter a name", "Μετονομασία": "Rename", "Μετακίνηση σε φάκελο": "Move to folder", "Μετακίνηση": "Move", "Εδώ": "Here", "🏠 Αρχική": "🏠 Home", "Δεν υπάρχουν φάκελοι ακόμη.": "No folders yet.", "Μετακινήθηκε": "Moved", "Αντίγραφο": "Duplicate", "αντίγραφο": "copy", "Πίσω": "Back", "Αποστολή": "Send", "σβήνει και ό,τι έχει μέσα": "deletes everything inside it too"});
 Object.assign(EN,{"Λίστα μετρήσεων": "Measurement list", "όλα τα σημάδια της τρέχουσας φωτογραφίας": "every mark on the current photo"});
 Object.assign(EN,{"Διορθώθηκε η θέση παλιών μετρήσεων": "Old measurements' position was corrected"});
+Object.assign(EN,{"πάχος γραμμής": "line thickness"});
 Object.assign(EN,{"Σημείο κλίμακας": "Scale point", "Τράβηξες μια γραμμή πάνω σε κάτι που ξέρεις πόσο είναι (πόρτα, πλακάκι, μέτρο). Γράψε το πραγματικό μήκος.": "You drew a line over something whose size you know (a door, a tile, a tape measure). Enter its real length.", "Μπορείς να βάλεις μέχρι 3 σημεία κλίμακας σε διαφορετικές αποστάσεις — ένα μπροστά κι ένα πιο πίσω. Τότε η εφαρμογή καταλαβαίνει το βάθος και διορθώνει μόνη της όσα είναι πιο μακριά.": "You can set up to 3 scale points at different distances — one near and one further back. The app then understands depth and corrects what is further away on its own.", "Έχεις ήδη 3 σημεία κλίμακας — σβήσε ένα πρώτα": "You already have 3 scale points — delete one first", "Κλίμακα με": "Scale with", "σημεία — υπολογίζεται και το βάθος": "points — depth is taken into account", "σημεία — με βάθος": "points — with depth", "Βάθος": "Depth", "βάλε μέχρι 3 σημεία κλίμακας σε διαφορετικές αποστάσεις — π.χ. το πόδι ενός τραπεζιού μπροστά και ένα ίδιο πόδι πιο πίσω, που στη φωτογραφία φαίνεται μικρότερο. Με δύο ή τρία σημεία η εφαρμογή καταλαβαίνει πόσο «μικραίνει» ο χώρος όσο πάει πίσω και δίνει σε κάθε μέτρηση τη δική της κλίμακα.": "set up to 3 scale points at different distances — e.g. a table leg at the front and an identical leg further back, which looks smaller in the photo. With two or three points the app works out how much the space shrinks with distance and gives every measurement its own scale."});
 Object.assign(EN,{"Διάσταση": "Dimension", "Περισσότερα…": "More…", "Γράψε τη διάσταση και πάτα Αποθήκευση": "Type the dimension and tap Save", "Διαγραφή εργασίας": "Delete project", "Θα σβηστεί η φωτογραφία μαζί με όλες τις μετρήσεις και τις σημειώσεις της. Δεν αναιρείται.": "The photo will be deleted along with all its measurements and notes. This cannot be undone.", "Η εργασία διαγράφηκε": "Project deleted"});
 Object.assign(EN,{"Φάκελος αντιγράφων": "Backup folder", "Επιλογή φακέλου": "Choose folder", "Αλλαγή φακέλου": "Change folder", "Επαναφορά από τον φάκελο": "Restore from the folder", "τα 10 νεότερα αντίγραφα — επαναφορά με ένα πάτημα": "the 10 newest backups — restore with one tap", "Επαναφορά από αρχείο": "Restore from file", "νεότερο": "newest", "Δεν υπάρχουν αντίγραφα στον φάκελο ακόμη.": "No backups in the folder yet.", "Αποθηκεύτηκε στον φάκελο": "Saved to the folder", "αποθηκεύεται στον φάκελο": "saved to the folder", "δεν έχει οριστεί — διάλεξε π.χ. Λήψεις/Backup": "not set — choose e.g. Downloads/Backup", "δεν υποστηρίζεται εδώ — τα αντίγραφα κατεβαίνουν ως αρχείο": "not supported here — backups download as a file", "Να σταματήσει η χρήση του φακέλου;": "Stop using the folder?", "Να σταματήσει η χρήση του φακέλου": "Stop using the folder", "Τα αρχεία που υπάρχουν ήδη στον φάκελο δεν σβήνονται.": "Files already in the folder are not deleted.", "Προσοχή: ο φάκελος είναι κοινός για όλες τις εφαρμογές σου, οπότε θα σταματήσει να χρησιμοποιείται και από αυτές, μέχρι να τον ξαναδιαλέξεις.": "Careful: the folder is shared by all your apps, so they will stop using it too until you choose it again.", "Αφαίρεση": "Remove", "Ο φάκελος αφαιρέθηκε": "Folder removed", "Δεν δόθηκε πρόσβαση στον φάκελο": "Folder access was not granted", "Δεν ορίστηκε φάκελος": "No folder was set", "Ορίστηκε ο φάκελος": "Folder set"});
@@ -506,7 +508,7 @@ function drawAnn(c,a,v,k,selected){
   c.save();
   c.lineCap='round'; c.lineJoin='round';
   c.strokeStyle=a.color; c.fillStyle=a.color;
-  c.lineWidth=w+2*k; c.globalAlpha=.35; c.strokeStyle='#000';
+  c.lineWidth=w+1.4*k; c.globalAlpha=.32; c.strokeStyle='#000';
   if(a.type!=='note') strokePath(c,a,P,k);
   c.globalAlpha=1; c.strokeStyle=a.color; c.lineWidth=w;
   strokePath(c,a,P,k);
@@ -556,7 +558,7 @@ function strokePath(c,a,P,k){
   for(let i=1;i<P.length;i++)c.lineTo(P[i].x,P[i].y);
   if(a.type==='poly'&&a.closed&&P.length>2)c.closePath();
   c.stroke();
-  if(a.type==='arrow'&&P.length>1)arrowHead(c,P[P.length-2],P[P.length-1],w);
+  if(a.type==='arrow'&&P.length>1)arrowHead(c,P[P.length-2],P[P.length-1],w,k);
   if(a.type==='line'||a.type==='calib')tickEnds(c,a,P,k);
   if(a.type==='angle'&&P.length>=3)arcMark(c,P,k);
 }
@@ -568,11 +570,11 @@ function tickEnds(c,a,P,k){
     c.moveTo(p.x-Math.cos(ang)*L,p.y-Math.sin(ang)*L);
     c.lineTo(p.x+Math.cos(ang)*L,p.y+Math.sin(ang)*L); c.stroke();});
 }
-function arrowHead(c,p0,p1,w){
-  const ang=Math.atan2(p1.y-p0.y,p1.x-p0.x), L=Math.max(10,w*3.4);
+function arrowHead(c,p0,p1,w,k){
+  const ang=Math.atan2(p1.y-p0.y,p1.x-p0.x), L=Math.max(16*(k||1), w*7);
   c.beginPath(); c.moveTo(p1.x,p1.y);
-  c.lineTo(p1.x-Math.cos(ang-0.45)*L, p1.y-Math.sin(ang-0.45)*L);
-  c.lineTo(p1.x-Math.cos(ang+0.45)*L, p1.y-Math.sin(ang+0.45)*L);
+  c.lineTo(p1.x-Math.cos(ang-0.40)*L, p1.y-Math.sin(ang-0.40)*L);
+  c.lineTo(p1.x-Math.cos(ang+0.40)*L, p1.y-Math.sin(ang+0.40)*L);
   c.closePath(); c.fill();
 }
 function arcMark(c,P,k){
@@ -1847,7 +1849,12 @@ function delSel(){
   push(); S.anns=S.anns.filter(a=>a.id!==S.sel); S.sel=null; draw(); refreshOpts();
 }
 
-$('wRange').oninput=e=>{ S.width=+e.target.value; const a=S.anns.find(x=>x.id===S.sel); if(a){a.width=S.width;draw();} };
+$('wRange').oninput=e=>{
+  S.width=+e.target.value;
+  const n=$('wNum'); if(n)n.textContent=String(S.width).replace('.',',');
+  try{ localStorage.setItem('fotometra-w',String(S.width)); }catch(_){}
+  const a=S.anns.find(x=>x.id===S.sel); if(a){a.width=S.width;draw();}
+};
 $('cSnap').onclick=()=>{ S.snap=!S.snap; refreshOpts(); toast(S.snap?'Γωνίες κλειδωμένες σε 0°/45°/90°':'Ελεύθερη γωνία'); };
 $('cShow').onclick=()=>{ S.show=!S.show; draw(); refreshOpts(); };
 $('cTxt').onclick=()=>{
@@ -1897,6 +1904,7 @@ try{ const c=JSON.parse(localStorage.getItem('fotometra-tools')||'null');
   if(c&&c.m&&c.m.length){S.mainTools=c.m; if(c.o&&c.o.length)S.toolOrder=c.o;} }catch(_){}
 try{ S.autoDev=!!localStorage.getItem('fotometra-autodev'); }catch(_){}
 try{ const t=localStorage.getItem('fotometra-txt'); if(t)S.noteText=t; }catch(_){}
+try{ const w=parseFloat(localStorage.getItem('fotometra-w')); if(w>0){ S.width=w; $('wRange').value=w; $('wNum').textContent=String(w).replace('.',','); } }catch(_){}
 buildTools(); setTool('select'); fitCanvas(); refreshOpts(); updateEnabled(); applyLang(document.body);
 document.documentElement.lang=(S.lang==='en'?'en':'el');
 if(QP.get('title')) document.querySelector('#top h1').textContent=QP.get('title');
@@ -1942,7 +1950,7 @@ if(QP.get('flat')==='1'){
 })();
 
 /* ---------- εγκατάσταση ως εφαρμογή ---------- */
-const APPV='2.7.0';
+const APPV='2.7.1';
 let deferredPrompt=null;
 let instDismissed=false; try{ instDismissed=!!localStorage.getItem('fotometra-noinst'); }catch(_){}
 function showInstBar(v){ const b=document.getElementById('instBar'); if(b)b.style.display=v?'flex':'none'; }
