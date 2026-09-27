@@ -157,6 +157,14 @@ textarea{min-height:84px;resize:vertical}
   transition:opacity .2s;z-index:60;max-width:90%;text-align:center
 }
 #toast.show{opacity:.95}
+.grp{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:13px 12px;margin-bottom:8px;
+  border:1px solid var(--line);border-radius:13px;background:var(--panel2);cursor:pointer;font:inherit;color:inherit}
+.grp:active{transform:scale(.985)}
+.grp .gi{font-size:21px;flex:0 0 auto;width:26px;text-align:center}
+.grp .gt{flex:1;min-width:0}
+.grp .gt b{display:block;font-size:13.5px}
+.grp .gt span{display:block;font-size:11.5px;color:var(--muted);margin-top:1px}
+.grp .ga{color:var(--muted);font-size:19px;flex:0 0 auto}
 ul.tips{margin:8px 0 0 16px;padding:0;font-size:12.5px;line-height:1.6;color:var(--muted)}
 </style>
 </head>
@@ -312,6 +320,7 @@ Object.assign(EN,{"Άδειος φάκελος.": "Empty folder.", "📁 Νέο�
 Object.assign(EN,{"Λίστα μετρήσεων": "Measurement list", "όλα τα σημάδια της τρέχουσας φωτογραφίας": "every mark on the current photo"});
 Object.assign(EN,{"Διορθώθηκε η θέση παλιών μετρήσεων": "Old measurements' position was corrected"});
 Object.assign(EN,{"πάτα τις 4 γωνίες μιας επίπεδης επιφάνειας (τοίχος, δάπεδο, πόρτα) και δώσε πλάτος και ύψος. Όποια μέτρηση πέφτει μέσα της βγαίνει σωστή ακόμη κι αν η φωτογραφία είναι τραβηγμένη λοξά — είναι ο πιο ακριβής τρόπος.": "tap the 4 corners of a flat surface (wall, floor, door) and give its width and height. Any measurement inside it comes out right even if the photo was taken at an angle — it is the most accurate way.", "Πολλές φωτογραφίες": "Several photos", "με το ＋ κάτω από την εικόνα βάζεις κι άλλη φωτογραφία στην ίδια εργασία, π.χ. τους τέσσερις τοίχους ενός δωματίου. Με τα βελάκια αλλάζεις φωτογραφία· η καθεμία έχει τις δικές της μετρήσεις.": "the ＋ under the image adds another photo to the same project, e.g. the four walls of a room. The arrows switch photos; each one has its own measurements.", "🎤 Φωνή": "🎤 Voice", "στο παράθυρο της διάστασης λες «ένα και ογδόντα τέσσερα» και γράφεται μόνο του. Το δεύτερο μέρος μετά το «και» μπαίνει σαν εκατοστά.": "in the dimension window say the number out loud and it is typed in for you. What comes after «and» is taken as centimetres.", "από το μενού, βγάζει σε ένα αρχείο τις φωτογραφίες με τα σημάδια, τον πίνακα των μετρήσεων και τα σύνολα.": "from the menu, it puts the marked photos, the measurement table and the totals into one file."});
+Object.assign(EN,{"Μέτρηση και εμφάνιση":"Measuring and display","μονάδα, κλίμακα, αριθμοί, βέλος":"unit, scale, numbers, arrow","Αποστολή και εξαγωγή":"Sending and export","φωτογραφία, πίνακας, αναφορά πελάτη":"photo, table, client report","Εργασίες":"Projects","άνοιγμα, όνομα, λίστα μετρήσεων":"open, name, measurement list","Ασφάλεια και αντίγραφα":"Safety and backups","αντίγραφα, κάδος, ανάκτηση":"backups, trash, recovery","Η εφαρμογή":"The app","γλώσσα, έκδοση, οδηγίες":"language, version, help","‹ Ρυθμίσεις":"‹ Settings","Ρυθμίσεις":"Settings","Όνομα εργασίας":"Project name","σβήνει όλα όσα ζωγράφισες σε αυτή τη φωτογραφία":"erases everything you drew on this photo"});
 Object.assign(EN,{"Υπάρχουν κι άλλες":"There are more","είναι δεμένες με άλλον πελάτη ή φτιάχτηκαν έξω από εδώ — δεν χάθηκαν":"they belong to another client or were made outside this window — nothing is lost","Δες τες":"Show them","Φαίνονται όλες οι εργασίες":"All projects are shown","και όσες ανήκουν σε άλλον πελάτη":"including those of other clients","Μόνο αυτού":"Only this one","Σύνδεση με αυτόν τον πελάτη":"Link to this client","για να φαίνεται κανονικά μέσα στο Δρομολόγιο":"so it shows up normally inside the other app","Σύνδεση":"Link","Συνδέθηκε":"Linked"});
 Object.assign(EN,{"Βέλος":"Arrow","μύτη και στις δύο άκρες, όπως στις διαστάσεις σχεδίου":"a head at both ends, like a drawing dimension","Διπλό":"Double","Μονό":"Single"});
 Object.assign(EN,{"Ασφάλεια δεδομένων":"Data safety","αντίγραφα, κάδος, ανάκτηση — τίποτα δεν χάνεται":"backups, trash, recovery — nothing is lost","Εργασίες στη συσκευή":"Projects on this device","Τελευταίο αντίγραφο":"Last backup","Μόνιμη αποθήκευση":"Persistent storage","Κάδος":"Trash","Τώρα":"Now","ποτέ":"never","σήμερα":"today","χθες":"yesterday","Δίχτυ ασφαλείας (μετρήσεις)":"Safety net (measurements)","Ανάκτηση — δες τα όλα":"Recovery — show everything","εμφανίζει κάθε εργασία που υπάρχει στη συσκευή, ό,τι φάκελο κι αν έχει":"shows every project on the device, whatever folder it is in","Ανάκτηση — όλα όσα υπάρχουν":"Recovery — everything found","Οριστικό άδειασμα;":"Empty for good?","Άδειασμα κάδου":"Empty trash","Ο κάδος είναι άδειος.":"The trash is empty.","Ό,τι διαγράφεις μένει εδώ 30 μέρες. Τίποτα δεν χάνεται αμέσως.":"Whatever you delete stays here for 30 days. Nothing is lost at once.","τελευταίο αντίγραφο":"last backup","κάδος, ανάκτηση":"trash, recovery","🛡️ Αντίγραφο πρώτα":"🛡️ Back up first","Αντίγραφο ασφαλείας…":"Backing up…","Ο κάδος άδειασε":"Trash emptied","Έγινε μόνιμη αποθήκευση":"Storage is now persistent","Δεν το επέτρεψε ο φυλλομετρητής":"The browser did not allow it","Δεν υπάρχει δίχτυ ασφαλείας":"There is no safety net yet","Όλες οι εργασίες υπάρχουν κανονικά":"All projects are present","Επανήλθαν":"Restored","εργασίες χωρίς φωτογραφία":"projects without a photo","Επανήλθε":"Restored","εργασίες βγήκαν στην αρχική":"projects moved to home","Είναι όλες στην αρχική":"They are all at home"});
@@ -1041,7 +1050,13 @@ function navEnter(){
 }
 function navExit(){
   if(!NAV_ON||navLevel<=0) return;
-  navLevel--; suppressPop=true;
+  navLevel--;
+  // Ασφάλεια: γυρνάμε πίσω ΜΟΝΟ αν στεκόμαστε πραγματικά σε δικό μας βήμα.
+  // Αλλιώς ένα γρήγορο κλείσιμο-άνοιγμα θα μπορούσε να βγάλει έξω την εφαρμογή.
+  let mine=false;
+  try{ mine = !!(history.state && typeof history.state.fm==='number'); }catch(e){}
+  if(!mine) return;
+  suppressPop=true;
   try{ history.back(); }catch(e){ suppressPop=false; }
 }
 async function goHome(){
@@ -1357,84 +1372,118 @@ function focusAnn(id){
   S.view.tx=cv._w/2-c.x*S.view.s; S.view.ty=cv._h/2-c.y*S.view.s; draw();
 }
 
+/* ---------- Ρυθμίσεις: πέντε κατηγορίες αντί για μια ατέλειωτη λίστα ---------- */
+const MG=[
+  {k:'meas',ic:'📐',n:'Μέτρηση και εμφάνιση',   s:'μονάδα, κλίμακα, αριθμοί, βέλος'},
+  {k:'out', ic:'📤',n:'Αποστολή και εξαγωγή',   s:'φωτογραφία, πίνακας, αναφορά πελάτη'},
+  {k:'proj',ic:'🗂️',n:'Εργασίες',              s:'άνοιγμα, όνομα, λίστα μετρήσεων'},
+  {k:'safe',ic:'🛡️',n:'Ασφάλεια και αντίγραφα', s:'αντίγραφα, κάδος, ανάκτηση'},
+  {k:'app', ic:'⚙️',n:'Η εφαρμογή',            s:'γλώσσα, έκδοση, οδηγίες'}
+];
 function menuSheet(){
-  openSheet(`<h2>Μενού</h2>
-    <div class="row"><div class="rowmain"><b>Αποθήκευση στη συσκευή</b><span>η δουλειά σου σώζεται μόνη της — εδώ της δίνεις όνομα</span></div><button class="mini" id="mSave">Όνομα</button></div>
-    <div class="row"><div class="rowmain"><b>Αποθηκευμένα έργα</b><span>άνοιγμα παλιότερης δουλειάς</span></div><button class="mini" id="mOpen">Άνοιγμα</button></div>
-    <div class="row"><div class="rowmain"><b>Λίστα μετρήσεων</b><span>όλα τα σημάδια της τρέχουσας φωτογραφίας</span></div><button class="mini" id="mList">Άνοιγμα</button></div>
+  openSheet(`<h2>Ρυθμίσεις</h2>
+    ${MG.map(g=>`<button class="grp" data-g="${g.k}"><span class="gi">${g.ic}</span>
+      <span class="gt"><b>${g.n}</b><span>${g.s}</span></span><span class="ga">›</span></button>`).join('')}
+    <p class="hint" style="text-align:center">ΦωτοΜέτρα ${APPV} · <span id="mVerS"></span></p>
+    <div class="acts"><button class="primary" id="mClose">Κλείσιμο</button></div>`);
+  $('mClose').onclick=closeSheet;
+  $('sheetIn').querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>groupSheet(b.dataset.g));
+  const v=$('mVerS');
+  if(v){ const t=bkLastAt(); v.textContent=tr('τελευταίο αντίγραφο')+': '+tr(agoTxt(t));
+    if(!t||(Date.now()-t)>7*864e5) v.style.color='var(--danger)'; }
+}
+function groupSheet(k){
+  const g=MG.find(x=>x.k===k)||MG[0];
+  openSheet(`<h2><span>${g.ic}</span> <span>${g.n}</span></h2>${(MROWS[g.k]||(()=>''))()}
+    <div class="acts"><button id="mUp">‹ Ρυθμίσεις</button><button class="primary" id="mClose">Κλείσιμο</button></div>`);
+  $('mUp').onclick=menuSheet;
+  $('mClose').onclick=closeSheet;
+  bindMenu();
+}
+const MROWS={
+  meas:()=>`
+    <div class="row"><div class="rowmain"><b>Μονάδα μέτρησης</b><span>σε τι θα γράφονται οι διαστάσεις</span></div>
+      <select id="mUnit" style="width:auto;padding:6px 8px;font-size:12px">${UNITS.map(u=>`<option value="${u}"${u===(S.scale?S.scale.unit:S.unit)?' selected':''}>${uName(u)}</option>`).join('')}</select></div>
+    <div class="row"><div class="rowmain"><b>Νέα κλίμακα</b><span>${!S.scale?tr('δεν έχει οριστεί'):(scaleRefs().length>=2?scaleRefs().length+' '+tr('σημεία — με βάθος'):(S.lang==='en'?'now: 1 px = ':'τώρα: 1 εικ. = ')+trimN(uppAt(S.imgH/2))+' '+uSym(S.scale.unit))}</span></div><button class="mini" id="mScale">Ορισμός</button></div>
+    <div class="row"><div class="rowmain"><b>Αρίθμηση μετρήσεων</b><span>κυκλωμένος αριθμός δίπλα σε κάθε μέτρηση, ίδιος με του πίνακα</span></div><button class="mini" id="mNums">${S.nums?'Ναι':'Όχι'}</button></div>
+    <div class="row"><div class="rowmain"><b>Βέλος</b><span>μύτη και στις δύο άκρες, όπως στις διαστάσεις σχεδίου</span></div><button class="mini" id="mArr">${S.arrow2?'Διπλό':'Μονό'}</button></div>
+    <div class="row"><div class="rowmain"><b>Καθάρισμα σημαδιών</b><span>σβήνει όλα όσα ζωγράφισες σε αυτή τη φωτογραφία</span></div><button class="mini del" id="mClear">Καθάρισμα</button></div>`,
+  out:()=>`
     <div class="row"><div class="rowmain"><b>Κοινοποίηση</b><span>email, Viber, Messenger, Συλλογή, Drive…</span></div><button class="mini" id="mShare">Άνοιγμα</button></div>
     <div class="row"><div class="rowmain"><b>Εξαγωγή εικόνας</b><span>κατέβασμα αρχείου με όλα τα σημάδια</span></div><button class="mini" id="mPng">Εικόνα</button></div>
+    <div class="row"><div class="rowmain"><b>Εξαγωγή πίνακα μετρήσεων</b><span>αρχείο για υπολογιστικό φύλλο</span></div><button class="mini" id="mCsv">Πίνακας</button></div>
+    <div class="row"><div class="rowmain"><b>Αναφορά για πελάτη</b><span>φωτογραφίες, μετρήσεις και σύνολα σε ένα αρχείο</span></div><button class="mini" id="mRep">Αναφορά</button></div>`,
+  proj:()=>`
+    <div class="row"><div class="rowmain"><b>Αποθηκευμένα έργα</b><span>άνοιγμα παλιότερης δουλειάς</span></div><button class="mini" id="mOpen">Άνοιγμα</button></div>
+    <div class="row"><div class="rowmain"><b>Όνομα εργασίας</b><span>η δουλειά σου σώζεται μόνη της — εδώ της δίνεις όνομα</span></div><button class="mini" id="mSave">Όνομα</button></div>
+    <div class="row"><div class="rowmain"><b>Λίστα μετρήσεων</b><span>όλα τα σημάδια της τρέχουσας φωτογραφίας</span></div><button class="mini" id="mList">Άνοιγμα</button></div>`,
+  safe:()=>`
+    <div class="row"><div class="rowmain"><b>Ασφάλεια δεδομένων</b><span id="mSafe">αντίγραφα, κάδος, ανάκτηση — τίποτα δεν χάνεται</span></div><button class="mini" id="mSafeB">Άνοιγμα</button></div>
     <div class="row"><div class="rowmain"><b>Αντίγραφο ασφαλείας (όλα)</b><span id="mBackSub">ένα αρχείο με όλες τις εργασίες και τις φωτογραφίες</span></div><button class="mini" id="mBack">Δημιουργία</button></div>
     <div class="row"><div class="rowmain"><b>Φάκελος αντιγράφων</b><span id="mFold">…</span></div><button class="mini" id="mFoldPick">Επιλογή φακέλου</button><button class="mini del" id="mFoldX" title="Να σταματήσει η χρήση του φακέλου" style="display:none">✕</button></div>
     <div class="row" id="mRestFRow"><div class="rowmain"><b>Επαναφορά από τον φάκελο</b><span>τα 10 νεότερα αντίγραφα — επαναφορά με ένα πάτημα</span></div><button class="mini" id="mRestF">Επαναφορά</button></div>
     <div class="row"><div class="rowmain"><b>Επαναφορά από αρχείο</b><span>φέρνει πίσω τα πάντα σε νέο κινητό ή μετά από καθάρισμα</span></div><button class="mini" id="mRest">Επαναφορά</button></div>
     <div class="row"><div class="rowmain"><b>Αυτόματη αποθήκευση στο κινητό</b><span>${native()?'ενεργή — κάθε εργασία γράφεται σε φάκελο':'θα ενεργοποιηθεί μόλις γίνει εφαρμογή Android'}</span></div>
-      <button class="mini" id="mAuto">${native()?(S.autoDev?'Ναι':'Όχι'):'—'}</button></div>
-    <div class="row"><div class="rowmain"><b>Εξαγωγή πίνακα μετρήσεων</b><span>αρχείο για υπολογιστικό φύλλο</span></div><button class="mini" id="mCsv">Πίνακας</button></div>
-    <div class="row"><div class="rowmain"><b>Αναφορά για πελάτη</b><span>φωτογραφίες, μετρήσεις και σύνολα σε ένα αρχείο</span></div><button class="mini" id="mRep">Αναφορά</button></div>
+      <button class="mini" id="mAuto">${native()?(S.autoDev?'Ναι':'Όχι'):'—'}</button></div>`,
+  app:()=>`
     <div class="row"><div class="rowmain"><b>Γλώσσα</b><span>Ελληνικά / English</span></div>
       <select id="mLang" style="width:auto;padding:6px 8px;font-size:12px">
         <option value="el"${S.lang==='el'?' selected':''}>Ελληνικά</option>
         <option value="en"${S.lang==='en'?' selected':''}>English</option></select></div>
-    <div class="row"><div class="rowmain"><b>Μονάδα μέτρησης</b><span>σε τι θα γράφονται οι διαστάσεις</span></div>
-      <select id="mUnit" style="width:auto;padding:6px 8px;font-size:12px">${UNITS.map(u=>`<option value="${u}"${u===(S.scale?S.scale.unit:S.unit)?' selected':''}>${uName(u)}</option>`).join('')}</select></div>
-    <div class="row"><div class="rowmain"><b>Νέα κλίμακα</b><span>${!S.scale?tr('δεν έχει οριστεί'):(scaleRefs().length>=2?scaleRefs().length+' '+tr('σημεία — με βάθος'):(S.lang==='en'?'now: 1 px = ':'τώρα: 1 εικ. = ')+trimN(uppAt(S.imgH/2))+' '+uSym(S.scale.unit))}</span></div><button class="mini" id="mScale">Ορισμός</button></div>
-    <div class="row"><div class="rowmain"><b>Καθάρισμα σημαδιών</b><span>σβήνει όλα όσα ζωγράφισες</span></div><button class="mini del" id="mClear">Καθάρισμα</button></div>
-    <div class="row"><div class="rowmain"><b>Αρίθμηση μετρήσεων</b><span>κυκλωμένος αριθμός δίπλα σε κάθε μέτρηση, ίδιος με του πίνακα</span></div><button class="mini" id="mNums">${S.nums?'Ναι':'Όχι'}</button></div>
-    <div class="row"><div class="rowmain"><b>Βέλος</b><span>μύτη και στις δύο άκρες, όπως στις διαστάσεις σχεδίου</span></div><button class="mini" id="mArr">${S.arrow2?'Διπλό':'Μονό'}</button></div>
-    <div class="row"><div class="rowmain"><b>Ασφάλεια δεδομένων</b><span id="mSafe">αντίγραφα, κάδος, ανάκτηση — τίποτα δεν χάνεται</span></div><button class="mini" id="mSafeB">Άνοιγμα</button></div>
     <div class="row"><div class="rowmain"><b>Έκδοση και ενημέρωση</b><span id="mVer">…</span></div><button class="mini" id="mUpd">Έλεγχος</button></div>
-    <div class="row"><div class="rowmain"><b>Οδηγίες</b><span>πώς δουλεύει το κάθε εργαλείο</span></div><button class="mini" id="mHelp">Άνοιγμα</button></div>
-    <div class="row"><div class="rowmain"><b>Εγκατάσταση στο κινητό</b><span>να μπει σαν κανονική εφαρμογή</span></div><button class="mini" id="mInst">Εγκατάσταση</button></div>
-    <p class="hint">${tr("Έκδοση")} ${APPV}</p>
-    <div class="acts"><button class="primary" id="mClose">Κλείσιμο</button></div>`);
-  $('mClose').onclick=closeSheet;
-  $('mInst').onclick=()=>{ closeSheet(); doInstall(); };
-  $('mLang').onchange=e=>{ setLang(e.target.value); closeSheet(); setTimeout(menuSheet,150); };
-  $('mList').onclick=()=>{ if(!S.img){toast('Βάλε πρώτα φωτογραφία');return;} closeSheet(); listSheet(); };
-  $('mUnit').onchange=e=>{ setUnit(e.target.value); toast(tr('Μονάδα')+': '+uName(e.target.value)); };
-  $('mSave').onclick=()=>{ closeSheet(); saveProject(); };
-  $('mOpen').onclick=()=>{ projectsSheet(); };
-  $('mShare').onclick=()=>{ closeSheet(); sharePng(); };
-  $('mBack').onclick=()=>{ closeSheet(); backupAll(); };
-  $('mRest').onclick=()=>{ closeSheet(); $('fBack').click(); };
-  $('mRestF').onclick=()=>{ folderRestoreSheet(); };
-  $('mFoldPick').onclick=async()=>{
+    ${(typeof doInstall==='function')?`<div class="row"><div class="rowmain"><b>Εγκατάσταση στο κινητό</b><span>να μπει σαν κανονική εφαρμογή</span></div><button class="mini" id="mInst">Εγκατάσταση</button></div>`:''}
+    <div class="row"><div class="rowmain"><b>Οδηγίες</b><span>πώς δουλεύει το κάθε εργαλείο</span></div><button class="mini" id="mHelp">Άνοιγμα</button></div>`
+};
+/* Ένα σημείο για όλα τα κουμπιά — δένει μόνο όσα υπάρχουν στην ανοιχτή κατηγορία. */
+function bindMenu(){
+  const on=(id,fn)=>{ const e=$(id); if(e) e.onclick=fn; };
+  const ch=(id,fn)=>{ const e=$(id); if(e) e.onchange=fn; };
+  ch('mLang',e=>{ setLang(e.target.value); closeSheet(); setTimeout(()=>groupSheet('app'),150); });
+  ch('mUnit',e=>{ setUnit(e.target.value); toast(tr('Μονάδα')+': '+uName(e.target.value)); });
+  on('mList',()=>{ if(!S.img){toast('Βάλε πρώτα φωτογραφία');return;} closeSheet(); listSheet(); });
+  on('mSave',()=>{ closeSheet(); saveProject(); });
+  on('mOpen',()=>{ projectsSheet(); });
+  on('mShare',()=>{ closeSheet(); sharePng(); });
+  on('mPng',()=>{ closeSheet(); exportPng(); });
+  on('mCsv',()=>{ closeSheet(); exportCsv(); });
+  on('mRep',()=>{ closeSheet(); exportReport(); });
+  on('mScale',()=>{ closeSheet(); setTool('calib'); toast('Τράβα γραμμή πάνω σε κάτι με γνωστό μήκος'); });
+  on('mClear',()=>{ push(); S.anns=[]; S.sel=null; draw(); closeSheet(); });
+  on('mHelp',helpSheet);
+  on('mInst',()=>{ closeSheet(); doInstall(); });
+  on('mUpd',()=>checkUpdate(true));
+  on('mSafeB',safetySheet);
+  on('mBack',()=>{ closeSheet(); backupAll(); });
+  on('mRest',()=>{ closeSheet(); $('fBack').click(); });
+  on('mRestF',()=>{ folderRestoreSheet(); });
+  on('mFoldX',bkClearSheet);
+  on('mFoldPick',async()=>{
     try{ const h=await bkPick(); toast(tr('Ορίστηκε ο φάκελος')+': '+h.name+' / '+BK_SUB); }
     catch(e){ if(!e||e.name!=='AbortError') toast('Δεν ορίστηκε φάκελος'); }
     bkFillMenu();
-  };
-  $('mFoldX').onclick=bkClearSheet;
-  bkFillMenu();
-  $('mAuto').onclick=()=>{ if(!native()){toast('Διαθέσιμο στην εφαρμογή Android');return;}
+  });
+  on('mAuto',()=>{ if(!native()){toast('Διαθέσιμο στην εφαρμογή Android');return;}
     S.autoDev=!S.autoDev; try{localStorage.setItem('fotometra-autodev',S.autoDev?'1':'');}catch(_){}
-    $('mAuto').textContent=S.autoDev?'Ναι':'Όχι'; };
-  $('mPng').onclick=()=>{ closeSheet(); exportPng(); };
-  $('mCsv').onclick=()=>{ closeSheet(); exportCsv(); };
-  $('mRep').onclick=()=>{ closeSheet(); exportReport(); };
-  $('mScale').onclick=()=>{ closeSheet(); setTool('calib'); toast('Τράβα γραμμή πάνω σε κάτι με γνωστό μήκος'); };
-  $('mClear').onclick=()=>{ push(); S.anns=[]; S.sel=null; draw(); closeSheet(); };
-  $('mHelp').onclick=helpSheet;
-  $('mUpd').onclick=()=>checkUpdate(true);
-  $('mSafeB').onclick=safetySheet;
-  $('mArr').onclick=()=>{
-    S.arrow2=!S.arrow2;
-    try{ localStorage.setItem('fotometra-arrow2',S.arrow2?'1':''); }catch(_){}
-    $('mArr').textContent=tr(S.arrow2?'Διπλό':'Μονό');
-    draw();
-  };
-  (async()=>{ const e=$('mSafe'); if(!e)return; const t=bkLastAt();
-    e.textContent=tr('τελευταίο αντίγραφο')+': '+tr(agoTxt(t))+' · '+tr('κάδος, ανάκτηση');
-    if(!t||(Date.now()-t)>7*864e5) e.style.color='var(--danger)';
-  })();
-  $('mNums').onclick=()=>{
+    $('mAuto').textContent=tr(S.autoDev?'Ναι':'Όχι'); });
+  on('mNums',()=>{
     S.nums=!S.nums;
     try{ localStorage.setItem('fotometra-nums',S.nums?'1':''); }catch(_){}
     $('mNums').textContent=tr(S.nums?'Ναι':'Όχι');
     draw(); refreshOpts();
-  };
+  });
+  on('mArr',()=>{
+    S.arrow2=!S.arrow2;
+    try{ localStorage.setItem('fotometra-arrow2',S.arrow2?'1':''); }catch(_){}
+    $('mArr').textContent=tr(S.arrow2?'Διπλό':'Μονό');
+    draw();
+  });
+  if($('mFold')) bkFillMenu();
   const mv=$('mVer');
   if(mv) mv.textContent = appVer() ? (tr('τώρα')+' '+appVer()+' · '+tr('πάτα για έλεγχο νέας έκδοσης')) : tr('προεπισκόπηση — δεν χρειάζεται ενημέρωση');
+  const ms=$('mSafe');
+  if(ms){ const t=bkLastAt();
+    ms.textContent=tr('τελευταίο αντίγραφο')+': '+tr(agoTxt(t))+' · '+tr('κάδος, ανάκτηση');
+    if(!t||(Date.now()-t)>7*864e5) ms.style.color='var(--danger)'; }
 }
 function helpSheet(){
   openSheet(`<h2>Οδηγίες</h2>
@@ -1860,7 +1909,7 @@ async function safetySheet(){
     <div class="row"><div class="rowmain"><b>Δίχτυ ασφαλείας (μετρήσεις)</b><span>${s?(s.items||[]).length+' εργασίες · '+agoTxt(s.date)+' — μόνο μετρήσεις, χωρίς φωτογραφίες':'δεν έχει γραφτεί ακόμη'}</span></div><button class="mini" id="sfNet">Επαναφορά</button></div>
     <div class="row"><div class="rowmain"><b>Ανάκτηση — δες τα όλα</b><span>εμφανίζει κάθε εργασία που υπάρχει στη συσκευή, ό,τι φάκελο κι αν έχει</span></div><button class="mini" id="sfAll">Άνοιγμα</button></div>
     <div class="acts"><button class="primary" id="sfC">Κλείσιμο</button></div>`);
-  $('sfC').onclick=menuSheet;
+  $('sfC').onclick=()=>groupSheet('safe');
   $('sfNow').onclick=async()=>{ closeSheet(); await backupAll(); };
   $('sfBin').onclick=binSheet;
   $('sfAll').onclick=rescueSheet;
@@ -2108,8 +2157,8 @@ function bkClearSheet(){
     <p class="hint">Τα αρχεία που υπάρχουν ήδη στον φάκελο δεν σβήνονται.</p>
     <p class="hint">Προσοχή: ο φάκελος είναι κοινός για όλες τις εφαρμογές σου, οπότε θα σταματήσει να χρησιμοποιείται και από αυτές, μέχρι να τον ξαναδιαλέξεις.</p>
     <div class="acts"><button id="fxC">Άκυρο</button><button class="primary" id="fxOk" style="background:var(--danger)">Αφαίρεση</button></div>`);
-  $('fxC').onclick=menuSheet;
-  $('fxOk').onclick=async()=>{ try{ await bkClearRoot(); toast('Ο φάκελος αφαιρέθηκε'); }catch(_){ toast('Δεν έγινε η αποθήκευση'); } menuSheet(); };
+  $('fxC').onclick=()=>groupSheet('safe');
+  $('fxOk').onclick=async()=>{ try{ await bkClearRoot(); toast('Ο φάκελος αφαιρέθηκε'); }catch(_){ toast('Δεν έγινε η αποθήκευση'); } groupSheet('safe'); };
 }
 async function folderRestoreSheet(){
   if(!bkSupported()){ $('fBack').click(); return; }
@@ -2781,7 +2830,7 @@ if(QP.get('flat')==='1'){
 })();
 
 /* ---------- εγκατάσταση ως εφαρμογή ---------- */
-const APPV='2.9.2';
+const APPV='2.9.3';
 let deferredPrompt=null;
 let instDismissed=false; try{ instDismissed=!!localStorage.getItem('fotometra-noinst'); }catch(_){}
 function showInstBar(v){ const b=document.getElementById('instBar'); if(b)b.style.display=v?'flex':'none'; }
