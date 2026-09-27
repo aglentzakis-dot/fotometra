@@ -265,6 +265,7 @@ const S = {
   toolOrder:['select','note','line','calib','plane','rect','poly','angle','arrow','free'],
   noteText:'hide',            // hide | short | full — πόσο κείμενο φαίνεται πάνω στην εικόνα
   nums:true,                  // αριθμοί πάνω στις μετρήσεις, ίδιοι με του πίνακα
+  arrow2:true,                // βέλος με μύτη και στις δύο άκρες
   view:{s:1,tx:0,ty:0},
   pages:[], pi:0,             // πολλές φωτογραφίες στην ίδια εργασία
   draft:null, undoS:[], redoS:[],
@@ -311,6 +312,8 @@ Object.assign(EN,{"Άδειος φάκελος.": "Empty folder.", "📁 Νέο�
 Object.assign(EN,{"Λίστα μετρήσεων": "Measurement list", "όλα τα σημάδια της τρέχουσας φωτογραφίας": "every mark on the current photo"});
 Object.assign(EN,{"Διορθώθηκε η θέση παλιών μετρήσεων": "Old measurements' position was corrected"});
 Object.assign(EN,{"πάτα τις 4 γωνίες μιας επίπεδης επιφάνειας (τοίχος, δάπεδο, πόρτα) και δώσε πλάτος και ύψος. Όποια μέτρηση πέφτει μέσα της βγαίνει σωστή ακόμη κι αν η φωτογραφία είναι τραβηγμένη λοξά — είναι ο πιο ακριβής τρόπος.": "tap the 4 corners of a flat surface (wall, floor, door) and give its width and height. Any measurement inside it comes out right even if the photo was taken at an angle — it is the most accurate way.", "Πολλές φωτογραφίες": "Several photos", "με το ＋ κάτω από την εικόνα βάζεις κι άλλη φωτογραφία στην ίδια εργασία, π.χ. τους τέσσερις τοίχους ενός δωματίου. Με τα βελάκια αλλάζεις φωτογραφία· η καθεμία έχει τις δικές της μετρήσεις.": "the ＋ under the image adds another photo to the same project, e.g. the four walls of a room. The arrows switch photos; each one has its own measurements.", "🎤 Φωνή": "🎤 Voice", "στο παράθυρο της διάστασης λες «ένα και ογδόντα τέσσερα» και γράφεται μόνο του. Το δεύτερο μέρος μετά το «και» μπαίνει σαν εκατοστά.": "in the dimension window say the number out loud and it is typed in for you. What comes after «and» is taken as centimetres.", "από το μενού, βγάζει σε ένα αρχείο τις φωτογραφίες με τα σημάδια, τον πίνακα των μετρήσεων και τα σύνολα.": "from the menu, it puts the marked photos, the measurement table and the totals into one file."});
+Object.assign(EN,{"Υπάρχουν κι άλλες":"There are more","είναι δεμένες με άλλον πελάτη ή φτιάχτηκαν έξω από εδώ — δεν χάθηκαν":"they belong to another client or were made outside this window — nothing is lost","Δες τες":"Show them","Φαίνονται όλες οι εργασίες":"All projects are shown","και όσες ανήκουν σε άλλον πελάτη":"including those of other clients","Μόνο αυτού":"Only this one","Σύνδεση με αυτόν τον πελάτη":"Link to this client","για να φαίνεται κανονικά μέσα στο Δρομολόγιο":"so it shows up normally inside the other app","Σύνδεση":"Link","Συνδέθηκε":"Linked"});
+Object.assign(EN,{"Βέλος":"Arrow","μύτη και στις δύο άκρες, όπως στις διαστάσεις σχεδίου":"a head at both ends, like a drawing dimension","Διπλό":"Double","Μονό":"Single"});
 Object.assign(EN,{"Ασφάλεια δεδομένων":"Data safety","αντίγραφα, κάδος, ανάκτηση — τίποτα δεν χάνεται":"backups, trash, recovery — nothing is lost","Εργασίες στη συσκευή":"Projects on this device","Τελευταίο αντίγραφο":"Last backup","Μόνιμη αποθήκευση":"Persistent storage","Κάδος":"Trash","Τώρα":"Now","ποτέ":"never","σήμερα":"today","χθες":"yesterday","Δίχτυ ασφαλείας (μετρήσεις)":"Safety net (measurements)","Ανάκτηση — δες τα όλα":"Recovery — show everything","εμφανίζει κάθε εργασία που υπάρχει στη συσκευή, ό,τι φάκελο κι αν έχει":"shows every project on the device, whatever folder it is in","Ανάκτηση — όλα όσα υπάρχουν":"Recovery — everything found","Οριστικό άδειασμα;":"Empty for good?","Άδειασμα κάδου":"Empty trash","Ο κάδος είναι άδειος.":"The trash is empty.","Ό,τι διαγράφεις μένει εδώ 30 μέρες. Τίποτα δεν χάνεται αμέσως.":"Whatever you delete stays here for 30 days. Nothing is lost at once.","τελευταίο αντίγραφο":"last backup","κάδος, ανάκτηση":"trash, recovery","🛡️ Αντίγραφο πρώτα":"🛡️ Back up first","Αντίγραφο ασφαλείας…":"Backing up…","Ο κάδος άδειασε":"Trash emptied","Έγινε μόνιμη αποθήκευση":"Storage is now persistent","Δεν το επέτρεψε ο φυλλομετρητής":"The browser did not allow it","Δεν υπάρχει δίχτυ ασφαλείας":"There is no safety net yet","Όλες οι εργασίες υπάρχουν κανονικά":"All projects are present","Επανήλθαν":"Restored","εργασίες χωρίς φωτογραφία":"projects without a photo","Επανήλθε":"Restored","εργασίες βγήκαν στην αρχική":"projects moved to home","Είναι όλες στην αρχική":"They are all at home"});
 Object.assign(EN,{"Αρίθμηση μετρήσεων": "Numbering of measurements", "κυκλωμένος αριθμός δίπλα σε κάθε μέτρηση, ίδιος με του πίνακα": "a circled number next to each measurement, the same as in the table"});
 Object.assign(EN,{"Έκδοση και ενημέρωση": "Version and update", "Έλεγχος": "Check", "τώρα": "now", "πάτα για έλεγχο νέας έκδοσης": "tap to check for a new version", "προεπισκόπηση — δεν χρειάζεται ενημέρωση": "preview — no update needed", "Υπάρχει νεότερη έκδοση": "A newer version is available", "⟳ Ενημέρωση": "⟳ Update", "Νεότερη έκδοση": "Newer version", "Τώρα έχεις": "You have", "Διαθέσιμη": "Available", "Οι εργασίες, οι φωτογραφίες και οι ρυθμίσεις σου μένουν όπως είναι.": "Your projects, photos and settings stay as they are.", "⟳ Ενημέρωση τώρα": "⟳ Update now", "Έλεγχος για νεότερη έκδοση…": "Checking for a newer version…", "Έχεις την τελευταία έκδοση": "You have the latest version", "Δεν έγινε ο έλεγχος — δες τη σύνδεση": "Check failed — look at your connection", "Γίνεται ενημέρωση…": "Updating…", "Ανανέωση…": "Refreshing…"});
@@ -666,17 +669,17 @@ function drawAnn(c,a,v,k,selected){
     let ntxt='';
     if(a.note){ ntxt = nm==='full'?a.note : nm==='short'?shortTxt(a.note) : '💬'; }
     const txt=(m?m:'')+(ntxt?(m?'  ·  ':'')+ntxt:'');
-    if(S.nums) drawNumBadge(c,P,a,n,k);   // ίδιος αριθμός με του πίνακα, και για την κλίμακα
     if(txt){
       const pos=labelPos(a,P);
       if(a.lo){ pos.x+=a.lo.x*v.s; pos.y+=a.lo.y*v.s; }
       const r=drawLabel(c,pos,txt,a.color,k,!!a.lo);
       if(v===S.view)LR.set(a.id,r);
+      if(S.nums) drawNumBadge(c,r,a,n,k,P);   // κολλητά στην ταμπέλα της διάστασης
       if(a.lo&&(Math.abs(a.lo.x)+Math.abs(a.lo.y))*v.s>18){
         c.save(); c.setLineDash([3*k,3*k]); c.globalAlpha=.6; c.lineWidth=1.2*k; c.strokeStyle=a.color;
         c.beginPath(); c.moveTo(labelPos(a,P).x, labelPos(a,P).y); c.lineTo(r.x+r.w/2, r.y+r.h); c.stroke(); c.restore();
       }
-    }
+    } else if(S.nums) drawNumBadge(c,null,a,n,k,P);   // χωρίς ταμπέλα: δίπλα στο σχήμα
   }
   if(selected){
     c.setLineDash([4*k,4*k]); c.strokeStyle='#fff'; c.lineWidth=1.5*k; c.globalAlpha=.9;
@@ -708,7 +711,10 @@ function strokePath(c,a,P,k){
   for(let i=1;i<P.length;i++)c.lineTo(P[i].x,P[i].y);
   if(a.type==='poly'&&a.closed&&P.length>2)c.closePath();
   c.stroke();
-  if(a.type==='arrow'&&P.length>1)arrowHead(c,P[P.length-2],P[P.length-1],w,k);
+  if(a.type==='arrow'&&P.length>1){
+    arrowHead(c,P[P.length-2],P[P.length-1],w,k);
+    if(S.arrow2) arrowHead(c,P[1],P[0],w,k);          // μύτη και στην αρχή — βέλος διάστασης ↔
+  }
   if(a.type==='line'||a.type==='calib')tickEnds(c,a,P,k);
   if(a.type==='angle'&&P.length>=3)arcMark(c,P,k);
 }
@@ -766,27 +772,39 @@ function drawLabel(c,pos,txt,color,k,fixed){
   lines.forEach((l,i)=>c.fillText(l,x+padX,y+padY+i*fs*1.25));
   return {x,y,w,h};
 }
-/* κυκλωμένος αριθμός δίπλα στη μέτρηση — ίδιος με τον αριθμό του πίνακα */
-function drawNumBadge(c,P,a,n,k){
-  if(!P||!P.length)return;
-  let p={x:P[0].x,y:P[0].y}, dx=-0.7, dy=-0.7;
-  if(a.type==='rect'&&P.length>1){
-    p={x:Math.min(P[0].x,P[1].x), y:Math.min(P[0].y,P[1].y)};
-  } else if(P.length>1){
-    const d=Math.hypot(P[1].x-P[0].x,P[1].y-P[0].y)||1;
-    dx=-(P[1].x-P[0].x)/d; dy=-(P[1].y-P[0].y)/d;
+/* Κυκλωμένος αριθμός, ίδιος με του πίνακα. Μόνο η περίμετρος του κύκλου —
+   μέσα μένει διάφανο, οπότε φαίνεται η φωτογραφία από κάτω. Μπαίνει κολλητά
+   στην ταμπέλα όπου γράφονται τα μέτρα ή τα εκατοστά. */
+function drawNumBadge(c,box,a,n,k,P){
+  const r=10.5*k, gap=4*k;
+  const CW=(c===ctx)?(cv._w||0):c.canvas.width;
+  let cx,cy;
+  if(box){
+    cy=box.y+box.h/2;
+    cx=box.x-r-gap;                                  // αριστερά από την ταμπέλα
+    if(cx-r<2*k) cx=box.x+box.w+r+gap;               // αν δεν χωράει, δεξιά της
+    if(CW&&cx+r>CW-2*k) cx=Math.max(r+2*k,box.x-r-gap);
+  } else {
+    if(!P||!P.length) return;
+    let p={x:P[0].x,y:P[0].y}, dx=-0.7, dy=-0.7;
+    if(a.type==='rect'&&P.length>1){ p={x:Math.min(P[0].x,P[1].x), y:Math.min(P[0].y,P[1].y)}; }
+    else if(P.length>1){ const d=Math.hypot(P[1].x-P[0].x,P[1].y-P[0].y)||1;
+      dx=-(P[1].x-P[0].x)/d; dy=-(P[1].y-P[0].y)/d; }
+    cx=p.x+dx*(r+gap); cy=p.y+dy*(r+gap);
   }
-  const r=11*k, cx=p.x+dx*(r+4*k), cy=p.y+dy*(r+4*k);
   c.save();
-  c.globalAlpha=1;
-  c.beginPath(); c.arc(cx,cy,r,0,7); c.fillStyle=a.color; c.fill();
-  c.lineWidth=2*k; c.strokeStyle='#fff'; c.stroke();
-  c.fillStyle=(a.color==='#ffffff'||a.color==='#ffd60a')?'#111':'#fff';
+  c.lineJoin='round'; c.lineCap='round';
+  c.beginPath(); c.arc(cx,cy,r,0,7);
+  c.globalAlpha=.38; c.strokeStyle='#000'; c.lineWidth=3.6*k; c.stroke();   // σκιά, να ξεχωρίζει σε ανοιχτό φόντο
+  c.globalAlpha=1;   c.strokeStyle=a.color; c.lineWidth=2*k;   c.stroke();
   c.font='700 '+(12.5*k)+'px -apple-system,Segoe UI,Roboto,sans-serif';
   c.textAlign='center'; c.textBaseline='middle';
+  c.lineWidth=3.2*k; c.globalAlpha=.55; c.strokeStyle='#000';
+  c.strokeText(String(n),cx,cy+0.5*k);
+  c.globalAlpha=1; c.fillStyle=a.color;
   c.fillText(String(n),cx,cy+0.5*k);
   c.restore();
-  placedL.push({x:cx-r,y:cy-r,w:2*r,h:2*r});   // οι ετικέτες το αποφεύγουν
+  placedL.push({x:cx-r,y:cy-r,w:2*r,h:2*r});   // οι επόμενες ετικέτες το αποφεύγουν
 }
 function drawPin(c,p,n,a,k,v,nm){
   const r=13*k;
@@ -1363,6 +1381,7 @@ function menuSheet(){
     <div class="row"><div class="rowmain"><b>Νέα κλίμακα</b><span>${!S.scale?tr('δεν έχει οριστεί'):(scaleRefs().length>=2?scaleRefs().length+' '+tr('σημεία — με βάθος'):(S.lang==='en'?'now: 1 px = ':'τώρα: 1 εικ. = ')+trimN(uppAt(S.imgH/2))+' '+uSym(S.scale.unit))}</span></div><button class="mini" id="mScale">Ορισμός</button></div>
     <div class="row"><div class="rowmain"><b>Καθάρισμα σημαδιών</b><span>σβήνει όλα όσα ζωγράφισες</span></div><button class="mini del" id="mClear">Καθάρισμα</button></div>
     <div class="row"><div class="rowmain"><b>Αρίθμηση μετρήσεων</b><span>κυκλωμένος αριθμός δίπλα σε κάθε μέτρηση, ίδιος με του πίνακα</span></div><button class="mini" id="mNums">${S.nums?'Ναι':'Όχι'}</button></div>
+    <div class="row"><div class="rowmain"><b>Βέλος</b><span>μύτη και στις δύο άκρες, όπως στις διαστάσεις σχεδίου</span></div><button class="mini" id="mArr">${S.arrow2?'Διπλό':'Μονό'}</button></div>
     <div class="row"><div class="rowmain"><b>Ασφάλεια δεδομένων</b><span id="mSafe">αντίγραφα, κάδος, ανάκτηση — τίποτα δεν χάνεται</span></div><button class="mini" id="mSafeB">Άνοιγμα</button></div>
     <div class="row"><div class="rowmain"><b>Έκδοση και ενημέρωση</b><span id="mVer">…</span></div><button class="mini" id="mUpd">Έλεγχος</button></div>
     <div class="row"><div class="rowmain"><b>Οδηγίες</b><span>πώς δουλεύει το κάθε εργαλείο</span></div><button class="mini" id="mHelp">Άνοιγμα</button></div>
@@ -1398,6 +1417,12 @@ function menuSheet(){
   $('mHelp').onclick=helpSheet;
   $('mUpd').onclick=()=>checkUpdate(true);
   $('mSafeB').onclick=safetySheet;
+  $('mArr').onclick=()=>{
+    S.arrow2=!S.arrow2;
+    try{ localStorage.setItem('fotometra-arrow2',S.arrow2?'1':''); }catch(_){}
+    $('mArr').textContent=tr(S.arrow2?'Διπλό':'Μονό');
+    draw();
+  };
   (async()=>{ const e=$('mSafe'); if(!e)return; const t=bkLastAt();
     e.textContent=tr('τελευταίο αντίγραφο')+': '+tr(agoTxt(t))+' · '+tr('κάδος, ανάκτηση');
     if(!t||(Date.now()-t)>7*864e5) e.style.color='var(--danger)';
@@ -1881,7 +1906,7 @@ async function rescueSheet(){
     return `<div class="row" style="gap:10px">
       <div style="width:46px;height:46px;border-radius:9px;flex:0 0 auto;overflow:hidden;background:var(--panel2);border:1px solid var(--line)">
         ${u?`<img src="${u}" style="width:100%;height:100%;object-fit:cover;display:block">`:''}</div>
-      <div class="rowmain"><b>${esc(r.name||'Χωρίς όνομα')}</b><span>${dstr(r.date)} · ${(r.anns||[]).length} σημάδια${r.folder?' · 📁 '+esc(r.folder):''}</span></div>
+      <div class="rowmain"><b>${esc(r.name||'Χωρίς όνομα')}</b><span>${dstr(r.date)} · ${(r.anns||[]).length} σημάδια${r.folder?' · 📁 '+esc(r.folder):''}${r.owner?' · 🔗 '+esc(r.owner):''}</span></div>
       <button class="mini" data-ro="${r.id}">Άνοιγμα</button></div>`;
   }).join('');
   openSheet(`<h2>Ανάκτηση — όλα όσα υπάρχουν</h2>
@@ -2379,13 +2404,22 @@ async function projectsSheet(){
       <button class="mini" data-menu="${r.id}">⋮</button>
     </div>`).join('');
 
-  const hidden=all.filter(r=>r.kind!=='folder').length-items.length;
+  let raw=[]; try{ raw=(await allRecsRaw()).filter(r=>!r.del&&r.kind!=='folder'); }catch(e){}
+  const mineN=all.filter(r=>r.kind!=='folder').length;
+  const others=Math.max(0,raw.length-mineN);           // δεμένες με άλλον πελάτη ή με άλλη εφαρμογή
+  const filtered=!!(S.owner&&S.owner!=='*');
+  const otherRow = others&&filtered ? `<div class="row"><div class="rowmain"><b>Υπάρχουν κι άλλες ${others} εργασίες</b>
+      <span>είναι δεμένες με άλλον πελάτη ή φτιάχτηκαν έξω από εδώ — δεν χάθηκαν</span></div>
+      <button class="mini" id="prAll">Δες τες</button></div>`
+    : (!filtered&&S.owner==='*' ? `<div class="row"><div class="rowmain"><b>Φαίνονται όλες οι εργασίες</b>
+      <span>και όσες ανήκουν σε άλλον πελάτη</span></div><button class="mini" id="prMine">Μόνο αυτού</button></div>` : '');
+  const hidden=mineN-items.length;
   const empty=(folders.length||items.length)?''
     : recsErr ? '<p class="hint" style="color:var(--danger)"><b>Δεν άνοιξε η αποθήκη αυτή τη στιγμή.</b> Οι εργασίες σου ΔΕΝ χάθηκαν. Κλείσε και ξανάνοιξε την εφαρμογή· αν συνεχίσει, πάτα «Ασφάλεια δεδομένων» στο μενού.</p>'
     : hidden>0 ? '<p class="hint">Άδειος φάκελος — έχεις '+hidden+' εργασίες σε άλλους φακέλους. Πάτα 🏠 πιο πάνω.</p>'
     : '<p class="hint">Άδειος φάκελος.</p>';
 
-  openSheet(`<h2>Οι εργασίες μου</h2>${crumbs}${fRows}${iRows}${empty}
+  openSheet(`<h2>Οι εργασίες μου</h2>${crumbs}${otherRow}${fRows}${iRows}${empty}
     <div class="stickBar">
       <div class="acts">
         <button id="prFold">📁 Νέος φάκελος</button>
@@ -2398,6 +2432,8 @@ async function projectsSheet(){
   $('prC').onclick=closeSheet;
   $('prNew').onclick=()=>{ closeSheet(); setTimeout(()=>$('bOpen').click(),120); };
   $('prFold').onclick=newFolder;
+  const pa=$('prAll');   if(pa) pa.onclick=()=>{ S.owner='*'; S.path=''; projectsSheet(); };
+  const pm=$('prMine');  if(pm) pm.onclick=()=>{ S.owner=OWNER; S.path=''; projectsSheet(); };
   $('sheetIn').querySelectorAll('[data-cd]').forEach(b=>b.onclick=()=>{ S.path=b.dataset.cd; projectsSheet(); });
   $('sheetIn').querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>openProject(all.find(x=>x.id===b.dataset.o)));
   $('sheetIn').querySelectorAll('[data-menu]').forEach(b=>b.onclick=()=>itemMenu(all.find(x=>x.id===b.dataset.menu)));
@@ -2456,6 +2492,8 @@ function itemMenu(r){
   openSheet(`<h2>${esc(r.name)}</h2>
     <div class="row"><div class="rowmain"><b>Μετονομασία</b></div><button class="mini" id="imRen">Αλλαγή</button></div>
     <div class="row"><div class="rowmain"><b>Μετακίνηση σε φάκελο</b></div><button class="mini" id="imMove">Μετακίνηση</button></div>
+    ${(!isF&&OWNER&&OWNER!=='*'&&(r.owner||'')!==OWNER)?`<div class="row"><div class="rowmain"><b>Σύνδεση με αυτόν τον πελάτη</b>
+      <span>για να φαίνεται κανονικά μέσα στο Δρομολόγιο</span></div><button class="mini" id="imOwn">Σύνδεση</button></div>`:''}
     ${isF?'':`<div class="row"><div class="rowmain"><b>Κοινοποίηση</b></div><button class="mini" id="imShare">Αποστολή</button></div>
     <div class="row"><div class="rowmain"><b>Αντίγραφο</b></div><button class="mini" id="imDup">Δημιουργία</button></div>`}
     <div class="row"><div class="rowmain"><b>Διαγραφή</b><span>${isF?'σβήνει και ό,τι έχει μέσα':''}</span></div><button class="mini del" id="imDel">Διαγραφή</button></div>
@@ -2464,6 +2502,8 @@ function itemMenu(r){
   $('imRen').onclick=()=>renameRec(r);
   $('imMove').onclick=()=>moveRec(r);
   $('imDel').onclick=()=>delTree(r);
+  const io2=$('imOwn');
+  if(io2) io2.onclick=async()=>{ r.owner=OWNER; await putRec(r); toast('Συνδέθηκε'); projectsSheet(); };
   if(!isF){
     $('imShare').onclick=()=>{ openProject(r); setTimeout(sharePng,600); };
     $('imDup').onclick=async()=>{
@@ -2694,6 +2734,7 @@ try{ const c=JSON.parse(localStorage.getItem('fotometra-tools')||'null');
 try{ S.autoDev=!!localStorage.getItem('fotometra-autodev'); }catch(_){}
 try{ const t=localStorage.getItem('fotometra-txt'); if(t)S.noteText=t; }catch(_){}
 try{ const n=localStorage.getItem('fotometra-nums'); if(n!==null)S.nums=!!n; }catch(_){}
+try{ const a2=localStorage.getItem('fotometra-arrow2'); if(a2!==null)S.arrow2=!!a2; }catch(_){}
 try{ const w=parseFloat(localStorage.getItem('fotometra-w')); if(w>0){ S.width=w; $('wRange').value=w; $('wNum').textContent=String(w).replace('.',','); } }catch(_){}
 buildTools(); setTool('select'); fitCanvas(); refreshOpts(); updateEnabled(); applyLang(document.body);
 document.documentElement.lang=(S.lang==='en'?'en':'el');
@@ -2740,7 +2781,7 @@ if(QP.get('flat')==='1'){
 })();
 
 /* ---------- εγκατάσταση ως εφαρμογή ---------- */
-const APPV='2.9.0';
+const APPV='2.9.2';
 let deferredPrompt=null;
 let instDismissed=false; try{ instDismissed=!!localStorage.getItem('fotometra-noinst'); }catch(_){}
 function showInstBar(v){ const b=document.getElementById('instBar'); if(b)b.style.display=v?'flex':'none'; }
