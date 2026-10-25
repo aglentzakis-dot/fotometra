@@ -1,7 +1,7 @@
 /* ΦωτοΜέτρα — service worker */
-const V = 'fotometra-v39';
+const V = 'fotometra-v40';
 const FILES = [
-  './', './index.html', './manifest.json',
+  './', './index.html','./plaisio.js', './manifest.json',
   './embed.js', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'
 ];
 
