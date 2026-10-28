@@ -2,6 +2,9 @@
 <html lang="el">
 <head>
 <meta charset="utf-8">
+<meta name="app-version" content="2.9.4">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-VcxRW85xJ8ru4xdw3ZdLQDYLaCB20jejCSkOUZYsG6Y='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' data: blob:; media-src 'self' data: blob:; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta name="referrer" content="no-referrer">
 <script src="plaisio.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
 <meta name="theme-color" content="#1a2a4a">
@@ -2905,7 +2908,7 @@ if(QP.get('flat')==='1'){
 })();
 
 /* ---------- εγκατάσταση ως εφαρμογή ---------- */
-const APPV='2.9.3';
+const APPV='2.9.4',APP_VERSION=APPV;
 let deferredPrompt=null;
 let instDismissed=false; try{ instDismissed=!!localStorage.getItem('fotometra-noinst'); }catch(_){}
 function showInstBar(v){ const b=document.getElementById('instBar'); if(b)b.style.display=v?'flex':'none'; }

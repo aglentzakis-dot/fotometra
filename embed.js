@@ -24,7 +24,7 @@
      Κάθε φορά που αναβαθμίζεται η ΦωτοΜέτρα, η αλλαγή φαίνεται αμέσως και εδώ,
      χωρίς να πειράξεις τίποτα σε αυτή την εφαρμογή.
      (Αν κάποτε θελήσεις τοπικό αντίγραφο, βάλε: var APP = 'fotometra/index.html';) */
-  var APP = 'https://aglentzakis-dot.github.io/fotometra/index.html';
+  var APP = 'https://fotometra.glenapps.gr/index.html';
   var ov = null;
   var ready = false;
 
