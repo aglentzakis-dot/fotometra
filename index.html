@@ -2,8 +2,8 @@
 <html lang="el">
 <head>
 <meta charset="utf-8">
-<meta name="app-version" content="2.9.5">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-5f2neCa07+Bodp5i8P0BZfsniLDSp8lh7dhQvXchD1E='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' data: blob:; media-src 'self' data: blob:; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta name="app-version" content="2.9.6">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Edu1yIUKc3qbyJ9iqDKpWCDkIBNX/GAsmnC0hOxMaZc='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' data: blob:; media-src 'self' data: blob:; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="no-referrer">
 <script src="plaisio.js"></script>
 <script src="metafora-rythmisi.js"></script>
@@ -2910,7 +2910,7 @@ if(QP.get('flat')==='1'){
 })();
 
 /* ---------- εγκατάσταση ως εφαρμογή ---------- */
-const APPV='2.9.5',APP_VERSION=APPV;
+const APPV='2.9.6',APP_VERSION=APPV;
 let deferredPrompt=null;
 let instDismissed=false; try{ instDismissed=!!localStorage.getItem('fotometra-noinst'); }catch(_){}
 function showInstBar(v){ const b=document.getElementById('instBar'); if(b)b.style.display=v?'flex':'none'; }

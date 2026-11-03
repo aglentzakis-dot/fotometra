@@ -1,5 +1,5 @@
 /* ΦωτοΜέτρα — service worker */
-const V = 'fotometra-2.9.5';
+const V = 'fotometra-2.9.6';
 const FILES = [
   './', './index.html','./plaisio.js', './metafora-rythmisi.js', './metafora-lipsi.js', './manifest.json',
   './embed.js', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'
