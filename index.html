@@ -2,10 +2,11 @@
 <html lang="el">
 <head>
 <meta charset="utf-8">
-<meta name="app-version" content="2.9.6">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Edu1yIUKc3qbyJ9iqDKpWCDkIBNX/GAsmnC0hOxMaZc='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' data: blob:; media-src 'self' data: blob:; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta name="app-version" content="2.9.7">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-kdB88+lM9svjS/T4RbMhyRXFAtWnx8zIA5UgRG/r+t0='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://aglentzakis-dot.github.io https://*.glenapps.gr; connect-src 'self' data: blob: https://aglentzakis-dot.github.io https://*.glenapps.gr; media-src 'self' data: blob:; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="no-referrer">
 <script src="plaisio.js"></script>
+<script src="efarmoges-mas.js"></script>
 <script src="metafora-rythmisi.js"></script>
 <script src="metafora-lipsi.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
@@ -185,6 +186,7 @@ ul.tips{margin:8px 0 0 16px;padding:0;font-size:12.5px;line-height:1.6;color:var
 #camLive .shot:active{background:#fff}
 #camLive .cmsg{position:absolute;left:0;right:0;top:45%;text-align:center;color:#fff;font-size:16px;padding:0 24px}
 #camLive.busy .shot{opacity:.4}
+.efm-newdot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#FDD117;box-shadow:0 0 0 2px #EF9F0255;margin-left:6px;vertical-align:middle}
 </style>
 </head>
 <body>
@@ -1399,14 +1401,25 @@ const MG=[
   {k:'safe',ic:'🛡️',n:'Ασφάλεια και αντίγραφα', s:'αντίγραφα, κάδος, ανάκτηση'},
   {k:'app', ic:'⚙️',n:'Η εφαρμογή',            s:'γλώσσα, έκδοση, οδηγίες'}
 ];
+/* «Οι εφαρμογές μας» — κοινό efarmoges-mas.js (ίδια σελίδα σε όλες τις εφαρμογές GlenApps) */
+function efmNew(){try{return localStorage.getItem('efm-new-seen')!=='1'}catch(e){return false}}
+function appsSheet(){
+  try{localStorage.setItem('efm-new-seen','1')}catch(e){}
+  openSheet(`<h2>🧩 Οι εφαρμογές μας</h2><div id="efmFm"></div><div class="acts"><button class="primary" id="efmBack">Πίσω</button></div>`);
+  $('efmBack').onclick=menuSheet;
+  try{const E=window.EfarmogesMas;if(E){E.init({app:'fotometra',lang:()=>(document.documentElement.lang||'el').slice(0,2)});E.page($('efmFm'))}else $('efmFm').innerHTML='<p class="hint">Η λίστα δεν φορτώθηκε.</p>'}catch(e){}
+}
 function menuSheet(){
   openSheet(`<h2>Ρυθμίσεις</h2>
     ${MG.map(g=>`<button class="grp" data-g="${g.k}"><span class="gi">${g.ic}</span>
       <span class="gt"><b>${g.n}</b><span>${g.s}</span></span><span class="ga">›</span></button>`).join('')}
+    <button class="grp" id="mApps"><span class="gi">🧩</span>
+      <span class="gt"><b>Οι εφαρμογές μας${efmNew()?' <i class="efm-newdot" aria-label="νέο"></i>':''}</b><span>κι άλλες εφαρμογές GlenApps</span></span><span class="ga">›</span></button>
     <p class="hint" style="text-align:center">ΦωτοΜέτρα ${APPV} · <span id="mVerS"></span></p>
     <div class="acts"><button class="primary" id="mClose">Κλείσιμο</button></div>`);
   $('mClose').onclick=closeSheet;
   $('sheetIn').querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>groupSheet(b.dataset.g));
+  $('mApps').onclick=appsSheet;
   const v=$('mVerS');
   if(v){ const t=bkLastAt(); v.textContent=tr('τελευταίο αντίγραφο')+': '+tr(agoTxt(t));
     if(!t||(Date.now()-t)>7*864e5) v.style.color='var(--danger)'; }
@@ -2910,7 +2923,7 @@ if(QP.get('flat')==='1'){
 })();
 
 /* ---------- εγκατάσταση ως εφαρμογή ---------- */
-const APPV='2.9.6',APP_VERSION=APPV;
+const APPV='2.9.7',APP_VERSION=APPV;
 let deferredPrompt=null;
 let instDismissed=false; try{ instDismissed=!!localStorage.getItem('fotometra-noinst'); }catch(_){}
 function showInstBar(v){ const b=document.getElementById('instBar'); if(b)b.style.display=v?'flex':'none'; }
